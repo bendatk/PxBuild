@@ -15,6 +15,12 @@
 *.xls
 *.xlsx
 *.zip
+testdata/out_files/
+example_data/pxbuild_output/
+testdata/**/*.agg
+testdata/**/*.vs
+testdata/**/*.px
+
 
 # The section below is from the GitHub .gitignore template for Python:
 # https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore

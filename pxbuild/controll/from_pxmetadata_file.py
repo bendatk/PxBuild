@@ -383,6 +383,9 @@ class LoadFromPxmetadata:
             if temp_tags:
                 out_model.synonyms.set(" ".join(temp_tags))
 
+        if in_model.dataset.description and in_model.dataset.description[lang]:
+            out_model.description.set(str(in_model.dataset.description[lang]), lang)
+            
         out_model.contents.set(in_model.dataset.table_id + ": " + in_model.dataset.base_title[lang] + ",", lang)
         if in_model.dataset.notes:
             for note in in_model.dataset.notes:

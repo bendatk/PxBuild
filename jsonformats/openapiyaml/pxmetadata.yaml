@@ -76,6 +76,11 @@ components:
               additionalProperties:
                 type: string
               description: "Text to which tableid is prefixed and _by_ variable list is appended. Is used for the CONTENTS keyword. example: no Utenrikshandel med varer"
+            description:
+              type: object
+              additionalProperties:
+                type: string
+              description: "Fixed header for the entire table. This header should include the base population/concept and any grouping variables that distinguish different tables, if needed."
             searchKeywords:
               type: object
               additionalProperties:

@@ -61,6 +61,8 @@ Keywords included in Round 1:
 |SYNONYMS|Meta||
 |DATA|data||
 
+Added keywords by Statistics Finland
+|DESCRIPTION|Meta||
 
 Keyword that are not really implemented:
 (remember output validation)
