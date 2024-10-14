@@ -14,7 +14,8 @@ class TimeDim(AbstractDim):
         super().__init__(config.timevariable_code, meta.time_dimension.label)
 
         col_name = meta.time_dimension.column_name
-        self._periods = in_datadatasource.get_timeperiodes(col_name)
+
+        self._periods = sorted(in_datadatasource.get_timeperiodes(col_name))
 
         self._for_get_data = CubemathsHelper(col_name, self._periods)
 

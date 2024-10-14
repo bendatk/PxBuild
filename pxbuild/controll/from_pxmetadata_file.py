@@ -201,6 +201,11 @@ class LoadFromPxmetadata:
         out_model.variablecode.set(time.get_code(), time.get_label(lang), lang)
         out_model.variable_type.set(time.get_variabletype(), time.get_label(lang), lang)
 
+        timescale = self._pxmetadata_model.dataset.time_dimension.time_period_format
+        time_dim_column_name = time.get_label(lang)
+        if timescale and time_dim_column_name:
+            out_model.timeval.set(timescale=timescale, time_periods=time.get_codes(), variable=time_dim_column_name, lang=lang)
+
     def map_coded_dimensions_to_pxfile(self, out_model: PXFileModel):
 
         if self._dims.coded_dimensions:

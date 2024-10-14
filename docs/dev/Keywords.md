@@ -63,6 +63,8 @@ Keywords included in Round 1:
 
 Added keywords by Statistics Finland
 |DESCRIPTION|Meta||
+|TIMEVAL|Meta|used timevalformat for this|
+
 
 Keyword that are not really implemented:
 (remember output validation)

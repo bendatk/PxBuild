@@ -7,7 +7,8 @@ class _PxTlist:
         self.time_periods = time_periods
 
     def __str__(self):
-        list_as_string = f'","'.join(self.time_periods)
+        self.time_periods = [x.replace("W", "").replace("H", "").replace("Q", "").replace("M", "") for x in self.time_periods]
+        list_as_string = '","'.join(self.time_periods)
         return f'TLIST({self.timescale}),"{list_as_string}"'
 
     def get_value(self):
