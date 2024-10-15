@@ -153,24 +153,7 @@ class LoadFromPxmetadata:
         lang = self._current_lang
         model = self._pxmetadata_model.dataset
 
-        tmp_list = self._dims.get_dimcodes_in_output_order()
-        vari_list = self._dims.get_as_lables(tmp_list, lang)
-
-        tmp_string = ", ".join(vari_list[:-1])
-
-        title = (
-            model.table_id
-            + ": "
-            + model.base_title[lang]
-            + ", "
-            + self._config.admin.the_word_by[lang]
-            + " "
-            + tmp_string
-            + " "
-            + self._config.admin.the_word_and[lang]
-            + " "
-            + vari_list[-1]
-        )
+        title = model.base_title[lang]
 
         out_model.title.set(title, self._current_lang)
 
@@ -184,6 +167,9 @@ class LoadFromPxmetadata:
             seen = True
 
         if self._dims.get_stubcodes():
+            print("ben_DEBUG: " + lang)
+            print(self._dims.get_stubcodes())
+            print(self._dims.get_as_lables(self._dims.get_stubcodes(), lang))
             my_stubs: List[str] = self._dims.get_as_lables(self._dims.get_stubcodes(), lang)
 
             out_model.stub.set(my_stubs, lang)
@@ -391,7 +377,7 @@ class LoadFromPxmetadata:
         if in_model.dataset.description and in_model.dataset.description[lang]:
             out_model.description.set(str(in_model.dataset.description[lang]), lang)
             
-        out_model.contents.set(in_model.dataset.table_id + ": " + in_model.dataset.base_title[lang] + ",", lang)
+        out_model.contents.set(in_model.dataset.base_title[lang], lang)
         if in_model.dataset.notes:
             for note in in_model.dataset.notes:
                 if note.is_mandatory:
@@ -407,7 +393,8 @@ class LoadFromPxmetadata:
             out_model.axis_version.set(str(in_config.axis_version))
             out_model.charset.set(str(in_config.charset))
             out_model.codepage.set(str(in_config.code_page))
-            out_model.descriptiondefault.set((in_config.description_default or False))
+            if in_config.description_default is not None:
+                out_model.descriptiondefault.set((in_config.description_default))
             if not in_config.admin.skip_creation_date:
                 out_model.creation_date.set(get_current_time())
 
