@@ -167,9 +167,6 @@ class LoadFromPxmetadata:
             seen = True
 
         if self._dims.get_stubcodes():
-            print("ben_DEBUG: " + lang)
-            print(self._dims.get_stubcodes())
-            print(self._dims.get_as_lables(self._dims.get_stubcodes(), lang))
             my_stubs: List[str] = self._dims.get_as_lables(self._dims.get_stubcodes(), lang)
 
             out_model.stub.set(my_stubs, lang)
