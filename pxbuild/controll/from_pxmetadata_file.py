@@ -170,22 +170,7 @@ class LoadFromPxmetadata:
         lang = self._current_lang
         model = self._pxmetadata_model.dataset
 
-        tmp_list = self._dims.get_dimcodes_in_output_order()
-        vari_list = self._dims.get_as_lables(tmp_list, lang)
-
-        tmp_string = ", ".join(vari_list[:-1])
-
-        title = (
-            model.base_title[lang]
-            + ", "
-            + self._config.admin.the_word_by[lang]
-            + " "
-            + tmp_string
-            + " "
-            + self._config.admin.the_word_and[lang]
-            + " "
-            + vari_list[-1]
-        )
+        title = model.base_title[lang]
 
         out_model.title.set(title, self._current_lang)
 
