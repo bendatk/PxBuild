@@ -5,6 +5,7 @@
     
     @staticmethod
     def get_main_language() -> str:
+<<<<<<< HEAD
         return Commons.main_language
     
     @classmethod
@@ -14,3 +15,6 @@
     @staticmethod
     def get_decimals() -> int:
         return Commons.decimals
+=======
+        return Commons.main_language
+>>>>>>> c5a8254 (Language in output: omit printing main langauge)
