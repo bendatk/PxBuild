@@ -5,7 +5,6 @@ from .parquet_datasource import ParquetDatasource
 from .csv_datasource import CsvDatasource
 from .abstract_datasource import AbstractDatasource
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
-from pxbuild.models.output.pxfile.util.commons import Commons
 from ...helpers.logger_config import logger
 
 # Open and read the Parquet file  (or csv for small tests)
@@ -119,9 +118,16 @@ class Datadatasource:
 
         return my_out
     
+<<<<<<< HEAD
     def round_by_decimals(self, df: pd.DataFrame) -> pd.DataFrame:
         for my_cont in self.measurements:
             df[my_cont.column_name] = df[my_cont.column_name].round(Commons.get_decimals())
+=======
+    def round_by_show_decimals(self, df: pd.DataFrame) -> pd.DataFrame:
+        for my_cont in self.measurements:
+            if my_cont.show_decimals:
+                df[my_cont.column_name] = df[my_cont.column_name].round(my_cont.show_decimals)
+>>>>>>> ea38732 (DATA: Round values to output by variable specific show_decimals)
         return df
 
 
@@ -139,7 +145,11 @@ class Datadatasource:
         #  add missing SYMBOL_{code}
         #  it is when we do pd.wide_to_long, this strange mix of column names and code is needed: The code in the cell is the columnnane minus "VALUE"
 
+<<<<<<< HEAD
         raw_data: pd.DataFrame = self.round_by_decimals(self._my_datasource.get_raw_pandas())
+=======
+        raw_data: pd.DataFrame = self.round_by_show_decimals(self._my_datasource.get_raw_pandas())
+>>>>>>> ea38732 (DATA: Round values to output by variable specific show_decimals)
 
         logger.debug(f"raw_data.columns: {raw_data.columns}")
 
