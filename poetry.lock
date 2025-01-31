@@ -1848,7 +1848,11 @@ files = [
 
 [[package]]
 name = "virtualenv"
+<<<<<<< HEAD
 version = "20.29.2"
+=======
+version = "20.29.1"
+>>>>>>> 840ec3e (accept lower python version)
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.8"
