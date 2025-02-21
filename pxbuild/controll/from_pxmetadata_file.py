@@ -338,9 +338,16 @@ class LoadFromPxmetadata:
             return contact_string
 
         for contact in in_data.contacts:
-            if contact.name is None:
-                return contact_string
-            contact_string += f"{contact.name[language]}#{contact.phone}#{contact.email}##"
+            if contact.raw is not None:
+                contact_string += f"{contact.raw[language]}##"
+
+        if contact_string == "":
+            for contact in in_data.contacts:
+                if contact.name is None:
+                    return contact_string
+                contact_string += f"{contact.name[language]}#{contact.phone}#{contact.email}##"
+            
+
 
         return contact_string[:-2]
 
