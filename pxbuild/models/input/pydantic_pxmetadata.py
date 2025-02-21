@@ -115,7 +115,7 @@ class CodedDimension(BaseModel):
     """
     A Link to a PxCodes document
     """
-    label_construction_option: Optional[LabelConstructionOption] = Field('text', alias='labelConstructionOption')
+    label_construction_option: Optional[LabelConstructionOption] = Field(None, alias='labelConstructionOption')
     """
     Construct label for codelist entry as text or code or text then code or code then text
     """
