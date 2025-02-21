@@ -207,6 +207,14 @@ class Dataset(BaseModel):
     """
     TODO: Er dette en filsti eller en url. required? Adress to the parquet-file with datadata
     """
+    output_file_name: Optional[str] = Field(None, alias='outputFileName')
+    """
+    Name of the output file. For multilingual defaults to tab_{tableId} or tab_{tableId}_{language} if not multilingual
+    """
+    matrix: Optional[str] = None
+    """
+    The matrix of the table. Defaults to outputFileName excluding language suffix
+    """
     base_title: Dict[str, str] = Field(..., alias='baseTitle')
     """
     Text to which tableid is prefixed and _by_ variable list is appended. Is used for the CONTENTS keyword. example: no Utenrikshandel med varer
