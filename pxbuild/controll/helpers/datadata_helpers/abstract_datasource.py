@@ -9,3 +9,7 @@ class AbstractDatasource(ABC):
     @abstractmethod
     def get_raw_pandas(self) -> pd.DataFrame:
         pass
+
+    @abstractmethod
+    def close(self) -> None:
+        pass

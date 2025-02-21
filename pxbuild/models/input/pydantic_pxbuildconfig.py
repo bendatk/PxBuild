@@ -161,7 +161,7 @@ class PxbuildConfig(BaseModel):
     """
     example: iso-8859-1
     """
-    description_default: Optional[bool] = Field(False, alias="descriptionDefault")
+    description_default: Optional[bool] = Field(None, alias="descriptionDefault")
     contvariable: Optional[Dict[str, constr(max_length=256)]] = None
     """
     Name for content variable

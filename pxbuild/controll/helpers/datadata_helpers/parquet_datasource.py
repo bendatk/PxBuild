@@ -13,5 +13,10 @@ class ParquetDatasource(AbstractDatasource):
         self._parquet_file = pq.ParquetFile(filepath)
 
     def get_raw_pandas(self) -> pd.DataFrame:
-        raw_data: pd.DataFrame = self._parquet_file.read().to_pandas()
-        return raw_data
+        if self._parquet_file is not None:
+            self.raw_data: pd.DataFrame = self._parquet_file.read().to_pandas()
+            return self.raw_data
+        return self.raw_data
+    
+    def close(self) -> None:
+        self._parquet_file = None

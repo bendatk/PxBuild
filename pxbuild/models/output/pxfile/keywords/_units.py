@@ -29,7 +29,7 @@ class _Units(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, content: str = None, lang: str = None) -> str:
+    def get_value(self,  content: str = None, lang: str = None) -> str:
         my_key = _KeytypeContentLang(content, lang)
         return super().get_value(my_key).get_value()
 

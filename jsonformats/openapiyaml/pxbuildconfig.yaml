@@ -176,7 +176,6 @@ components:
               description: "example: iso-8859-1"
             descriptionDefault:
               type: boolean
-              default: false
             contvariable:
               type: object
               minProperties: 1

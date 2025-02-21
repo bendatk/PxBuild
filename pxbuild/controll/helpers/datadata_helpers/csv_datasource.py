@@ -12,3 +12,6 @@ class CsvDatasource(AbstractDatasource):
     def get_raw_pandas(self) -> pd.DataFrame:
         raw_data: pd.DataFrame = self._df
         return raw_data
+    
+    def close(self) -> None:
+        return super().close()

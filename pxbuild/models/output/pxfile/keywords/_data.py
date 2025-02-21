@@ -21,7 +21,14 @@ class _Data(_PxSingle):
         except Exception as e:
             msg = self._keyword + ":" + str(e)
             raise type(e)(msg) from e
-
+    
+    def __str__(self):
+        # Override parent method to add extra line feed before printing the actual data
+        if self.has_value():
+            return f"{self._keyword}=\n{self._px_value};"
+        else:
+            return ""
+        
     def get_value(self) -> list:
         return super().get_value().get_value()
 

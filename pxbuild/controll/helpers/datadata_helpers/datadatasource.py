@@ -4,6 +4,8 @@ from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from .parquet_datasource import ParquetDatasource
 from .csv_datasource import CsvDatasource
 from .abstract_datasource import AbstractDatasource
+from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
+from pxbuild.models.output.pxfile.util.commons import Commons
 from ...helpers.logger_config import logger
 
 # Open and read the Parquet file  (or csv for small tests)
@@ -16,8 +18,9 @@ class PxDataSourceError(Exception):
 
 
 class Datadatasource:
-    def __init__(self, file_id: str, config: PxbuildConfig) -> None:
+    def __init__(self, file_id: str, config: PxbuildConfig, pxmetadata: PxMetadata) -> None:
         data_file_path_format = config.admin.px_data_resource.adress_format
+        self.measurements = pxmetadata.dataset.measurements
         self._data_file_path = data_file_path_format.format(id=file_id)
         if self._data_file_path.endswith(".parquet"):
             self._my_datasource: AbstractDatasource = ParquetDatasource(self._data_file_path)
@@ -62,6 +65,23 @@ class Datadatasource:
                     print(invalid_rows.head(10))
                     raise PxDataSourceError(err_mess)
 
+    def validate_coded_values(self, column: str, codelist: List[str]) -> None:
+        """Validates that all values in a column are in a list of valid values."""
+
+        if column not in self._raw_df.columns:
+            raise PxDataSourceError(f"Column '{column}' not found in the data.")
+
+        column_data = self._raw_df[column]
+
+        # Create a mask for invalid entries (not in valid_values and not NaN)
+        mask = ~column_data.isin(codelist) & column_data.notna()
+
+        # Filter the DataFrame with the mask
+        invalid_rows = self._raw_df[mask]
+        if not invalid_rows.empty:
+            err_mess = f"There are rows with invalid values in column '{column}'."
+            raise PxDataSourceError(err_mess)
+
     def get_timeperiodes(self, column_name: str) -> List[str]:
         """Reads all values from a column, applies unique and sorts descending."""
 
@@ -73,7 +93,7 @@ class Datadatasource:
         # Get distinct values from the column
         distinct_values = column_data.unique()
         as_list = distinct_values.tolist()
-        as_sorted_list = sorted(as_list, reverse=True)
+        as_sorted_list = sorted(as_list)
         return as_sorted_list
 
     def get_identifiercolumns(self, all_columns: list, measurement_map: dict) -> List[str]:
@@ -98,6 +118,12 @@ class Datadatasource:
                 my_out[corresponding_symbol_column] = f"SYMBOL_{measurement_code_by_column_name[column_name]}"
 
         return my_out
+    
+    def round_by_decimals(self, df: pd.DataFrame) -> pd.DataFrame:
+        for my_cont in self.measurements:
+            df[my_cont.column_name] = df[my_cont.column_name].round(Commons.get_decimals())
+        return df
+
 
     def get_tidy_df(self, measure_dim_name: str, measurement_code_by_column_name: dict) -> pd.DataFrame:
         # measure_dim_name is contvariable_code from config
@@ -113,7 +139,7 @@ class Datadatasource:
         #  add missing SYMBOL_{code}
         #  it is when we do pd.wide_to_long, this strange mix of column names and code is needed: The code in the cell is the columnnane minus "VALUE"
 
-        raw_data: pd.DataFrame = self._my_datasource.get_raw_pandas()
+        raw_data: pd.DataFrame = self.round_by_decimals(self._my_datasource.get_raw_pandas())
 
         logger.debug(f"raw_data.columns: {raw_data.columns}")
 

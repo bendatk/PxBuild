@@ -58,6 +58,10 @@ class CodedDim(AbstractDim):
 
     def get_domain_id(self, language: str) -> str:
         return self._raw.codelist_id + "_" + language
+    
+    def get_geo_label(self, language: str) -> str | None:
+        labels = self.get_pydantic().geo_variable_label
+        return labels[language] if labels is not None else None
 
     # For Support_files.py:
     def get_helper_pxcodes(self) -> HelperPxCodes:

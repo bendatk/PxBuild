@@ -4,6 +4,7 @@ from typing import List, Dict
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata, AttachmentItem
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.input.pydantic_pxstatistics import PxStatistics
+from pxbuild.models.output.pxfile.util.commons import Commons
 
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
 
@@ -35,7 +36,7 @@ class LoadFromPxmetadata:
         self._pxmetadata_model = self._loaded_jsons.get_pxmetadata()
         self._pxstatistics = self._loaded_jsons.get_pxstatistics()
 
-        self._datadata = Datadatasource(self._pxmetadata_model.dataset.data_file, self._config)
+        self._datadata = Datadatasource(self._pxmetadata_model.dataset.data_file, self._config, self._pxmetadata_model)
 
         self._dims = Dims(self._loaded_jsons, self._datadata)
 
@@ -54,6 +55,7 @@ class LoadFromPxmetadata:
 
         # loop in languages
         self._add_language_independent = True  # like AXIS_VERSION
+        Commons.set_main_language(self._config.admin.valid_languages[0])
         for language in self._config.admin.valid_languages:
 
             self._current_lang = language
@@ -74,7 +76,7 @@ class LoadFromPxmetadata:
             self.map_metaid_to_pxfile(out_model)
             self.map_cellnote_to_pxfile(out_model)
 
-            fixdata = MapData(self._datadata, self._pxmetadata_model, self._config, self._dims, self._current_lang)
+            fixdata = MapData(self._datadata, self._pxmetadata_model, self._config, self._dims, self._loaded_jsons, self._current_lang)
             fixdata.map_data(out_model)
 
             if not self._config.admin.build_multilingual_files:
@@ -93,7 +95,8 @@ class LoadFromPxmetadata:
 
         support = SupportFiles(self._pxmetadata_model, self._config, self._dims, self._pxmetadata_id)
         support.make_vs_file()
-
+        self._datadata._my_datasource.close()
+        
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:
         if self._add_language_independent:
             metaid_table: List[str] = []
@@ -132,8 +135,10 @@ class LoadFromPxmetadata:
         for cellnote in self._pxmetadata_model.dataset.cell_notes:
             valuecode_by_dimensioncode = self.get_valuecode_by_dimensioncode(cellnote.attachment)
             valuetexts_for_subkey: List[str] = []
+            dimcodes: List[str] = []
             for dim in dimension_in_order:
                 dimcode = dim.get_code()
+                dimcodes.append(dimcode)
                 if dimcode in valuecode_by_dimensioncode:
                     valuecode = valuecode_by_dimensioncode[dimcode]
                     valuelabel = dim.get_valuelabel(lang, valuecode)
@@ -156,8 +161,10 @@ class LoadFromPxmetadata:
     def map_aggregallowed_to_pxfile(self, out_model: PXFileModel):
         # Check if all values in the array are True
         if self._add_language_independent:
+            all_boolean = all(isinstance(instance.aggregation_allowed, bool) for instance in self._pxmetadata_model.dataset.measurements)
             all_true = all(instance.aggregation_allowed for instance in self._pxmetadata_model.dataset.measurements)
-            out_model.aggregallowed.set(all_true)
+            if all_boolean:
+                out_model.aggregallowed.set(all_true)
 
     def map_title_to_pxfile(self, out_model: PXFileModel):
         lang = self._current_lang
@@ -169,9 +176,7 @@ class LoadFromPxmetadata:
         tmp_string = ", ".join(vari_list[:-1])
 
         title = (
-            model.table_id
-            + ": "
-            + model.base_title[lang]
+            model.base_title[lang]
             + ", "
             + self._config.admin.the_word_by[lang]
             + " "
@@ -277,8 +282,10 @@ class LoadFromPxmetadata:
     def map_measurements_to_pxfile(self, out_model: PXFileModel):
         contdim = self._dims.contdim
         lang = self._current_lang
+
+        # Table wide units keyword is required to avoid crash
         out_model.units.set(
-            "Hi, it seems this has to be here to aviod a crash. For multi-content at least.", None, lang
+            "", None, lang, ""
         )
 
         for my_cont in self._pxmetadata_model.dataset.measurements:
@@ -326,10 +333,10 @@ class LoadFromPxmetadata:
             show_decimals_values = [instance.show_decimals for instance in self._pxmetadata_model.dataset.measurements]
 
             if self._pxmetadata_model.dataset.stored_decimals:
-                out_model.decimals.set(max(self._pxmetadata_model.dataset.stored_decimals, max(show_decimals_values)))
+                Commons.set_decimals(max(self._pxmetadata_model.dataset.stored_decimals, max(show_decimals_values)))
             else:
-                out_model.decimals.set(max(show_decimals_values))
-
+                Commons.set_decimals(max(show_decimals_values))
+            out_model.decimals.set(Commons.get_decimals())
             out_model.showdecimals.set(min(show_decimals_values))
 
     def get_contact_string(self, in_data: PxStatistics, language: str) -> str:
@@ -412,7 +419,6 @@ class LoadFromPxmetadata:
                 out_model.first_published.set(in_model.dataset.first_published)
 
             # The SYNONYMS keyword is language independent. So, all langs go into one for multilingual_files.
-        out_model.contents.set(in_model.dataset.table_id + ": " + in_model.dataset.base_title[lang] + ",", lang)
             if in_model.dataset.search_keywords:
                 temp_tags: List[str] = []
                 if self._config.admin.build_multilingual_files:
@@ -423,7 +429,10 @@ class LoadFromPxmetadata:
                 if temp_tags:
                     out_model.synonyms.set(" ".join(temp_tags))
                     
+        if in_model.dataset.description and in_model.dataset.description[lang]:
+            out_model.description.set(str(in_model.dataset.description[lang]), lang)
 
+        out_model.contents.set(in_model.dataset.base_title[lang], lang)
         if in_model.dataset.notes:
             for note in in_model.dataset.notes:
                 if note.is_mandatory:
@@ -440,7 +449,8 @@ class LoadFromPxmetadata:
             if in_config.charset is not None:
                 out_model.charset.set(str(in_config.charset))
             out_model.codepage.set(str(in_config.code_page))
-            out_model.descriptiondefault.set((in_config.description_default or False))
+            if in_config.description_default is not None:
+                out_model.descriptiondefault.set((in_config.description_default))
             if not in_config.admin.skip_creation_date:
                 out_model.creation_date.set(get_current_time())
 

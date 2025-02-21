@@ -7,6 +7,7 @@ from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.middle.dims import Dims
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+from ..loaded_jsons import LoadedJsons
 
 from .datadatasource import Datadatasource
 from .for_get_data import CubemathsHelper
@@ -16,13 +17,14 @@ from ...helpers.logger_config import logger
 
 class MapData:
     def __init__(
-        self, datadata: Datadatasource, pxmetadata: PxMetadata, config: PxbuildConfig, dims: Dims, lang: str
+        self, datadata: Datadatasource, pxmetadata: PxMetadata, config: PxbuildConfig, dims: Dims, loaded_jsons: LoadedJsons, lang: str
     ) -> None:
         self._pxmetadata_model = pxmetadata
         self._datadata = datadata
         self._config = config
         self._dims = dims
         self._lang = lang
+        self._loaded_jsons = loaded_jsons
 
         self._cubemaths_helper_by_codeid: Dict[str, CubemathsHelper] = dict()
         # The CubemathsHelpers is initalized in  init_cubemaths_helpers_and_calculate_matrix_size()
@@ -43,6 +45,15 @@ class MapData:
         if out_model.data.has_value():
             return
 
+        # Check that coded dimension variables contains only values that are in the dataset
+        for coded_dim in self._pxmetadata_model.dataset.coded_dimensions:
+            dim_code = coded_dim.code
+            dim_values = self._datadata._raw_df[dim_code].unique()
+            codelist_values = [item.code for item in self._loaded_jsons._resolved_pxcodes_ids[coded_dim.codelist_id].valueitems]
+            missing_values = [value for value in dim_values if value not in codelist_values]
+            if missing_values:
+                raise ValueError("Values {} in dataset for coded dimension \"{}\" are not in codelist \"{}\".".format(', '.join(map(lambda x: '"{}"'.format(x), missing_values)), dim_code, coded_dim.codelist_id))
+
         start_get_data = time.time()
 
         matrix_size = self.init_cubemaths_helpers_and_calculate_matrix_size()
@@ -62,7 +73,7 @@ class MapData:
         self.add_out_value(missing_cell_symbol, df)
         merged_df = self.add_missing_rows(matrix_size, missing_row_symbol, df)
 
-        out_data = merged_df["out_value"].tolist()
+        out_data = merged_df["out_value"].apply(lambda x: str(x).rstrip('0').rstrip('.') if x.replace('.', '', 1).isdigit() and '.' in x else x).tolist()
 
         formatter = DataFormatter(self._dims.get_headingcodes(), self._cubemaths_helper_by_codeid)
         number_of_columns_per_line = formatter.calculate_line_break()

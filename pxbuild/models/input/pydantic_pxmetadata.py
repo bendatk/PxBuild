@@ -111,6 +111,10 @@ class CodedDimension(BaseModel):
     """
     Geo variable or not
     """
+    geo_variable_label: Optional[Dict[str, str]] = Field(None, alias='geoVariableLabel')
+    """
+    Label for the geo variable. Maps to MAP keyword
+    """
     variable_type: Optional[str] = Field('N', alias='variableType')
     """
     Variable type
@@ -157,9 +161,9 @@ class Measurement(BaseModel):
     """
     Empty if not a price
     """
-    aggregation_allowed: bool = Field(..., alias='aggregationAllowed')
     is_seasonally_adjusted: Optional[bool] = Field(None, alias='isSeasonallyAdjusted')
     is_workingdays_adjusted: Optional[bool] = Field(None, alias='isWorkingdaysAdjusted')
+    aggregation_allowed: Optional[bool] = Field(None, alias='aggregationAllowed')
     """
     Is it meaningfull to sum this measurement
     """
@@ -218,6 +222,10 @@ class Dataset(BaseModel):
     base_title: Dict[str, str] = Field(..., alias='baseTitle')
     """
     Text to which tableid is prefixed and _by_ variable list is appended. Is used for the CONTENTS keyword. example: no Utenrikshandel med varer
+    """
+    description: Optional[Dict[str, str]] = None
+    """
+    Fixed header for the entire table. This header should include the base population/concept and any grouping variables that distinguish different tables, if needed.
     """
     search_keywords: Optional[Dict[str, List[str]]] = Field(None, alias='searchKeywords')
     """

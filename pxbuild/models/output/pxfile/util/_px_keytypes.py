@@ -7,6 +7,7 @@ They used to be just namedTuples, but we wanted to use pydantic for validation
 """
 
 from ._line_validator import LineValidator
+from .commons import Commons
 
 
 class _KeytypeLang:
@@ -19,7 +20,7 @@ class _KeytypeLang:
         self.lang = lang
 
     def __str__(self):
-        return f"[{self.lang}]" if self.lang else ""
+        return f"[{self.lang}]" if self.lang and Commons.get_main_language() != self.lang else ""
 
     def __eq__(self, other):
         if type(self) is type(other):
