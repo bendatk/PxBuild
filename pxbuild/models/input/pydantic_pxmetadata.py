@@ -149,9 +149,9 @@ class Measurement(BaseModel):
     """
     Empty if not a price
     """
-    is_seasonally_adjusted: Optional[bool] = Field(False, alias='isSeasonallyAdjusted')
-    is_workingdays_adjusted: Optional[bool] = Field(False, alias='isWorkingdaysAdjusted')
     aggregation_allowed: bool = Field(..., alias='aggregationAllowed')
+    is_seasonally_adjusted: Optional[bool] = Field(None, alias='isSeasonallyAdjusted')
+    is_workingdays_adjusted: Optional[bool] = Field(None, alias='isWorkingdaysAdjusted')
     """
     Is it meaningfull to sum this measurement
     """
