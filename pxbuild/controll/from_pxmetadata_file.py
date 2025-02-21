@@ -437,7 +437,8 @@ class LoadFromPxmetadata:
             if in_config.admin.build_multilingual_files:
                 out_model.languages.set(in_config.admin.valid_languages)
             out_model.axis_version.set(str(in_config.axis_version))
-            out_model.charset.set(str(in_config.charset))
+            if in_config.charset is not None:
+                out_model.charset.set(str(in_config.charset))
             out_model.codepage.set(str(in_config.code_page))
             out_model.descriptiondefault.set((in_config.description_default or False))
             if not in_config.admin.skip_creation_date:
@@ -487,8 +488,18 @@ def write_output(
     out_folder = px_folder_format.format(id=pxmetadata_id)
     out_file = f"{out_folder}/{output_filename}.px"
 
+    if encoding is None:
+        encoding = "cp1252"
+    try:
+        "".encode(encoding)
+    except LookupError:
+        logger.warning(f"Config.codePage '{encoding}' is not valid encoding for printing. Defaulting to 'cp1252'")
+        encoding = "cp1252"
 
-    with open(out_file, "w", encoding="cp1252") as f:
+    if "utf" in encoding.lower() and "-sig" not in encoding.lower():
+        encoding = encoding + "-sig"
+
+    with open(out_file, "w", encoding=encoding) as f:
         print(out_model, file=f)
 
     logger.info(f"File written to: {out_file}")
