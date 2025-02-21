@@ -16,12 +16,12 @@ class _Units(_PxValueByKey):
         super().__init__("UNITS")
         self._seen_languages = {}
 
-    def set(self, units: str, content: str = None, lang: str = None) -> None:
+    def set(self, units: str, content: str = None, lang: str = None, code: str = "") -> None:
         """Unit text, e.g. ton, NOK"""
         LineValidator.is_not_None(self._keyword, units)
         LineValidator.is_string(self._keyword, units)
         my_value = _PxString(units)
-        my_key = _KeytypeContentLang(content, lang)
+        my_key = _KeytypeContentLang(content, lang, code)
         try:
             super().set(my_value, my_key)
         except Exception as e:
