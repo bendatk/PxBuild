@@ -61,6 +61,10 @@ class TimeDimension(BaseModel):
     """
     name of column in dataset
     """
+    code: Optional[str] = None
+    """
+    the code of the dimension( aka variable). Defaults to columName if missing
+    """
     time_period_format: Optional[str] = Field(None, alias='timePeriodFormat')
     """
     example: yyyy
@@ -70,6 +74,10 @@ class TimeDimension(BaseModel):
     If true the dimension is a heading otherwise it is a stub
     """
     label: Optional[Dict[str, str]] = None
+    meta_id: Optional[List[str]] = Field(None, alias='metaId')
+    """
+    For MetaId keyword
+    """
 
 
 class CellNote(BaseModel):
@@ -97,7 +105,7 @@ class CodedDimension(BaseModel):
     """
     code: Optional[str] = None
     """
-    the code of the dimention( aka variable). Defaults to columName if missing
+    the code of the dimension( aka variable). Defaults to columName if missing
     """
     is_geo_variable_type: Optional[bool] = Field(False, alias='isGeoVariableType')
     """

@@ -95,7 +95,7 @@ class LoadFromPxmetadata:
             if self._pxstatistics.meta_id:
                 metaid_table += self._pxstatistics.meta_id
             if metaid_table:
-                out_model.meta_id.set(" ".join(metaid_table))
+                out_model.meta_id.set("tablelevel", " ".join(metaid_table))
 
         lang = self._current_lang
         if self._dims.coded_dimensions:
@@ -110,6 +110,9 @@ class LoadFromPxmetadata:
                 out_model.meta_id.set(
                     " ".join(my_cont.meta_id), contdim.get_label(lang), my_cont.label[self._current_lang], lang, my_cont.code
                 )
+        
+        if self._pxmetadata_model.dataset.time_dimension.meta_id:
+            out_model.meta_id.set(" ".join(self._pxmetadata_model.dataset.time_dimension.meta_id), self._dims.time.get_label(lang), None, lang, "timedimension")
 
     def map_cellnote_to_pxfile(self, out_model: PXFileModel) -> None:
         if not self._pxmetadata_model.dataset.cell_notes:
