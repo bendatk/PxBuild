@@ -103,6 +103,10 @@ class CodedDimension(BaseModel):
     """
     Geo variable or not
     """
+    variable_type: Optional[str] = Field('N', alias='variableType')
+    """
+    Variable type
+    """
     is_heading: Optional[bool] = Field(None, alias='isHeading')
     """
     If true the dimension is a heading otherwise it is a stub
