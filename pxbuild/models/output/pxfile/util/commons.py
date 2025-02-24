@@ -5,10 +5,6 @@
     
     @staticmethod
     def get_main_language() -> str:
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> d79ca07 (Round by decimals instead show_decimals)
         return Commons.main_language
     
     @classmethod
@@ -17,11 +13,4 @@
     
     @staticmethod
     def get_decimals() -> int:
-<<<<<<< HEAD
         return Commons.decimals
-=======
-        return Commons.main_language
->>>>>>> c5a8254 (Language in output: omit printing main langauge)
-=======
-        return Commons.decimals
->>>>>>> d79ca07 (Round by decimals instead show_decimals)
