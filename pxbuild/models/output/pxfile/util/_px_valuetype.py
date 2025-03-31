@@ -86,7 +86,8 @@ class _PxTlist:
 
         if consistent_gap:
             if gap_size == 1:
-                return f'TLIST({period_type}1,"{periods[0]}"-"{periods[-1]}")'
+                periods_int = [str(''.join(filter(str.isdigit, t))) for t in periods]
+                return f'TLIST({period_type}1,"{periods_int[0]}"-"{periods_int[-1]}")'
             filled_periods = fill_gaps(periods)
             periods_int = [str(''.join(filter(str.isdigit, t))) for t in filled_periods]
             periods_quoted = ",".join([f'"{period}"' for period in periods_int])
