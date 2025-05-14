@@ -50,6 +50,11 @@ class LoadFromPxmetadata:
         self.models_for_pytest: dict = {}  # Todo make perfect reader, and let the pytest read the files
 
         self._last_updated = self.get_last_updated(self._pxstatistics)
+        
+        if not self._pxmetadata_model.dataset.creation_date:
+            self._creation_date = get_current_time()
+        else:
+            self._creation_date = convert_to_pxdate_string(self._pxmetadata_model.dataset.creation_date, self._pxmetadata_model.dataset.creation_dateformat)
 
         out_model = PXFileModel()
 
@@ -415,6 +420,8 @@ class LoadFromPxmetadata:
                 out_model.official_statistics.set(in_model.dataset.official_statistics)
             if in_model.dataset.copyright:
                 out_model.copyright.set(in_model.dataset.copyright)
+            if not self._config.admin.skip_creation_date:
+                out_model.creation_date.set(self._creation_date)
             if in_model.dataset.first_published:
                 out_model.first_published.set(in_model.dataset.first_published)
 
@@ -451,8 +458,6 @@ class LoadFromPxmetadata:
             out_model.codepage.set(str(in_config.code_page))
             if in_config.description_default is not None:
                 out_model.descriptiondefault.set((in_config.description_default))
-            if not in_config.admin.skip_creation_date:
-                out_model.creation_date.set(get_current_time())
 
         out_model.contvariable.set(str(in_config.contvariable[current_lang]), current_lang)
 

@@ -151,6 +151,13 @@ components:
             copyright:
                type: boolean
                default: false
+            creationDateformat:
+                type: string
+                description: "Format for datetime.strptime reading creationDate. Default is the pxweb standard which is CCYYMMDD hh:mm"
+                default: "%Y%m%d %H:%M"
+            creationDate:
+              type: string
+              description: "Date for CREATION-DATE keyword. Default is the current date. Format specified in creationDateformat"
             firstPublished:
                type: string
                description: The date when the data cube was first published in the format CCYYMMDD hh:mm
