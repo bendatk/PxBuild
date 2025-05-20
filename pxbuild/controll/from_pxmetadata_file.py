@@ -138,6 +138,8 @@ class LoadFromPxmetadata:
         dimension_in_order = self._dims.get_dims_in_output_order()
 
         for cellnote in self._pxmetadata_model.dataset.cell_notes:
+            if lang not in cellnote.text:
+                continue
             valuecode_by_dimensioncode = self.get_valuecode_by_dimensioncode(cellnote.attachment)
             valuetexts_for_subkey: List[str] = []
             dimcodes: List[str] = []
@@ -268,6 +270,8 @@ class LoadFromPxmetadata:
                 # Note on variable
                 if my_var.notes:
                     for note in my_var.notes:
+                        if lang not in note.text:
+                            continue
                         if note.is_mandatory:
                             out_model.notex.set(note.text[lang], my_funny_var_id, lang, n_var.get_code())
                         else:
@@ -278,6 +282,8 @@ class LoadFromPxmetadata:
                 if my_value_notes:
                     for valuecode in my_value_notes:
                         for note in my_value_notes[valuecode]:
+                            if lang not in note.text:
+                                continue
                             valuelabel = n_var.get_valuelabel(lang, valuecode)
                             if note.is_mandatory:
                                 out_model.valuenotex.set(note.text[lang], n_var.get_label(lang), valuelabel, lang, n_var.get_code())
@@ -323,6 +329,8 @@ class LoadFromPxmetadata:
             # Note on a contentvalue
             if my_cont.notes:
                 for note in my_cont.notes:
+                    if lang not in note.text:
+                        continue
                     if note.is_mandatory:
                         out_model.valuenotex.set(note.text[lang], contdim.get_label(lang), my_funny_cont_id, lang, code)
                     else:
@@ -442,6 +450,8 @@ class LoadFromPxmetadata:
         out_model.contents.set(in_model.dataset.base_title[lang], lang)
         if in_model.dataset.notes:
             for note in in_model.dataset.notes:
+                if lang not in note.text:
+                    continue
                 if note.is_mandatory:
                     out_model.notex.set(note.text[lang], None, lang, "")
                 else:
