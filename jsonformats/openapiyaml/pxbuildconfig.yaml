@@ -64,13 +64,17 @@ components:
                             type: string
                             enum:
                               - file
+                              - dictionary
                               - s3_todo
                               - api_todo
                             default: file
                             description: This defaults to file. Which currently is the only working value.
                         adressFormat:
-                            type: string
-                            description: "The path or url to the json, given its id ( id is the first argument to LoadFromPxmetadata). Example: example_data/pxmetadata/{id}.json"
+                            oneOf:
+                              - type: string
+                                description: "The path or url to the json, given its id ( id is the first argument to LoadFromPxmetadata). Example: example_data/pxmetadata/{id}.json"
+                              - type: object
+                                description: "Dictionary containing pxmetadata"
                   pxStatisticsResource:
                       type: object
                       description: What resource provides the pxstatistics-json
@@ -81,12 +85,16 @@ components:
                             type: string
                             enum:
                               - file
+                              - dictionary
                               - s3_todo
                               - api_todo
                             default: file
                         adressFormat:
-                            type: string
-                            description: "The path or url to the json, given its id (id is taken from pxmetadata/dataset/statisticsId.) Example: example_data/pxstatistics/pxstatistics_{id}.json"
+                          oneOf:
+                            - type: string
+                              description: "The path or url to the json, given its id (id is taken from pxmetadata/dataset/statisticsId.) Example: example_data/pxstatistics/pxstatistics_{id}.json"
+                            - type: object
+                              description: "Dictionary containing pxstatistics"
                   pxCodesResource:
                       type: object
                       description: What resource provides the pxcodes-json
@@ -97,12 +105,16 @@ components:
                             type: string
                             enum:
                               - file
+                              - dictionary
                               - s3_todo
                               - api_todo
                             default: file
                         adressFormat:
-                            type: string
-                            description: "The path or url to the json, given its id. Example: example_data/pxcodes/{id}.json"
+                            oneOf:
+                              - type: string
+                                description: "The path or url to the json, given its id (id is taken from pxmetadata/dataset/codesId). Example: example_data/pxcodes/{id}.json"
+                              - type: object
+                                description: "Dictionary containing pxcodes"
                   pxDataResource:
                       type: object
                       description: What resource provides the datadata
@@ -113,6 +125,7 @@ components:
                             type: string
                             enum:
                               - file
+                              - dataframe
                               - s3_todo
                               - api_todo
                             default: file

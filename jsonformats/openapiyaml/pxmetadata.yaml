@@ -69,8 +69,11 @@ components:
               type: string
               description: "Id of group of tables in the registry of statistics. example: '8765'"
             dataFile:
-              type: string
-              description: "TODO: Er dette en filsti eller en url. required? Adress to the parquet-file with datadata"
+              oneOf:
+                - type: string
+                  description: "TODO: Er dette en filsti eller en url. required? Adress to the parquet-file with datadata"
+                - type: object
+                  description: "Dataframe"
             outputFileName:
               type: string
               description: "Name of the output file. For multilingual defaults to tab_{tableId} or tab_{tableId}_{language} if not multilingual"

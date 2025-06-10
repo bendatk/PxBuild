@@ -1,7 +1,8 @@
-import pyarrow.parquet as pq
-import pandas as pd
+import pyarrow.parquet as pq, pandas, pyspark.pandas
 from .abstract_datasource import AbstractDatasource
 from ...helpers.logger_config import logger
+from .pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
+from pyspark.sql import DataFrame as SparkDataFrame
 
 # Open and read the Parquet file
 
@@ -11,12 +12,12 @@ class ParquetDatasource(AbstractDatasource):
         self._filepath = filepath
         logger.debug(f"Reading parquet file: {filepath}")
         self._parquet_file = pq.ParquetFile(filepath)
+        self._backend = PandasSparkBackend.get_backend()
 
-    def get_raw_pandas(self) -> pd.DataFrame:
-        if self._parquet_file is not None:
-            self.raw_data: pd.DataFrame = self._parquet_file.read().to_pandas()
-            return self.raw_data
+    def get_raw_data(self) -> pandas.DataFrame | SparkDataFrame:
+        if self._parquet_file:
+            self.raw_data = self._backend.read_parquet(self._parquet_file)
         return self.raw_data
-    
+
     def close(self) -> None:
         self._parquet_file = None

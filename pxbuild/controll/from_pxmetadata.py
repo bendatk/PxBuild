@@ -14,6 +14,7 @@ from .helpers.loaded_jsons import LoadedJsons
 from .helpers.support_files import SupportFiles
 from .helpers.logger_config import configure_logger, logger
 from pxbuild.models.middle.dims import Dims
+from .helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
 
 
 class LoadFromPxmetadata:
@@ -26,8 +27,10 @@ class LoadFromPxmetadata:
 
     PriceTypeDict = {"PriceType.current": "C", "PriceType.fixed": "F"}
 
-    def __init__(self, pxmetadata_id: str, config_file: str, debug: bool = False) -> None:
+    def __init__(self, pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> None:
         configure_logger(debug)
+        PandasSparkBackend.set_backend(backend)
+
         self._pxmetadata_id = pxmetadata_id
 
         self._loaded_jsons: LoadedJsons = LoadedJsons(pxmetadata_id, config_file)
@@ -36,7 +39,11 @@ class LoadFromPxmetadata:
         self._pxmetadata_model = self._loaded_jsons.get_pxmetadata()
         self._pxstatistics = self._loaded_jsons.get_pxstatistics()
 
-        self._datadata = Datadatasource(self._pxmetadata_model.dataset.data_file, self._config, self._pxmetadata_model)
+        if isinstance(self._pxmetadata_model.dataset.data_file, str):
+            file_id = self._pxmetadata_model.dataset.data_file
+        elif isinstance(self._pxmetadata_model.dataset.data_file, dict):
+            file_id = next(iter(self._pxmetadata_model.dataset.data_file))
+        self._datadata = Datadatasource(file_id, self._config, self._pxmetadata_model)
 
         self._dims = Dims(self._loaded_jsons, self._datadata)
 
@@ -524,7 +531,6 @@ def write_output(
     if "utf" in encoding.lower() and "-sig" not in encoding.lower():
         encoding = encoding + "-sig"
 
-    with open(out_file, "w", encoding=encoding) as f:
-        print(out_model, file=f)
+    out_model.write_to_file(out_file, encoding=encoding)
 
     logger.info(f"File written to: {out_file}")

@@ -1,6 +1,8 @@
 # ---------------   ValueType Classes:
 import datetime
 from typing import Optional
+import pandas as pd
+from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
 
 class _PxTlist: 
     """TLIST(A1, ”1994”-”1996”);  eller TLIST(A1), ”1994”, ”1995”,"1996”;"""
@@ -183,25 +185,26 @@ class _PxBool:
 
 
 class _PxData:
-    def __init__(self, the_data: list, columns_per_line: int) -> None:
+    def __init__(self, the_data: SparkDataFrame | pd.Series, columns_per_line: int) -> None:
         self._data = the_data
         self._columns_per_line = columns_per_line
 
     def __str__(self):
         data_string = ""
-        for i, data_cell in enumerate(self._data):
-            if i > 0:
-                if i % self._columns_per_line == 0:
-                    data_string += " \n"
-                else:
-                    data_string += " "
-            data_string += data_cell
+        if isinstance(self._data, pd.Series):
+            for i, data_cell in enumerate(self._data):
+                if i > 0:
+                    if i % self._columns_per_line == 0:
+                        data_string += " \n"
+                    else:
+                        data_string += " "
+                data_string += data_cell
 
         return data_string
 
     def get_value(self):
         return self._data
-
+    
 
 class _PxInt:
     """Holdes a integer and prints it in quotes"""

@@ -1,13 +1,10 @@
-import pandas as pd
 from abc import ABC, abstractmethod
-
-
-# Open and read the Parquet file
-
+from pyspark.sql import DataFrame as SparkDataFrame
+from pandas import DataFrame as PandasDataFrame
 
 class AbstractDatasource(ABC):
     @abstractmethod
-    def get_raw_pandas(self) -> pd.DataFrame:
+    def get_raw_data(self) -> PandasDataFrame | SparkDataFrame:
         pass
 
     @abstractmethod

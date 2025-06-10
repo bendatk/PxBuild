@@ -1,6 +1,10 @@
 ﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxData
-
+import pyspark.pandas as ps
+import pandas as pd
+from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
+from .....controll.helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
+from io import TextIOWrapper
 
 class _Data(_PxSingle):
 
@@ -13,7 +17,7 @@ class _Data(_PxSingle):
     def __init__(self) -> None:
         super().__init__("DATA")
 
-    def set(self, data: list, columns_per_line: int) -> None:
+    def set(self, data: SparkDataFrame | pd.Series, columns_per_line: int) -> None:
         """Numbers and quoted dots"""
         my_value = _PxData(data, columns_per_line)
         try:
@@ -28,8 +32,16 @@ class _Data(_PxSingle):
             return f"{self._keyword}=\n{self._px_value};"
         else:
             return ""
+
+    def write_to_file(self, file_path, f: TextIOWrapper) -> None:
+        if self.has_value() and isinstance(self._px_value, _PxData):
+            f.write(f"{self._keyword}=\n")
+            PandasSparkBackend.get_backend().write_pxdata_to_file(self._px_value, f, file_path, self._px_value._columns_per_line, chunk_size=500000)
+            f.write(";")
+        else:
+            raise ValueError(f"Cannot write {self._keyword} without value.")
         
-    def get_value(self) -> list:
+    def get_value(self):
         return super().get_value().get_value()
 
     def has_value(self) -> bool:

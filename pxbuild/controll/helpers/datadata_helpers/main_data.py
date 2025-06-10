@@ -1,8 +1,8 @@
 import time
-import pandas as pd
 import numpy as np
-from typing import Dict
-
+import pandas as pd
+from typing import Dict, Union
+from pyspark.sql import DataFrame as SparkDataFrame
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.middle.dims import Dims
@@ -13,6 +13,7 @@ from .datadatasource import Datadatasource
 from .for_get_data import CubemathsHelper
 from .data_formatter import DataFormatter
 from ...helpers.logger_config import logger
+from .pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
 
 
 class MapData:
@@ -28,6 +29,7 @@ class MapData:
 
         self._cubemaths_helper_by_codeid: Dict[str, CubemathsHelper] = dict()
         # The CubemathsHelpers is initalized in  init_cubemaths_helpers_and_calculate_matrix_size()
+        self._backend = PandasSparkBackend.get_backend()
 
     def map_data(self, out_model: PXFileModel) -> None:
         # /// MINDEX:
@@ -45,14 +47,9 @@ class MapData:
         if out_model.data.has_value():
             return
 
-        # Check that coded dimension variables contains only values that are in the dataset
-        for coded_dim in self._pxmetadata_model.dataset.coded_dimensions:
-            dim_code = coded_dim.code
-            dim_values = self._datadata._raw_df[dim_code].unique()
-            codelist_values = [item.code for item in self._loaded_jsons._resolved_pxcodes_ids[coded_dim.codelist_id].valueitems]
-            missing_values = [value for value in dim_values if value not in codelist_values]
-            if missing_values:
-                raise ValueError("Values {} in dataset for coded dimension \"{}\" are not in codelist \"{}\".".format(', '.join(map(lambda x: '"{}"'.format(x), missing_values)), dim_code, coded_dim.codelist_id))
+        self._backend.validate_codelist_vs_data_values(
+            self._datadata._raw_df, self._pxmetadata_model.dataset.coded_dimensions, self._loaded_jsons._resolved_pxcodes_ids
+        )
 
         start_get_data = time.time()
 
@@ -69,17 +66,14 @@ class MapData:
         time_used_tidy = end_tidy - start_tidy
         logger.debug(f"Time: GetTidyDF: {time_used_tidy}")
 
-        self.add_out_index(df)
-        self.add_out_value(missing_cell_symbol, df)
+        df = self.add_out_index(df)
+        df = self.add_out_value(df, missing_cell_symbol)
+
         merged_df = self.add_missing_rows(matrix_size, missing_row_symbol, df)
-
-        out_data = merged_df["out_value"].apply(lambda x: str(x).rstrip('0').rstrip('.') if x.replace('.', '', 1).isdigit() and '.' in x else x).tolist()
-
+        out_data = self._backend.remove_trailing_zero_decimals(merged_df)
         formatter = DataFormatter(self._dims.get_headingcodes(), self._cubemaths_helper_by_codeid)
         number_of_columns_per_line = formatter.calculate_line_break()
-
         out_model.data.set(out_data, number_of_columns_per_line)
-
         end_get_data = time.time()
         time_used_get_data = end_get_data - start_get_data
         logger.debug(f"Time: GetData: {time_used_get_data}")
@@ -102,38 +96,13 @@ class MapData:
         return array_size
 
     def add_missing_rows(self, matrix_size, missing_row_symbol, df):
-        # sorts on index as sideeffect :-)
-        matrix_df = pd.DataFrame({"out_index": range(matrix_size)})
+        return self._backend.add_missing_rows(matrix_size, missing_row_symbol, df)
 
-        # Merge the two DataFrames
-        merged_df = pd.merge(matrix_df, df, on="out_index", how="left")
-
-        # Fill missing values with "MISSING"
-        merged_df["out_value"] = merged_df["out_value"].fillna(missing_row_symbol)
-
-        return merged_df
-
-    def add_out_value(self, missing_cell_symbol: str, df):
-        start = time.time()
-
-        conditions = [df["SYMBOL"].notna() & (df["SYMBOL"] != ""), df["VALUE"].notna() & (df["VALUE"] != "")]
-
-        choices = [df["SYMBOL"].astype(str), df["VALUE"].astype(str)]
-
-        df["out_value"] = np.select(conditions, choices, missing_cell_symbol)
-
-        end = time.time()
-        time_used = end - start
-        logger.debug(f"Time: numpy select in: {time_used}")
+    def add_out_value(self, df: pd.DataFrame | SparkDataFrame, missing_cell_symbol: str):
+        return self._backend.add_out_value(df, missing_cell_symbol)
 
     def add_out_index(self, df):
-        columns_to_sum = []
-        for col in self._cubemaths_helper_by_codeid.values():
-            # Mapping the values using the dictionary
-            contrib_col_name = "int_" + col._colname_in_dataframe
-            df[contrib_col_name] = df[col._colname_in_dataframe].map(col._position_of_value) * col.factor
-            columns_to_sum.append(contrib_col_name)
-        df["out_index"] = df[columns_to_sum].sum(axis=1)
+        return self._backend.add_out_index(df, self._cubemaths_helper_by_codeid)
 
     def get_measurement_column_code_mapping(self) -> dict:
         column_code_map = {}

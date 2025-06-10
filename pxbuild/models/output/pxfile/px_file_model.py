@@ -85,7 +85,7 @@ from pxbuild.models.output.pxfile.keywords._variablecode import _Variablecode
 from pxbuild.models.output.pxfile.keywords._meta_id import _MetaId
 from pxbuild.models.output.pxfile.keywords._data import _Data
 from pxbuild.models.output.pxfile.util._px_super import _SuperKeyword
-
+from ....controll.helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
 
 class PXFileModel:
     """
@@ -272,6 +272,18 @@ class PXFileModel:
         attrs = vars(self)
         attr_strings = [str(value) for value in attrs.values() if str(value) != ""]
         return "\n".join(attr_strings)
+    
+    def write_to_file(self, file_path: str, encoding: str) -> None:
+        backend = PandasSparkBackend.get_backend()
+        attrs = vars(self)
+        with open(file_path, "w", encoding=encoding) as f:
+            for value in attrs.values():
+                if isinstance(value, _Data) and backend.backend_name == "spark":
+                    value.write_to_file(file_path, f)
+                else:
+                    value_str = str(value)
+                    if value_str != "":
+                        f.write(value_str + "\n")
 
     def get_attribute(self, name: str) -> _SuperKeyword:
         return getattr(self, name)
