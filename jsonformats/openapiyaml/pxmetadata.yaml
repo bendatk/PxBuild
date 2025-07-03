@@ -199,6 +199,13 @@ components:
                   geoVariableLabel:
                     $ref: '#/components/schemas/StringByLanguage'
                     description: Label for the geo variable. Maps to MAP keyword
+                  domainIdFrom:
+                    type: string
+                    enum:
+                      - codelistId
+                      - firstGroupingLabel
+                      - firstGroupingFilenameBase
+                    description: "How to construct the domain label. Defaults to codelistId."
                   variableType:
                     type: string
                     description: Variable type

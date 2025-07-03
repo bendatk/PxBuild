@@ -105,8 +105,10 @@ class LoadFromPxmetadata:
             write_output(self._pxmetadata_id, self._config.admin.output_destination.px_folder_format, out_model, self._output_filename, self._config.code_page)
             self.models_for_pytest["multi"] = out_model
 
-        support = SupportFiles(self._pxmetadata_model, self._config, self._dims, self._pxmetadata_id)
-        support.make_vs_file()
+        if self._config.admin.make_support_files:
+            support = SupportFiles(self._pxmetadata_model, self._config, self._dims, self._pxmetadata_id)
+            support.make_vs_file()
+
         self._datadata._my_datasource.close()
         
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:

@@ -2,6 +2,7 @@ from typing import List
 from .abstract_dim import AbstractDim
 from ..input.pydantic_pxmetadata import CodedDimension
 from ..input.pydantic_pxcodes import Grouping
+from ..input.pydantic_pxmetadata import DomainIdFrom
 
 from pxbuild.controll.helpers.loaded_jsons import LoadedJsons
 from pxbuild.controll.helpers.datadata_helpers.for_get_data import CubemathsHelper
@@ -25,6 +26,14 @@ class CodedDim(AbstractDim):
             self._variabletype = in_cd.variable_type
 
         self._column_name = in_cd.column_name
+
+        self._domain_id: dict[str,str] | str = self._raw.codelist_id
+        groupings = self._pxcodes_helper.groupings()
+        if groupings and len(groupings) > 0:
+            if in_cd.domain_id_from == DomainIdFrom.first_grouping_label:
+                self._domain_id = groupings[0].label if groupings[0].label else self._domain_id 
+            elif in_cd.domain_id_from == DomainIdFrom.first_grouping_filename_base:
+                self._domain_id = groupings[0].filename_base if groupings[0].filename_base else self._domain_id
 
     def get_pydantic(self) -> CodedDimension:
         return self._raw
@@ -57,6 +66,10 @@ class CodedDim(AbstractDim):
         return self._variabletype
 
     def get_domain_id(self, language: str) -> str:
+        if isinstance(self._domain_id, str):
+            return self._domain_id + "_" + language
+        elif isinstance(self._domain_id, dict):
+            return self._domain_id.get(language, self._raw.codelist_id + "_" + language)
         return self._raw.codelist_id + "_" + language
     
     def get_geo_label(self, language: str) -> str | None:
