@@ -125,6 +125,19 @@ components:
                   description: For MetaId keyword
                   items:
                     type: string
+                notes:
+                  $ref: '#/components/schemas/Notes'
+                valueNotes:
+                  type: array
+                  description: "Notes on the values in the time dimension."
+                  items:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                        description: "Value note is referring to. Must exist in the time dimension."
+                      note:
+                        $ref: '#/components/schemas/Note'
             codedDimensions:
               type: array
               description: Also known as classification variables
