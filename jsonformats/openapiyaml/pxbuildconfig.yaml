@@ -154,6 +154,10 @@ components:
                      items:
                         type: string
                      description: The 2-letter languagecodes. Probably ISO 639, but the real constraint is that it has to match your pxweb
+                  makeSupportFiles:
+                    type: boolean
+                    description: If True, the pxbuild will create support files like vs and agg files.
+                    default: true
                   buildMultilingualFiles:
                      type: boolean
                      description: make multilingual PX-files, not one for each language. If true, the first entry in validLanguages will be used for language keyword.

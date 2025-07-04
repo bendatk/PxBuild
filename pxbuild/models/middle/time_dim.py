@@ -1,4 +1,5 @@
 from .abstract_dim import AbstractDim
+from ..input.pydantic_pxmetadata import Note
 from typing import List
 from pxbuild.controll.helpers.datadata_helpers.datadatasource import Datadatasource
 from pxbuild.controll.helpers.loaded_jsons import LoadedJsons
@@ -16,16 +17,20 @@ class TimeDim(AbstractDim):
         col_name = meta.time_dimension.column_name
 
         self._periods = in_datadatasource.get_timeperiodes(col_name)
+        self._period_labels = self._periods
+        self._period_codes =  [str(period).replace('*', '') for period in self._periods]
         self._variable_type = config.timevariable_type
         self._for_get_data = CubemathsHelper(col_name, self._periods)
+        self._value_notes = meta.time_dimension.value_notes
+        self._notes = meta.time_dimension.notes
 
     # for time : code == label
 
     def get_codes(self) -> List[str]:
-        return self._periods
+        return self._period_codes
 
     def get_labels(self, language: str) -> List[str]:
-        return self._periods
+        return self._period_labels
 
     def get_valuelabel(self, language: str, value_code: str) -> str:
 

@@ -76,8 +76,7 @@ class _PxTlist:
         if isinstance(periods, str):
             return f'TLIST({self.timescale},"{self.time_periods}")'
         
-        # Convert integer years to string format
-        periods = [str(period) for period in periods]
+        periods = [str(period).replace('*', '') for period in periods]
 
         if len(periods) == 1:
             period_type = parse_period(periods[0])[1]

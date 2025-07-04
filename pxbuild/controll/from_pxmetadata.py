@@ -105,8 +105,10 @@ class LoadFromPxmetadata:
             write_output(self._pxmetadata_id, self._config.admin.output_destination.px_folder_format, out_model, self._output_filename, self._config.code_page)
             self.models_for_pytest["multi"] = out_model
 
-        support = SupportFiles(self._pxmetadata_model, self._config, self._dims, self._pxmetadata_id)
-        support.make_vs_file()
+        if self._config.admin.make_support_files:
+            support = SupportFiles(self._pxmetadata_model, self._config, self._dims, self._pxmetadata_id)
+            support.make_vs_file()
+
         self._datadata._my_datasource.close()
         
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:
@@ -232,6 +234,26 @@ class LoadFromPxmetadata:
 
         timescale = self._pxmetadata_model.dataset.time_dimension.time_period_format
         time_dim_column_name = time.get_label(lang)
+
+        if time._value_notes:
+            for valuenote in time._value_notes:
+                if valuenote.note and valuenote.value:
+                    if lang not in valuenote.note.text:
+                        continue
+                    if valuenote.note.is_mandatory:
+                        out_model.valuenotex.set(valuenote.note.text[lang], time.get_label(lang), valuenote.value, lang, time.get_code())
+                    else:
+                        out_model.valuenote.set(valuenote.note.text[lang], time.get_label(lang), valuenote.value, lang, time.get_code())
+
+        if time._notes:
+            for note in time._notes:
+                if lang not in note.text:
+                    continue
+                if note.is_mandatory:
+                    out_model.notex.set(note.text[lang], time.get_label(lang), lang, time.get_code())
+                else:
+                    out_model.note.set(note.text[lang], time.get_label(lang), lang, time.get_code())
+
         if timescale and time_dim_column_name:
             out_model.timeval.set(timescale=timescale, time_periods=time.get_codes(), variable=time_dim_column_name, lang=lang, code=time.get_code())
 
