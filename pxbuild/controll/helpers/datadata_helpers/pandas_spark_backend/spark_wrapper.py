@@ -253,7 +253,7 @@ class SparkWrapper(IBackendMethods):
                     all_measurement_cols_to_cast.append(col_name)
 
         for col_to_cast in set(all_measurement_cols_to_cast):
-            df_casted = df_casted.withColumn(col_to_cast, col(col_to_cast).cast(DoubleType()))
+            df_casted = df_casted.withColumn(col_to_cast, expr(f"try_cast(`{col_to_cast}` as double)"))
 
         for stub in stubnames:
             current_stub_cols = [f"{stub}{sep}{code}" for code in measurement_codes]
