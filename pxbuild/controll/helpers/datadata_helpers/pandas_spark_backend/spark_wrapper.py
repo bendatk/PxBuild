@@ -156,8 +156,7 @@ class SparkWrapper(IBackendMethods):
                 try:
                     dbutils = DBUtils(data._data.sparkSession)
                     try:
-                        dbutils.fs.ls(temp_output_path)
-                        dbutils.fs.rm(temp_output_path, True)
+                        dbutils.fs.rm(temp_volume_base_path, True)
                     except Exception:
                         pass
                 except Exception as cleanup_e:
