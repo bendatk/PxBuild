@@ -1,6 +1,7 @@
 import operator, os, shutil
 from typing import Literal, List
 from pyarrow.parquet import ParquetFile
+from pyspark.dbutils import DBUtils
 from io import TextIOWrapper
 from functools import reduce
 from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
@@ -27,6 +28,11 @@ class SparkWrapper(IBackendMethods):
         except ImportError:
             return SparkSession.builder.getOrCreate()
         
+    SPARKDATAFRAMETYPES = [
+        "<class 'pyspark.sql.dataframe.DataFrame'>", 
+        "<class 'pyspark.sql.connect.dataframe.DataFrame'>",
+        "<class 'pyspark.sql.classic.dataframe.DataFrame'>"
+    ]
 
     # 
     # File I/O methods
@@ -41,10 +47,9 @@ class SparkWrapper(IBackendMethods):
     ) -> None:
 
         temp_output_path = None
-        fs = None
         path_to_list = None
         try:
-            if not isinstance(data._data, SparkDataFrame):
+            if str(type(data._data)) not in self.SPARKDATAFRAMETYPES:
                 raise TypeError(f"Input 'data' must be a Spark DataFrame, got {type(data._data)}")
             if not isinstance(output_file_handle, TextIOWrapper):
                 raise TypeError(f"Input 'output_file_handle' must be a TextIOWrapper, got {type(output_file_handle)}")
@@ -55,10 +60,10 @@ class SparkWrapper(IBackendMethods):
 
             df = data._data.select("out_value")
 
-            # Assign a globally unique and increasing row number to preserve existing order
-            df_temp_id = df.withColumn("_temp_id", monotonically_increasing_id())
-            window_spec_global_order = Window.orderBy("_temp_id")
-            df_with_rownum = df_temp_id.withColumn("_global_row_num", row_number().over(window_spec_global_order)).drop("_temp_id")
+
+            df_temp_id = df.withColumn("_temp_id", monotonically_increasing_id()).withColumn("_dummy_partition", lit(1))
+            window_spec_global_order = Window.partitionBy("_dummy_partition").orderBy("_temp_id")
+            df_with_rownum = df_temp_id.withColumn("_global_row_num", row_number().over(window_spec_global_order)).drop("_temp_id", "_dummy_partition")
 
             # Calculate line groups and assign a "chunk_id" so that both change at the same row boundary
             # We are doing this to ensure that each chunk contains a complete set of lines
@@ -104,36 +109,21 @@ class SparkWrapper(IBackendMethods):
                 .mode("overwrite") \
                 .text(temp_output_path)
             
-            # Concatenate temporary files into provided output_file_handle
-            hadoop_conf = spark._jsc.hadoopConfiguration()
-            fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(hadoop_conf)
-            path_to_list = spark._jvm.org.apache.hadoop.fs.Path(temp_output_path)
-
-            all_part_files = []
+            
+            dbutils = DBUtils(spark)
+            files = dbutils.fs.ls(temp_output_path)
             chunk_id_and_file = []
-            file_statuses = fs.listStatus(path_to_list)
-            
-            for status in file_statuses:
-                chunk_path = status.getPath()
-                chunk_name = chunk_path.getName()
+            for f in files:
+                if f.isDir() and f.name.startswith("chunk_id="):
+                    chunk_id = int(f.name.split("chunk_id=")[1].rstrip("/"))
+                    part_files = dbutils.fs.ls(f.path)
+                    for pf in part_files:
+                        if pf.name.startswith("part-"):
+                            local_path = pf.path
+                            if local_path.startswith("dbfs:/"):
+                                local_path = local_path.replace("dbfs:", "")
+                            chunk_id_and_file.append((chunk_id, local_path))
 
-                if status.isDirectory() and chunk_name.startswith("chunk_id="):
-                    try:
-                        chunk_id = int(chunk_name.split("chunk_id=")[1])
-                    except Exception:
-                        raise ValueError(f"Invalid chunk_id format in directory name: {chunk_name}")
-
-                    chunk_files = fs.listStatus(chunk_path)
-                    for chunk_file in chunk_files:
-                        chunk_file_path = chunk_file.getPath()
-                        chunk_file_name = chunk_file_path.getName()
-
-                        if chunk_file.isFile() and chunk_file_name.startswith("part-"):
-                            full_part_file_uri = chunk_file_path.toString()
-                            if full_part_file_uri.startswith("dbfs:/Volumes/"):
-                                full_part_file_uri = full_part_file_uri.replace("dbfs:", "")
-                            chunk_id_and_file.append((chunk_id, full_part_file_uri))
-            
             # Sort by chunk_id
             chunk_id_and_file.sort(key=lambda x: x[0])
             all_part_files = [file for _, file in chunk_id_and_file]
@@ -161,17 +151,17 @@ class SparkWrapper(IBackendMethods):
         except Exception as e:
             print(f"Error writing DATA part to file handle: {e}")
             raise
-
         finally:
-            if fs is not None and temp_output_path is not None and path_to_list is not None:
+            if temp_output_path is not None:
                 try:
-                    if fs.exists(path_to_list):
-                        fs.delete(path_to_list, True)
-                        if os.path.exists(temp_volume_base_path):
-                            shutil.rmtree(temp_volume_base_path, ignore_errors=True)
+                    dbutils = DBUtils(data._data.sparkSession)
+                    try:
+                        dbutils.fs.ls(temp_output_path)
+                        dbutils.fs.rm(temp_output_path, True)
+                    except Exception:
+                        pass
                 except Exception as cleanup_e:
                     print(f"Error during temporary directory cleanup: {cleanup_e}")
-
 
     def read_parquet(self, parquet: ParquetFile):
         pass
@@ -381,7 +371,7 @@ class SparkWrapper(IBackendMethods):
             column_name: str
     ) -> list:
 
-        distinct_values = df.select(column_name).distinct().rdd.flatMap(lambda x: x).collect()
+        distinct_values = [row[column_name] for row in df.select(column_name).distinct().collect()]
         return sorted(distinct_values, reverse=False)
 
 
@@ -421,7 +411,7 @@ class SparkWrapper(IBackendMethods):
     
         for coded_dim in coded_dimensions:
             dim_code = coded_dim.code
-            dim_values = df.select(dim_code).distinct().rdd.flatMap(lambda x: x).collect()
+            dim_values = [row[dim_code] for row in df.select(dim_code).distinct().collect()]
             codelist_values = [item.code for item in resolved_pxcodes_ids[coded_dim.codelist_id].valueitems]
             
             missing_values = [value for value in dim_values if value not in codelist_values]
