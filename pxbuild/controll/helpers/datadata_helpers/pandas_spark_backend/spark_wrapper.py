@@ -1,31 +1,40 @@
 import operator, os, shutil
-from typing import Literal, List
+from typing import Literal, List, TYPE_CHECKING
 from pyarrow.parquet import ParquetFile
-from pyspark.dbutils import DBUtils
 from io import TextIOWrapper
 from functools import reduce
-from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
-from pyspark.sql.window import Window
-from pyspark.sql.types import DoubleType
-from pyspark.sql.functions import struct, sort_array, row_number, round as spark_round, expr, lit, when, col, regexp_replace
-from pyspark.sql.functions import trim, row_number, collect_list, concat_ws, monotonically_increasing_id
 from .....models.output.pxfile.util.commons import Commons
 from .....models.output.pxfile.keywords._data import _PxData
 from .....models.input.pydantic_pxmetadata import Measurement
 from ._backend_methods import IBackendMethods
 
+if TYPE_CHECKING:
+    from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
+    from pyspark.sql.window import Window
+    from pyspark.sql.types import DoubleType
+    from pyspark.sql.functions import struct, sort_array, row_number, round as spark_round, expr, lit, when, col, regexp_replace
+    from pyspark.sql.functions import trim, row_number, collect_list, concat_ws, monotonically_increasing_id
+    from pyspark.dbutils import DBUtils
+
+
 class SparkWrapper(IBackendMethods):
+
+    def _init_(self) -> None:
+        import importlib.util
+        if importlib.util.find_spec("pyspark.sql") is None:
+            raise ImportError("SparkWrapper requires a Spark environment with pyspark available.")
 
     @property
     def backend_name(self) -> str:
         return "spark"
     
     @staticmethod
-    def get_spark() -> SparkSession:
+    def get_spark() -> "SparkSession":
         try:
             from databricks.connect import DatabricksSession
             return DatabricksSession.builder.getOrCreate()
         except ImportError:
+            from pyspark.sql import SparkSession
             return SparkSession.builder.getOrCreate()
         
     SPARKDATAFRAMETYPES = [
@@ -45,6 +54,11 @@ class SparkWrapper(IBackendMethods):
         columns_per_line: int,
         chunk_size: int = 500000
     ) -> None:
+
+        from pyspark.sql.window import Window
+        from pyspark.sql.functions import struct, sort_array, row_number, expr, lit, col
+        from pyspark.sql.functions import collect_list, concat_ws, monotonically_increasing_id
+        from pyspark.dbutils import DBUtils
 
         temp_output_path = None
         path_to_list = None
@@ -176,10 +190,13 @@ class SparkWrapper(IBackendMethods):
     #
     def add_out_index(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             cubemaths_helper_by_codeid: dict
-    ) -> SparkDataFrame:
+    ) -> "SparkDataFrame":
         
+        from pyspark.sql import DataFrame as SparkDataFrame
+        from pyspark.sql.functions import expr
+
         columns_to_sum = []
 
         for col_helper in cubemaths_helper_by_codeid.values():
@@ -201,36 +218,43 @@ class SparkWrapper(IBackendMethods):
 
     def add_sum_column(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             sum_col_name: str, 
             columns: list[str]
-    ) -> SparkDataFrame:
+    ) -> "SparkDataFrame":
         
+        from pyspark.sql.functions import col
+        from pyspark.sql import DataFrame as SparkDataFrame
+
         return df.withColumn(sum_col_name, reduce(operator.add, (col(c) for c in columns)))
 
 
     def merge(
             self, 
-            df1: SparkDataFrame, 
-            df2: SparkDataFrame, 
+            df1: "SparkDataFrame", 
+            df2: "SparkDataFrame", 
             on: str, 
             how: Literal["left", "right", "outer", "inner", "cross"] = "left"
-    ) -> SparkDataFrame:
+    ) -> "SparkDataFrame":
+        from pyspark.sql import DataFrame as SparkDataFrame
         return df1.join(df2, on=on, how=how)
 
 
 
 
     def wide_to_long(
-            self, df: SparkDataFrame, 
+            self, df: "SparkDataFrame", 
             identifier_cols: list, 
             stubnames: list, 
             measurement_codes: list, 
             j_column_name: str, 
             sep: str, 
             suffix: str
-    ) -> SparkDataFrame:
+    ) -> "SparkDataFrame":
         
+        from pyspark.sql import DataFrame as SparkDataFrame
+        from pyspark.sql.functions import expr
+
         unpivoted_dfs = {}
 
         df_casted = df
@@ -282,9 +306,11 @@ class SparkWrapper(IBackendMethods):
 
     def rename(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             rename_map: dict
-    ) -> SparkDataFrame:
+    ) -> "SparkDataFrame":
+        
+        from pyspark.sql import DataFrame as SparkDataFrame
 
         for old_name, new_name in rename_map.items():
             if old_name in df.columns:
@@ -295,9 +321,11 @@ class SparkWrapper(IBackendMethods):
     def add_missing_symbolcolumns(
             self, 
             measurement_codes: list, 
-            df: SparkDataFrame
-    ) -> SparkDataFrame:
-        
+            df: "SparkDataFrame"
+    ) -> "SparkDataFrame":
+        from pyspark.sql.functions import lit
+        from pyspark.sql import DataFrame as SparkDataFrame
+
         for code in measurement_codes:
             column_name = f"SYMBOL_{code}"
             if column_name not in df.columns:
@@ -309,8 +337,11 @@ class SparkWrapper(IBackendMethods):
             self, 
             matrix_size: int, 
             missing_row_symbol: str, 
-            df: SparkDataFrame
-    ) -> SparkDataFrame:
+            df: "SparkDataFrame"
+    ) -> "SparkDataFrame":
+        
+        from pyspark.sql import DataFrame as SparkDataFrame
+
         spark = df.sparkSession
         out_index_df = spark.range(0, matrix_size).withColumnRenamed("id", "out_index")
         merged_df = out_index_df.join(df, on="out_index", how="left")
@@ -321,10 +352,13 @@ class SparkWrapper(IBackendMethods):
 
     def add_out_value(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             missing_cell_symbol: str
-    ) -> SparkDataFrame:
+    ) -> "SparkDataFrame":
         
+        from pyspark.sql import DataFrame as SparkDataFrame
+        from pyspark.sql.functions import when, col, lit, trim
+
         return df.withColumn(
             "out_value",
             when(
@@ -339,10 +373,13 @@ class SparkWrapper(IBackendMethods):
 
     def round_by_decimals(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             measurements: List[Measurement]
-    ) -> SparkDataFrame:
+    ) -> "SparkDataFrame":
         
+        from pyspark.sql.functions import round as spark_round, col
+        from pyspark.sql import DataFrame as SparkDataFrame
+
         for my_cont in measurements:
             df = df.withColumn(
                 my_cont.column_name, 
@@ -358,17 +395,20 @@ class SparkWrapper(IBackendMethods):
     #
     def get_columns_to_list(
             self, 
-            df: SparkDataFrame
+            df: "SparkDataFrame"
     ) -> List[str]:
         
+        from pyspark.sql import DataFrame as SparkDataFrame
+
         return df.columns
 
 
     def get_timeperiodes(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             column_name: str
     ) -> list:
+        from pyspark.sql import DataFrame as SparkDataFrame
 
         distinct_values = [row[column_name] for row in df.select(column_name).distinct().collect()]
         return sorted(distinct_values, reverse=False)
@@ -376,8 +416,11 @@ class SparkWrapper(IBackendMethods):
 
     def remove_trailing_zero_decimals(
             self, 
-            df: SparkDataFrame
-    ) -> SparkDataFrame:
+            df: "SparkDataFrame"
+    ) -> "SparkDataFrame":
+        
+        from pyspark.sql.functions import when, col, regexp_replace
+        from pyspark.sql import DataFrame as SparkDataFrame
 
         mask = (
             col("out_value").cast("string").rlike(r"^-?\d+\.?\d*$") & 
@@ -403,10 +446,11 @@ class SparkWrapper(IBackendMethods):
     #
     def validate_codelist_vs_data_values(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             coded_dimensions: list, 
             resolved_pxcodes_ids: dict
     ) -> None:
+        from pyspark.sql import DataFrame as SparkDataFrame
     
         for coded_dim in coded_dimensions:
             dim_code = coded_dim.code
@@ -424,10 +468,13 @@ class SparkWrapper(IBackendMethods):
 
     def validate_coded_values(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             column: str, 
             codelist: list
     ) -> None:
+        
+        from pyspark.sql.functions import col
+        from pyspark.sql import DataFrame as SparkDataFrame
 
         invalid_rows = df.filter(~col(column).isin(codelist) & ~col(column).isNull())
 
@@ -439,9 +486,12 @@ class SparkWrapper(IBackendMethods):
 
     def validate_data(
             self, 
-            df: SparkDataFrame, 
+            df: "SparkDataFrame", 
             data_file_path: str
     ) -> None:
+        
+        from pyspark.sql.functions import col
+        from pyspark.sql import DataFrame as SparkDataFrame
         
         # TODO: Read valid_symbol_entries from a configuration or constants file
         valid_symbol_entries = ["", ".", "..", "...", "....", ".....", "......", "-"]

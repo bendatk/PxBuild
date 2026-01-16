@@ -1,10 +1,13 @@
 ﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxData
-import pyspark.pandas as ps
 import pandas as pd
-from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
 from .....controll.helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
 from io import TextIOWrapper
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
+
 
 class _Data(_PxSingle):
 
@@ -17,7 +20,7 @@ class _Data(_PxSingle):
     def __init__(self) -> None:
         super().__init__("DATA")
 
-    def set(self, data: SparkDataFrame | pd.Series, columns_per_line: int) -> None:
+    def set(self, data: "SparkDataFrame | pd.Series", columns_per_line: int) -> None:
         """Numbers and quoted dots"""
         my_value = _PxData(data, columns_per_line)
         try:

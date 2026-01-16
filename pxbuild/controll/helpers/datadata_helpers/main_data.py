@@ -1,8 +1,7 @@
 import time
 import numpy as np
 import pandas as pd
-from typing import Dict, Union
-from pyspark.sql import DataFrame as SparkDataFrame
+from typing import Dict, Union, TYPE_CHECKING
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.middle.dims import Dims
@@ -15,6 +14,8 @@ from .data_formatter import DataFormatter
 from ...helpers.logger_config import logger
 from .pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
 
+if TYPE_CHECKING:
+    from pyspark.sql import DataFrame as SparkDataFrame
 
 class MapData:
     def __init__(
@@ -94,11 +95,11 @@ class MapData:
         array_size = curr_factor
 
         return array_size
-
+    
     def add_missing_rows(self, matrix_size, missing_row_symbol, df):
         return self._backend.add_missing_rows(matrix_size, missing_row_symbol, df)
 
-    def add_out_value(self, df: pd.DataFrame | SparkDataFrame, missing_cell_symbol: str):
+    def add_out_value(self, df: "pd.DataFrame | SparkDataFrame", missing_cell_symbol: str):
         return self._backend.add_out_value(df, missing_cell_symbol)
 
     def add_out_index(self, df):
