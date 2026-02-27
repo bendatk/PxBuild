@@ -262,7 +262,7 @@ class SparkWrapper(IBackendMethods):
         for stub in stubnames:
             for code in measurement_codes:
                 col_name = f"{stub}{sep}{code}"
-                if col_name in df.columns:
+                if col_name in df.columns and stub == "VALUE":
                     all_measurement_cols_to_cast.append(col_name)
 
         for col_to_cast in set(all_measurement_cols_to_cast):
