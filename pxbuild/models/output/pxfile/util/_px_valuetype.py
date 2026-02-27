@@ -1,8 +1,10 @@
 # ---------------   ValueType Classes:
 import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 import pandas as pd
-from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
+
+if TYPE_CHECKING:
+    from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
 
 class _PxTlist: 
     """TLIST(A1, ”1994”-”1996”);  eller TLIST(A1), ”1994”, ”1995”,"1996”;"""
@@ -184,7 +186,7 @@ class _PxBool:
 
 
 class _PxData:
-    def __init__(self, the_data: SparkDataFrame | pd.Series, columns_per_line: int) -> None:
+    def __init__(self, the_data: "SparkDataFrame | pd.Series", columns_per_line: int) -> None:
         self._data = the_data
         self._columns_per_line = columns_per_line
 

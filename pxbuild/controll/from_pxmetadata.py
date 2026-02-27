@@ -110,6 +110,13 @@ class LoadFromPxmetadata:
             support.make_vs_file()
 
         self._datadata._my_datasource.close()
+
+        # Make out_model accessible to users via the out_model property
+        self._out_model = out_model
+
+    @property
+    def out_model(self) -> PXFileModel:
+        return self._out_model
         
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:
         if self._add_language_independent:

@@ -1,5 +1,5 @@
 import pandas
-from typing import List
+from typing import List, TYPE_CHECKING
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from .parquet_datasource import ParquetDatasource
 from .csv_datasource import CsvDatasource
@@ -9,9 +9,11 @@ from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.output.pxfile.util.commons import Commons
 from ...helpers.logger_config import logger
 from .pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
-from pyspark.sql import DataFrame as SparkDataFrame
 from ....models.output.pxfile.util.commons import Commons
 from pxbuild.models.input.pydantic_pxbuildconfig import ResourceType3
+
+if TYPE_CHECKING:
+    from pyspark.sql import DataFrame as SparkDataFrame
 
 class PxDataSourceError(Exception):
     """Custom exception for errors related to datasource."""
@@ -43,7 +45,7 @@ class Datadatasource:
 
         self._validate_data(self._raw_df, self._data_file_path)
 
-    def _validate_data(self, df: pandas.DataFrame | SparkDataFrame, file_path: str) -> None:
+    def _validate_data(self, df: "pandas.DataFrame | SparkDataFrame", file_path: str) -> None:
         self._backend.validate_data(df, file_path)
 
     def validate_coded_values(self, column: str, codelist: List[str]) -> None:
@@ -52,7 +54,7 @@ class Datadatasource:
     def get_timeperiodes(self, column_name: str) -> List[str]:
         return self._backend.get_timeperiodes(self._raw_df, column_name)
 
-    def get_identifiercolumns(self, raw_data: pandas.DataFrame | SparkDataFrame, measurement_map: dict) -> List[str]:
+    def get_identifiercolumns(self, raw_data: "pandas.DataFrame | SparkDataFrame", measurement_map: dict) -> List[str]:
         all_columns = self._backend.get_columns_to_list(raw_data)
         identifier_columns = []
         for column in all_columns:
@@ -61,7 +63,7 @@ class Datadatasource:
 
         return identifier_columns
 
-    def add_missing_symbolcolumns(self, measurement_codes: list[str], df: pandas.DataFrame | SparkDataFrame) -> SparkDataFrame | pandas.DataFrame:
+    def add_missing_symbolcolumns(self, measurement_codes: list[str], df: "pandas.DataFrame | SparkDataFrame") -> "SparkDataFrame | pandas.DataFrame":
         return self._backend.add_missing_symbolcolumns(measurement_codes, df)
 
     def make_renamedict(self, measurement_code_by_column_name: dict, columns_in_datafile) -> dict:
@@ -75,11 +77,11 @@ class Datadatasource:
         return my_out
     
 
-    def round_by_decimals(self, df: pandas.DataFrame | SparkDataFrame) -> pandas.DataFrame | SparkDataFrame:
+    def round_by_decimals(self, df: "pandas.DataFrame | SparkDataFrame") -> "pandas.DataFrame | SparkDataFrame":
         return self._backend.round_by_decimals(df, self.measurements)
 
 
-    def get_tidy_df(self, measure_dim_name: str, measurement_code_by_column_name: dict) -> pandas.DataFrame | SparkDataFrame:
+    def get_tidy_df(self, measure_dim_name: str, measurement_code_by_column_name: dict) -> "pandas.DataFrame | SparkDataFrame":
         # measure_dim_name is contvariable_code from config
         # column_code_map is
         #        for measurement_var in self._pxmetadata_model.dataset.measurements:
