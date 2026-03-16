@@ -454,14 +454,15 @@ class SparkWrapper(IBackendMethods):
     
         for coded_dim in coded_dimensions:
             dim_code = coded_dim.code
-            dim_values = [row[dim_code] for row in df.select(dim_code).distinct().collect()]
+            dim_column_name = coded_dim.column_name
+            dim_values = [row[dim_column_name] for row in df.select(dim_column_name).distinct().collect()]
             codelist_values = [item.code for item in resolved_pxcodes_ids[coded_dim.codelist_id].valueitems]
             
             missing_values = [value for value in dim_values if value not in codelist_values]
             if missing_values:
                 raise ValueError(
                     'Values {} in dataset for coded dimension "{}" are not in codelist "{}".'.format(
-                        ', '.join(f'"{x}"' for x in missing_values), dim_code, coded_dim.codelist_id
+                        ', '.join(f'"{x}"' for x in missing_values), dim_column_name, coded_dim.codelist_id
                     )
                 )
 
