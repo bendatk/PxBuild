@@ -276,14 +276,20 @@ class PXFileModel:
     def write_to_file(self, file_path: str, encoding: str) -> None:
         backend = PandasSparkBackend.get_backend()
         attrs = vars(self)
-        with open(file_path, "w", encoding=encoding) as f:
-            for value in attrs.values():
+        if '-sig' in encoding:
+            sig = True
+        with open(file_path, "wb") as f:
+            for i, value in enumerate(attrs.values()):
+                if sig and i > 0:
+                    enc = encoding.replace("-sig", "")
+                else:
+                    enc = encoding
                 if isinstance(value, _Data) and backend.backend_name == "spark":
-                    value.write_to_file(file_path, f)
+                    value.write_to_file(file_path, f, enc)
                 else:
                     value_str = str(value)
                     if value_str != "":
-                        f.write(value_str + "\n")
+                        f.write((value_str + "\n").encode(enc))
 
     def get_attribute(self, name: str) -> _SuperKeyword:
         return getattr(self, name)
