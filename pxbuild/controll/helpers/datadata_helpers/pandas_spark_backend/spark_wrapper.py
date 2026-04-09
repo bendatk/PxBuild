@@ -1,11 +1,12 @@
 from typing import Literal, List, TYPE_CHECKING
 from pyarrow.parquet import ParquetFile
-from io import BufferedWriter, TextIOWrapper
+from io import BufferedWriter
 from functools import reduce
-from .....models.output.pxfile.util.commons import Commons
 from .....models.output.pxfile.keywords._data import _PxData
 from .....models.input.pydantic_pxmetadata import Measurement
 from ._backend_methods import IBackendMethods
+from pxbuild.models.output.pxfile.util.commons import Commons
+
 import operator
 import shutil
 import glob
@@ -75,15 +76,21 @@ class SparkWrapper(IBackendMethods):
             .withColumn("out_concat", F.concat(F.col("out_concat"), F.lit(" ")))
         )
     
+        # todo: this is quite a arbitrary way to set the number of partitions - memory should be taken into account also
+        # num_partitions = None
+        # if Commons.get_matrix_size():
+        #     def get_num_workers(spark):
+        #         try:
+        #             return int(spark.conf.get("spark.databricks.clusterUsageTags.clusterMaxWorkers", 1))
+        #         except Exception:
+        #             return int(spark.conf.get("spark.executor.instances", "1"))
+        #     num_workers = get_num_workers(self.get_spark())
+        #     num_partitions = max(4 * num_workers, int(Commons.get_matrix_size() / 5000000)+1)
 
-        # with bigger dataframes df.count() consumes more time than manaual partitioning saves it
-        # def get_num_workers(spark):
-        #     try:
-        #         return int(spark.conf.get("spark.databricks.clusterUsageTags.clusterMaxWorkers", 1))
-        #     except Exception:
-        #         return int(spark.conf.get("spark.executor.instances", "1"))
-        # num_workers = get_num_workers(self.get_spark())
-        # num_partitions = max(4 * num_workers, int(df.count() / 5000000)+1)
+        # if num_partitions:
+        #     df_grouped = df_grouped.repartitionByRange(num_partitions, "line_idx")
+        # else:
+        #     df_grouped = df_grouped.repartitionByRange("line_idx")
 
         df_sorted = (
                 df_grouped
@@ -106,8 +113,6 @@ class SparkWrapper(IBackendMethods):
             return dbutils
 
         dbutils = get_dbutils(self.get_spark())
-
-
 
         if part_files:
             last_part = part_files[-1]

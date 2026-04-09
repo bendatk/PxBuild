@@ -7,6 +7,7 @@ from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.middle.dims import Dims
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
 from ..loaded_jsons import LoadedJsons
+from pxbuild.models.output.pxfile.util.commons import Commons
 
 from .datadatasource import Datadatasource
 from .for_get_data import CubemathsHelper
@@ -55,6 +56,7 @@ class MapData:
         start_get_data = time.time()
 
         matrix_size = self.init_cubemaths_helpers_and_calculate_matrix_size()
+        Commons.set_matrix_size(matrix_size)
 
         missing_row_symbol = self._pxmetadata_model.dataset.row_missing
         missing_cell_symbol = self._pxmetadata_model.dataset.cell_missing

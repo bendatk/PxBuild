@@ -14,3 +14,11 @@
     @staticmethod
     def get_decimals() -> int:
         return Commons.decimals
+    
+    @classmethod
+    def set_matrix_size(cls, matrix_size: int):
+        cls.matrix_size = matrix_size
+
+    @staticmethod
+    def get_matrix_size() -> int:
+        return Commons.matrix_size
