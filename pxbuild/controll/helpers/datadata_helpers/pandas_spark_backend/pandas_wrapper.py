@@ -158,7 +158,8 @@ class PandasWrapper(IBackendMethods):
     def validate_codelist_vs_data_values(self, df: pd.DataFrame, coded_dimensions: list, resolved_pxcodes_ids: dict) -> None:
         for coded_dim in coded_dimensions:
             dim_code = coded_dim.code
-            dim_values = df[dim_code].unique()
+            dim_column_name = coded_dim.column_name
+            dim_values = df[dim_column_name].unique()
             codelist_values = [item.code for item in resolved_pxcodes_ids[coded_dim.codelist_id].valueitems]
             missing_values = [value for value in dim_values.tolist() if value not in codelist_values]
             if missing_values:

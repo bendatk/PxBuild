@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from pandas import DataFrame as PandasDataFrame
-from io import TextIOWrapper
+from io import BufferedWriter, TextIOWrapper
 from .....models.output.pxfile.keywords._data import _PxData
 from typing import TYPE_CHECKING
 
@@ -18,5 +18,5 @@ class IFileIO(ABC):
         pass
 
     @abstractmethod
-    def write_pxdata_to_file(self, df: _PxData, file: TextIOWrapper, file_path: str, columns_per_line, chunk_size: int):
+    def write_pxdata_to_file(self, df: _PxData, file: TextIOWrapper | BufferedWriter, file_path: str, columns_per_line):
         pass
