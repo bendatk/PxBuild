@@ -293,7 +293,11 @@ class Dataset(BaseModel):
     The date when the data cube was first published in the format CCYYMMDD hh:mm
     """
     attributes: Optional[List[Attribute]] = None
-
+    is_heading_contdim: Optional[bool] = Field(None, alias='isHeadingContdim')
+    """
+    Defaults to heading
+    """
+    
 
 class PxMetadata(BaseModel):
     """
