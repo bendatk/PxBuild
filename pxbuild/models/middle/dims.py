@@ -47,7 +47,10 @@ class Dims:
         # CONT
         self.contdim: ContDim = ContDim(in_loaded_jsons)
         contdim_code = self.contdim.get_code()
-        self._headingCodes.append(contdim_code)
+        if meta.is_heading_contdim or meta.is_heading_contdim is None:
+            self._headingCodes.append(contdim_code)
+        else:
+            self._stubCodes.append(contdim_code)
         self.dim_by_code[contdim_code] = self.contdim
 
         # TIME
