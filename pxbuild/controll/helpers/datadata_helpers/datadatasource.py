@@ -1,5 +1,6 @@
 import pandas
 from typing import List, TYPE_CHECKING
+from .pandas_datasource import PandasDatasource
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from .parquet_datasource import ParquetDatasource
 from .csv_datasource import CsvDatasource
@@ -38,12 +39,20 @@ class Datadatasource:
             self._data_file_path = "from_direct_reference"
             if dataframe is None:
                 raise PxDataSourceError(f"No dataframe '{file_id}' found.")
-            self._my_datasource: AbstractDatasource = SparkDatasource(dataframe)
+            if not isinstance(dataframe, pandas.DataFrame) and not self._is_spark_dataframe(dataframe):
+                raise PxDataSourceError(f"The provided data for '{file_id}' is not a valid DataFrame.")
+            if isinstance(dataframe, pandas.DataFrame):
+                self._my_datasource: AbstractDatasource = PandasDatasource(dataframe)
+            else:
+                self._my_datasource: AbstractDatasource = SparkDatasource(dataframe)
 
         self._backend = PandasSparkBackend.get_backend()
         self._raw_df = self._my_datasource.get_raw_data()
 
         self._validate_data(self._raw_df, self._data_file_path)
+
+    def _is_spark_dataframe(self, obj) -> bool:
+        return type(obj).__module__.startswith("pyspark.sql") and type(obj).__name__ == "DataFrame"
 
     def _validate_data(self, df: "pandas.DataFrame | SparkDataFrame", file_path: str) -> None:
         self._backend.validate_data(df, file_path)

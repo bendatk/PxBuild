@@ -105,6 +105,10 @@ class TimeDimension(BaseModel):
     """
     example: yyyy
     """
+    codelist_id: Optional[str] = Field(None, alias='codelistId')
+    """
+    A Link to a PxCodes document
+    """
     is_heading: Optional[bool] = Field(None, alias='isHeading')
     """
     If true the dimension is a heading otherwise it is a stub

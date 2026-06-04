@@ -80,7 +80,7 @@ class LoadFromPxmetadata:
             self.map_coded_dimensions_to_pxfile(out_model)
             self.map_measurements_to_pxfile(out_model)
             self.map_decimals_to_pxfile(out_model)
-            self.map_time_dimension_to_pxfile(out_model)
+            self.map_time_dimension_to_pxfile(out_model, language)
             self.map_stub_heading_to_pxfile(out_model)
             self.map_title_to_pxfile(out_model)
             self.map_aggregallowed_to_pxfile(out_model)
@@ -230,9 +230,9 @@ class LoadFromPxmetadata:
         if not seen:
             raise Exception("Sorry, both stub and heading are empty.")
 
-    def map_time_dimension_to_pxfile(self, out_model: PXFileModel):
+    def map_time_dimension_to_pxfile(self, out_model: PXFileModel, language: str):
         time = self._dims.time
-        lang = self._current_lang
+        lang = language
 
         out_model.values.set(time.get_labels(lang), time.get_label(lang), lang, time.get_code())
         out_model.codes.set(time.get_codes(), time.get_label(lang), lang, time.get_code())
