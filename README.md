@@ -1,6 +1,6 @@
 AI has been used in development.
 # disclaimer
-This is WORK IN PROGRESS and is be no means ready for production.
+This is a work in progress and is not recommended for use in production
 # pxbuild
 Purpose: Creating px-files (.px, .vs and .agg -files), which is one of the datasource-types for the awesome PxWeb ( see https://github.com/statisticssweden/PxWeb )
 

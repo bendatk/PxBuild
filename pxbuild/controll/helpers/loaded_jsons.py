@@ -44,10 +44,10 @@ class LoadedJsons:
 
 
         self._resolved_pxcodes_ids: Dict[str, PxCodes] = {}
+        pxcodes_format = self._config.admin.px_codes_resource.adress_format
         if self._pxmetadata_model.dataset.coded_dimensions:
 
             # pxcodesFormat="example_data/pxcodes/{id}.json"
-            pxcodes_format = self._config.admin.px_codes_resource.adress_format
             pxcodes_source_type = self._config.admin.px_codes_resource.resource_type
             for dimension in self._pxmetadata_model.dataset.coded_dimensions:
 
@@ -60,6 +60,16 @@ class LoadedJsons:
                         json1 = pxcodes_format.get(dimension.codelist_id, {})
 
                     self._resolved_pxcodes_ids[dimension.codelist_id] = PxCodes(**json1)
+        
+        if self._pxmetadata_model.dataset.time_dimension.codelist_id and self._pxmetadata_model.dataset.time_dimension.codelist_id not in self._resolved_pxcodes_ids:
+            time_codelist_id = self._pxmetadata_model.dataset.time_dimension.codelist_id
+            if isinstance(pxcodes_format, str) and pxcodes_source_type == ResourceType1.file:
+                tmp_path = pxcodes_format.format(id=time_codelist_id)
+                with open(tmp_path, encoding="utf-8-sig") as f:
+                    json1 = json.loads(f.read())
+            elif isinstance(pxcodes_format, dict) and pxcodes_source_type == ResourceType1.dictionary:
+                json1 = pxcodes_format.get(time_codelist_id, {})
+            self._resolved_pxcodes_ids[time_codelist_id] = PxCodes(**json1)
 
     def get_config(self) -> PxbuildConfig:
         return self._config

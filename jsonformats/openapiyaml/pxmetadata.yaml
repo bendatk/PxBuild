@@ -112,6 +112,9 @@ components:
                 code:
                   type: string
                   description: the code of the dimension( aka variable). Defaults to columName if missing
+                codelistId:
+                  type: string
+                  description: A Link to a PxCodes document
                 timePeriodFormat:
                   type: string
                   description: "example: yyyy"

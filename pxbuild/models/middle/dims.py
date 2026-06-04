@@ -54,7 +54,11 @@ class Dims:
         self.dim_by_code[contdim_code] = self.contdim
 
         # TIME
-        self.time: TimeDim = TimeDim(in_loaded_jsons, in_datadatasource)
+        if meta.time_dimension.codelist_id:
+            pxcodes_time = in_loaded_jsons.get_resolved_pxcodes_ids().get(meta.time_dimension.codelist_id, None)
+        else:
+            pxcodes_time = None
+        self.time: TimeDim = TimeDim(in_loaded_jsons, in_datadatasource, pxcodes_time)
         time_code = self.time.get_code()
         # Defaults to heading as is_heading is optional property without default value
         if meta.time_dimension.is_heading:
