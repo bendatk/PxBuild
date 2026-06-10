@@ -346,7 +346,8 @@ class LoadFromPxmetadata:
             if isinstance(my_cont.is_workingdays_adjusted, bool):
                 out_model.dayadj.set(my_cont.is_workingdays_adjusted, my_funny_cont_id, lang, code)
             out_model.units.set(my_cont.unit_of_measure[self._current_lang], my_funny_cont_id, lang, code)
-            out_model.contact.set(self._contact_string, my_funny_cont_id, lang, code)
+            if len(self._contact_string) > 0:
+                out_model.contact.set(self._contact_string, my_funny_cont_id, lang, code)
             out_model.last_updated.set(self._last_updated, my_funny_cont_id, lang, code)
 
             if my_cont.reference_period and my_cont.reference_period[lang]:
