@@ -194,6 +194,10 @@ components:
                   codelistId:
                     type: string
                     description: A Link to a PxCodes document
+            isHeadingContdim:
+              type: boolean
+              default: true
+              description: Defaults to heading
 
 
     CodedDimension:
@@ -232,6 +236,9 @@ components:
                   codelistId:
                     type: string
                     description: A Link to a PxCodes document
+                  eliminationEnable:
+                    type: boolean
+                    description: Is elimination keyword created
                   labelConstructionOption:
                     type: string
                     enum:

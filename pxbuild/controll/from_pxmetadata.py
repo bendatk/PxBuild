@@ -291,14 +291,16 @@ class LoadFromPxmetadata:
                     if label:
                         out_model.map.set(map=label, variable=n_var.get_label(lang), lang=lang, code=n_var.get_code())
 
-                if not n_var.elimination_possible:
-                    out_model.elimination.set("NO", my_funny_var_id, lang, n_var.get_code())
-                else:
-                    label = n_var.get_elimination_label(lang)
-                    if label:
-                        out_model.elimination.set(label, my_funny_var_id, lang, n_var.get_code())
+                
+                if my_var.elimination_enable:
+                    if not n_var.elimination_possible():
+                        out_model.elimination.set("NO", my_funny_var_id, lang, n_var.get_code())
                     else:
-                        out_model.elimination.set("YES", my_funny_var_id, lang, n_var.get_code())
+                        label = n_var.get_elimination_label(lang)
+                        if label:
+                            out_model.elimination.set(label, my_funny_var_id, lang, n_var.get_code())
+                        else:
+                            out_model.elimination.set("YES", my_funny_var_id, lang, n_var.get_code())
 
                 if my_var.doublecolumn:
                     out_model.doublecolumn.set(my_var.doublecolumn, my_funny_var_id, lang, n_var.get_code())
