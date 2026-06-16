@@ -134,7 +134,10 @@ class SparkWrapper(IBackendMethods):
             with open(part, 'rb') as infile:
                 shutil.copyfileobj(infile, output_handle)
 
-        shutil.rmtree(temp_volume_base_path)
+        try:
+            rc = dbutils.fs.rm(temp_volume_base_path, True)
+        except Exception:
+            pass
 
 
     def read_parquet(self, parquet: ParquetFile):
