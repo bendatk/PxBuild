@@ -49,14 +49,13 @@ The from_jsons.py inside the demo folder, is probably a good starting point
 
 ### Requirements
 * Python 3.11
-* [Poetry](https://python-poetry.org/)
+* [uv](https://docs.astral.sh/uv/)
 
 
 ### Install and test
 ```
-poetry env use 3.11
-poetry install
-poetry run pytest
+uv sync --dev
+uv run pytest
 ```
 ### Setup git pre-commit hooks
 ```
