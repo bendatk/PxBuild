@@ -42,3 +42,9 @@ packages = ["pxbuild"]
 
 [tool.black]
 line-length = 120
+
+[tool.pytest.ini_options]
+markers = [
+    "databricks: requires a live Spark/Databricks environment; not run locally or in CI, only inside an Azure Databricks job/notebook.",
+]
+addopts = "-m 'not databricks'"

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 class SparkWrapper(IBackendMethods):
 
-    def _init_(self) -> None:
+    def __init__(self) -> None:
         import importlib.util
         if importlib.util.find_spec("pyspark.sql") is None:
             raise ImportError("SparkWrapper requires a Spark environment with pyspark available.")
