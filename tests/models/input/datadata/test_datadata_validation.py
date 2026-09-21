@@ -30,6 +30,4 @@ class TestDatadataValidation:
 
     def test_bad_value_in_status_column_raises(self):
         with pytest.raises(ValueError):
-            Datadatasource(
-                "bad_value_in_status_column.csv", self._config(), _FAKE_PXMETADATA, create_backend("pandas")
-            )
+            Datadatasource("bad_value_in_status_column.csv", self._config(), _FAKE_PXMETADATA, create_backend("pandas"))

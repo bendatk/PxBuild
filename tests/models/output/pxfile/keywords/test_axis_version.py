@@ -1,5 +1,12 @@
-﻿import pytest
+import pytest
 from pxbuild.models.output.pxfile.keywords._axis_version import _AxisVersion
+
+
+def test_axisversion_init():
+    version = _AxisVersion()
+    assert version._keyword == "AXIS-VERSION"
+    assert version.pxvalue_type == "_PxString"
+    assert not version.may_have_language
 
 
 def test_axisversion_set_valid():
