@@ -1,0 +1,599 @@
+{
+  "charset": null,
+  "axisVersion": "2024",
+  "codePage": "utf-8",
+  "descriptionDefault": null,
+  "contvariable": {
+    "fi": "Tiedot",
+    "sv": "Uppgifter",
+    "en": "Information"
+  },
+  "contvariableCode": "contentscode",
+  "contvariableType": "Contents",
+  "timevariableCode": "timeperiod_y",
+  "timevariableType": "Time",
+  "datasymbol1": null,
+  "datasymbol2": null,
+  "datasymbol3": null,
+  "datasymbol4": null,
+  "datasymbol5": null,
+  "datasymbol6": null,
+  "datasymbolNil": null,
+  "datasymbolSum": null,
+  "source": {
+    "fi": "Tilastokeskus, adoptiot",
+    "sv": "Tilastokeskus, adoptioner",
+    "en": "Tilastokeskus, adoptions"
+  },
+  "admin": {
+    "pxMetadataResource": {
+      "resourceType": "dictionary",
+      "adressFormat": {
+        "dataset": {
+          "tableId": "11lv",
+          "storedDecimals": 0,
+          "statisticsId": "adopt",
+          "outputFileName": "11lv",
+          "matrix": "11lv",
+          "baseTitle": {
+            "fi": "Adoptiot",
+            "sv": "Adoptioner",
+            "en": "Adoptions"
+          },
+          "description": {
+            "fi": "11lv -- Adoptiot lapsen syntymämaan, ikäryhmän ja sukupuolen sekä adoptiotyypin mukaan, 2000-2100",
+            "sv": "11lv -- Adoptioner efter barnens födelseland, kön och åldersgrupp samt typ av adoption, 2000-2100",
+            "en": "11lv -- Adoptions by country of birth, age group and sex of child and type of adoption, 2000-2100"
+          },
+          "searchKeywords": null,
+          "notes": [
+            {
+              "text": {
+                "fi": "<A HREF='https://stat.fi/tilasto/dokumentaatio/adopt' TARGET=_blank>Tilaston dokumentaatio</A>##11lv -- Adoptiot lapsen syntymämaan, ikäryhmän ja sukupuolen sekä adoptiotyypin mukaan, 2000-2100, Adoptiot, Tilastokeskus",
+                "sv": "<A HREF='https://stat.fi/sv/statistik/dokumentation/adopt' TARGET=_blank>Dokumentation för statistiken</A>##11lv -- Adoptioner efter barnens födelseland, kön och åldersgrupp samt typ av adoption, 2000-2100, Adoptioner, Statistikcentralen",
+                "en": "<A HREF='https://stat.fi/en/statistics/documentation/adopt' TARGET=_blank>Documentation of statistics</A>##11lv -- Adoptions by country of birth, age group and sex of child and type of adoption, 2000-2100, Adoptions, Statistics Finland"
+              },
+              "isMandatory": false
+            }
+          ],
+          "cellNotes": null,
+          "timeDimension": {
+            "columnName": "timeperiod",
+            "code": "timeperiod_y",
+            "codelistId": null,
+            "timePeriodFormat": "A1",
+            "isHeading": false,
+            "label": {
+              "fi": "Vuosi",
+              "sv": "År",
+              "en": "Year"
+            },
+            "metaId": [
+              "SCALE-TYPE=nominal"
+            ],
+            "notes": null,
+            "valueNotes": null
+          },
+          "codedDimensions": [
+            {
+              "columnName": "svaltio",
+              "code": "valtio_19_20190101",
+              "isGeoVariableType": true,
+              "geoVariableLabel": {
+                "fi": "Valtio",
+                "sv": "Valtio",
+                "en": "Valtio"
+              },
+              "domainIdFrom": "firstGroupingLabel",
+              "variableType": "Region",
+              "isHeading": false,
+              "codelistId": "valtio_19_20190101-adopt-svaltio",
+              "eliminationEnable": true,
+              "labelConstructionOption": null,
+              "label": {
+                "fi": "Syntymävaltio",
+                "sv": "Födelseland",
+                "en": "Country of birth"
+              },
+              "doublecolumn": false,
+              "notes": [
+                {
+                  "text": {
+                    "fi": "Valtiot ja maat (ISO 3166).#Maanosaluokituksena käytetään Eurostatin luokitusta, jossa Kypros ja Turkki kuuluvat Eurooppaan.#Maanosaluokituksessa Eurooppa ei sisällä Suomen lukuja.#Epäitsenäiset valtiot yhdistetty emämaahansa.#Sudan = Sudan + Entinen Sudan #---#HDI = Inhimillisen kehityksen indeksi#HDI-indeksin mukainen sijoitus maittain:#Entinen Neuvostoliitto on yhdistetty Venäjän HDI-luokkaan#Entinen Tsekkoslovakia on yhdistetty Tsekin HDI-luokkaan#Entinen Jugoslavia ja entinen Serbia ja Montenegro on yhdistetty Serbian HDI-luokkaan",
+                    "sv": "Stater och länder (ISO 3166).#Som klassificering efter världsdel använd Eurostats klassificering, där Cypern och Turkiet hör till Europa.#Klassificering efter världsdel innehåller Europa inte siffror om Finland.#Icke självständiga stater summerat med moderlandet.#Sudan = Sudan + Det forna Sudan#---#HDI = Indexet för mänsklig utveckling#Ranking efter land enligt HDI-index:#Forna Sovjetunionen har slagits samman till HDI-klassen Ryssland#Forna Tjeckoslovakien har slagits samman till HDI-klassen Tjeckien#Forna Jugoslavien och forna Serbien och Montenegro har slagits samman till HDI-klassen Serbien",
+                    "en": "Countries (ISO 3166).#The used classification of continents is the classification of Eurostat, where Cyprus and Turkey belong to Europe.#In the classification of continents, Europe does not include the figures for Finland.#Non-autonomous states are combined with the mother country.#Sudan = Sudan + Former Sudan#---#HDI = Human Development Index#Ranking according to the HDI index by country:#The former Soviet Union is included in the Russia HDI category#The former Czechoslovakia is included in the Czech Republic HDI category#The former Yugoslavia and Serbia and Montenegro are included in the Serbia HDI category"
+                  },
+                  "isMandatory": false
+                }
+              ],
+              "metaId": [
+                "SCALE-TYPE=nominal"
+              ]
+            },
+            {
+              "columnName": "adtyyppi",
+              "code": "adoptiotyyppi_1_20180101",
+              "isGeoVariableType": true,
+              "geoVariableLabel": null,
+              "domainIdFrom": "firstGroupingLabel",
+              "variableType": "Classificatory",
+              "isHeading": true,
+              "codelistId": "adoptiotyyppi_1_20180101-adtyyppi",
+              "eliminationEnable": true,
+              "labelConstructionOption": null,
+              "label": {
+                "fi": "Adoptiotyyppi",
+                "sv": "Typ av adoption",
+                "en": "Adoption type"
+              },
+              "doublecolumn": false,
+              "notes": [
+                {
+                  "text": {},
+                  "isMandatory": false
+                }
+              ],
+              "metaId": [
+                "SCALE-TYPE=nominal"
+              ]
+            },
+            {
+              "columnName": "ika",
+              "code": "ikaryhma_10_20180101",
+              "isGeoVariableType": true,
+              "geoVariableLabel": null,
+              "domainIdFrom": "firstGroupingLabel",
+              "variableType": "Classificatory",
+              "isHeading": true,
+              "codelistId": "ikaryhma_10_20180101-adopt-ika",
+              "eliminationEnable": true,
+              "labelConstructionOption": null,
+              "label": {
+                "fi": "Ikä",
+                "sv": "Ålder",
+                "en": "Age"
+              },
+              "doublecolumn": false,
+              "notes": [
+                {
+                  "text": {},
+                  "isMandatory": false
+                }
+              ],
+              "metaId": [
+                "SCALE-TYPE=ordinal"
+              ]
+            },
+            {
+              "columnName": "sukup",
+              "code": "sukupuoli_9_20180101",
+              "isGeoVariableType": true,
+              "geoVariableLabel": null,
+              "domainIdFrom": "firstGroupingLabel",
+              "variableType": "Classificatory",
+              "isHeading": true,
+              "codelistId": "sukupuoli_9_20180101-adopt-sukup",
+              "eliminationEnable": true,
+              "labelConstructionOption": null,
+              "label": {
+                "fi": "Sukupuoli",
+                "sv": "Kön",
+                "en": "Sex"
+              },
+              "doublecolumn": false,
+              "notes": [
+                {
+                  "text": {},
+                  "isMandatory": false
+                }
+              ],
+              "metaId": [
+                "SCALE-TYPE=nominal"
+              ]
+            }
+          ],
+          "measurements": [
+            {
+              "columnName": "vm61",
+              "code": "vm61",
+              "label": {
+                "fi": "Adoptiot",
+                "sv": "Adoptioner",
+                "en": "Adoptions"
+              },
+              "showDecimals": 1,
+              "priceType": null,
+              "isSeasonallyAdjusted": null,
+              "isWorkingdaysAdjusted": null,
+              "aggregationAllowed": null,
+              "basePeriod": {},
+              "referencePeriod": {},
+              "rank": null,
+              "unitOfMeasure": {
+                "fi": "lukumäärä",
+                "sv": "antal",
+                "en": "count"
+              },
+              "notes": [
+                {
+                  "text": {
+                    "fi": "Pyoristetty yhden desimaalin tarkkuudella.",
+                    "sv": "Avrundat till en decimal.",
+                    "en": "Rounded to one decimal."
+                  },
+                  "isMandatory": false
+                }
+              ],
+              "metaId": null
+            }
+          ],
+          "metaId": null,
+          "rowMissing": ".",
+          "cellMissing": ".",
+          "officialStatistics": true,
+          "copyright": true,
+          "creationDateformat": "%Y%m%d %H:%M",
+          "creationDate": "20260602 09:00",
+          "firstPublished": null,
+          "attributes": null,
+          "isHeadingContdim": true,
+          "dataFile": "11lv"
+        }
+      }
+    },
+    "pxStatisticsResource": {
+      "resourceType": "dictionary",
+      "adressFormat": {
+        "id": "adopt",
+        "updateFrequency": {
+          "fi": "Vuosi",
+          "sv": "År",
+          "en": "Year"
+        },
+        "metaId": null,
+        "subjectCode": "adopt",
+        "subjectText": {
+          "fi": "Adoptiot",
+          "sv": "Adoptioner",
+          "en": "Adoptions"
+        },
+        "upcomingReleasesDateformat": "%Y%m%d %H:%M",
+        "upcomingReleases": [
+          "20351231 08:00",
+          "20360131 08:00"
+        ],
+        "contacts": [
+          {
+            "phone": null,
+            "email": null,
+            "name": null,
+            "raw": {
+              "fi": "<A HREF='https://stat.fi/tilasto/adopt' TARGET=_blank>Tilaston kotisivu</A>",
+              "sv": "<A HREF='https://stat.fi/sv/statistik/adopt' TARGET=_blank>Statistikens webbsidor</A>",
+              "en": "<A HREF='https://stat.fi/en/statistics/adopt' TARGET=_blank>Statistics' homepage</A>"
+            }
+          }
+        ]
+      }
+    },
+    "pxCodesResource": {
+      "resourceType": "dictionary",
+      "adressFormat": {
+        "sukupuoli_9_20180101-adopt-sukup": {
+          "id": "sukupuoli_9_20180101-adopt-sukup",
+          "admin": {
+            "isFinal": false,
+            "tags": [],
+            "todoCreation": ""
+          },
+          "sortValueitemsOn": "rank",
+          "label": {
+            "fi": "Px-koodistoja käytetään taulukkomuotoisen tilastotiedon esittämiseen. Niiden pohjana ovat yleensä standardiluokitukset. Px-koodistoihin on lisätty yhtenäiset summa- ja tuntematon -luokat sekä tilastojen taulukoissaan käyttämiä omia summa- tai yhdistelmäluokkia. ",
+            "sv": "Px-koderna används för presentation av statistiska uppgifter i tabellform. De bygger i allmänhet på standardklassificeringar. Koderna har kompletterats med enhetliga summaklasser och okända klasser samt med egna summaklasser eller kombinationsklasser som statistikgrenarna använder i sina tabeller.",
+            "en": "Px code lists are used for presenting table-format statistical data. They are generally based on standard classifications. Uniform aggregation and unknown categories and aggregation and combined categories used by the statistics in their tables are added to the px code lists."
+          },
+          "valueitems": [
+            {
+              "code": "SSS",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Yhteensä",
+                "sv": "Totalt",
+                "en": "Total"
+              },
+              "rank": {
+                "fi": "000010",
+                "sv": "000010",
+                "en": "000010"
+              },
+              "notes": null
+            },
+            {
+              "code": "1",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Miehet",
+                "sv": "Män",
+                "en": "Males"
+              },
+              "rank": {
+                "fi": "000020",
+                "sv": "000020",
+                "en": "000020"
+              },
+              "notes": null
+            }
+          ],
+          "eliminationPossible": true,
+          "eliminationCode": "SSS",
+          "sortGroupingsOn": "filenameBase",
+          "groupings": null
+        },
+        "ikaryhma_10_20180101-adopt-ika": {
+          "id": "ikaryhma_10_20180101-adopt-ika",
+          "admin": {
+            "isFinal": false,
+            "tags": [],
+            "todoCreation": ""
+          },
+          "sortValueitemsOn": "rank",
+          "label": {
+            "fi": "Px-koodistoja käytetään taulukkomuotoisen tilastotiedon esittämiseen. Niiden pohjana ovat yleensä standardiluokitukset. Px-koodistoihin on lisätty yhtenäiset summa- ja tuntematon -luokat sekä tilastojen taulukoissaan käyttämiä omia summa- tai yhdistelmäluokkia. ",
+            "sv": "Px-koderna används för presentation av statistiska uppgifter i tabellform. De bygger i allmänhet på standardklassificeringar. Koderna har kompletterats med enhetliga summaklasser och okända klasser samt med egna summaklasser eller kombinationsklasser som statistikgrenarna använder i sina tabeller.",
+            "en": "Px code lists are used for presenting table-format statistical data. They are generally based on standard classifications. Uniform aggregation and unknown categories and aggregation and combined categories used by the statistics in their tables are added to the px code lists."
+          },
+          "valueitems": [
+            {
+              "code": "SSS",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Yhteensä",
+                "sv": "Totalt",
+                "en": "Total"
+              },
+              "rank": {
+                "fi": "000010",
+                "sv": "000010",
+                "en": "000010"
+              },
+              "notes": null
+            },
+            {
+              "code": "000",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "0",
+                "sv": "0",
+                "en": "0"
+              },
+              "rank": {
+                "fi": "000020",
+                "sv": "000020",
+                "en": "000020"
+              },
+              "notes": null
+            },
+            {
+              "code": "001",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "1",
+                "sv": "1",
+                "en": "1"
+              },
+              "rank": {
+                "fi": "000030",
+                "sv": "000030",
+                "en": "000030"
+              },
+              "notes": null
+            }
+          ],
+          "eliminationPossible": true,
+          "eliminationCode": "SSS",
+          "sortGroupingsOn": "filenameBase",
+          "groupings": null
+        },
+        "valtio_19_20190101-adopt-svaltio": {
+          "id": "valtio_19_20190101-adopt-svaltio",
+          "admin": {
+            "isFinal": false,
+            "tags": [],
+            "todoCreation": ""
+          },
+          "sortValueitemsOn": "rank",
+          "label": {
+            "fi": "Valtio pxprota varten käytetään väestötilaston kansalaisuus ja  syntymävaltiotaulukoissa. Jatkuvapäivitteinen. Luokitus ei sisällä epäitsenäisiä valtioita, jotka voi yhdistää emämaahansa.",
+            "sv": "Kuvaus puuttuu",
+            "en": "Kuvaus puuttuu"
+          },
+          "valueitems": [
+            {
+              "code": "SSS",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "YHTEENSÄ",
+                "sv": "TOTALT",
+                "en": "TOTAL"
+              },
+              "rank": {
+                "fi": "000010",
+                "sv": "000010",
+                "en": "000010"
+              },
+              "notes": null
+            },
+            {
+              "code": "246",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Suomi",
+                "sv": "Finland",
+                "en": "Finland"
+              },
+              "rank": {
+                "fi": "000020",
+                "sv": "000020",
+                "en": "000020"
+              },
+              "notes": null
+            },
+            {
+              "code": "ULK",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "ULKOMAAT YHTEENSÄ",
+                "sv": "UTLANDET TOTALT",
+                "en": "FOREIGN COUNTRIES, TOTAL"
+              },
+              "rank": {
+                "fi": "000030",
+                "sv": "000030",
+                "en": "000030"
+              },
+              "notes": null
+            },
+            {
+              "code": "EUR",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "EUROOPPA",
+                "sv": "EUROPA",
+                "en": "EUROPE"
+              },
+              "rank": {
+                "fi": "000040",
+                "sv": "000040",
+                "en": "000040"
+              },
+              "notes": null
+            }
+          ],
+          "eliminationPossible": true,
+          "eliminationCode": "SSS",
+          "sortGroupingsOn": "filenameBase",
+          "groupings": [
+            {
+              "filenameBase": "syntymävaltio",
+              "label": {
+                "fi": "syntymävaltio_fi",
+                "sv": "syntymävaltio_sv",
+                "en": "syntymävaltio_en"
+              },
+              "rank": null,
+              "sortValueitemsOn": "code",
+              "valueitems": []
+            }
+          ]
+        },
+        "adoptiotyyppi_1_20180101-adtyyppi": {
+          "id": "adoptiotyyppi_1_20180101-adtyyppi",
+          "admin": {
+            "isFinal": false,
+            "tags": [],
+            "todoCreation": ""
+          },
+          "sortValueitemsOn": "rank",
+          "label": {
+            "fi": "Adoptiotyyppi-luokitus PxPro-taulukointia varten",
+            "sv": "Adoptiotyyppi-luokitus PxPro-taulukointia varten",
+            "en": "Adoptiotyyppi-luokitus PxPro-taulukointia varten"
+          },
+          "valueitems": [
+            {
+              "code": "SSS",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Yhteensä",
+                "sv": "Totalt",
+                "en": "Total"
+              },
+              "rank": {
+                "fi": "000010",
+                "sv": "000010",
+                "en": "000010"
+              },
+              "notes": null
+            },
+            {
+              "code": "1",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Kahden vanhemman adoptiot",
+                "sv": "Adoptioner av två föräldrar",
+                "en": "Two-parent adoptions"
+              },
+              "rank": {
+                "fi": "000020",
+                "sv": "000020",
+                "en": "000020"
+              },
+              "notes": null
+            },
+            {
+              "code": "2",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Yhden vanhemman adoptiot",
+                "sv": "Adoptioner av en förälder",
+                "en": "Single-parent adoptions"
+              },
+              "rank": {
+                "fi": "000030",
+                "sv": "000030",
+                "en": "000030"
+              },
+              "notes": null
+            },
+            {
+              "code": "X",
+              "unorderedChildren": null,
+              "label": {
+                "fi": "Tuntematon",
+                "sv": "Okänd",
+                "en": "Unknown"
+              },
+              "rank": {
+                "fi": "000040",
+                "sv": "000040",
+                "en": "000040"
+              },
+              "notes": null
+            }
+          ],
+          "eliminationPossible": true,
+          "eliminationCode": "SSS",
+          "sortGroupingsOn": "filenameBase",
+          "groupings": null
+        }
+      }
+    },
+    "pxDataResource": {
+      "resourceType": "file",
+      "adressFormat": "testdata/test_11lv/{id}.parquet"
+    },
+    "outputDestination": {
+      "resourceType": "folders",
+      "pxFolderFormat": "testdata/out_files/test_11lv/",
+      "aggFolderFormat": "testdata/out_files/test_11lv/"
+    },
+    "validLanguages": [
+      "fi",
+      "sv",
+      "en"
+    ],
+    "makeSupportFiles": false,
+    "buildMultilingualFiles": true,
+    "skipCreationDate": false,
+    "theWordAnd": {
+      "fi": "ja",
+      "sv": "och",
+      "en": "and"
+    },
+    "theWordBy": {
+      "fi": "muuttujina",
+      "sv": "efter",
+      "en": "by"
+    }
+  }
+}
