@@ -7,20 +7,27 @@ from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.middle.dims import Dims
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
 from ..loaded_jsons import LoadedJsons
-from pxbuild.models.output.pxfile.util.commons import Commons
 
 from .datadatasource import Datadatasource
 from .for_get_data import CubemathsHelper
 from .data_formatter import DataFormatter
 from ...helpers.logger_config import logger
-from .pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
+from .pandas_spark_backend._backend_methods import IBackendMethods
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame
 
 class MapData:
     def __init__(
-        self, datadata: Datadatasource, pxmetadata: PxMetadata, config: PxbuildConfig, dims: Dims, loaded_jsons: LoadedJsons, lang: str
+        self,
+        datadata: Datadatasource,
+        pxmetadata: PxMetadata,
+        config: PxbuildConfig,
+        dims: Dims,
+        loaded_jsons: LoadedJsons,
+        lang: str,
+        backend: "IBackendMethods",
+        decimals: int,
     ) -> None:
         self._pxmetadata_model = pxmetadata
         self._datadata = datadata
@@ -28,10 +35,11 @@ class MapData:
         self._dims = dims
         self._lang = lang
         self._loaded_jsons = loaded_jsons
+        self._decimals = decimals
 
         self._cubemaths_helper_by_codeid: Dict[str, CubemathsHelper] = dict()
         # The CubemathsHelpers is initalized in  init_cubemaths_helpers_and_calculate_matrix_size()
-        self._backend = PandasSparkBackend.get_backend()
+        self._backend = backend
 
     def map_data(self, out_model: PXFileModel) -> None:
         # /// MINDEX:
@@ -56,14 +64,13 @@ class MapData:
         start_get_data = time.time()
 
         matrix_size = self.init_cubemaths_helpers_and_calculate_matrix_size()
-        Commons.set_matrix_size(matrix_size)
 
         missing_row_symbol = self._pxmetadata_model.dataset.row_missing
         missing_cell_symbol = self._pxmetadata_model.dataset.cell_missing
         column_code_map = self.get_measurement_column_code_mapping()
 
         start_tidy = time.time()
-        df = self._datadata.get_tidy_df(self._config.contvariable_code, column_code_map)
+        df = self._datadata.get_tidy_df(self._config.contvariable_code, column_code_map, self._decimals)
 
         end_tidy = time.time()
         time_used_tidy = end_tidy - start_tidy

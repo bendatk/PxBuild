@@ -1,10 +1,10 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Dict
 
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata, AttachmentItem
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.input.pydantic_pxstatistics import PxStatistics
-from pxbuild.models.output.pxfile.util.commons import Commons
 
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
 
@@ -14,10 +14,38 @@ from .helpers.loaded_jsons import LoadedJsons
 from .helpers.support_files import SupportFiles
 from .helpers.logger_config import configure_logger, logger
 from pxbuild.models.middle.dims import Dims
-from .helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
+from .helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import create_backend
+from .helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
 
 
-class LoadFromPxmetadata:
+@dataclass
+class PxBuildModel:
+    """In-memory result of building a PX file: no I/O has happened yet.
+
+    ``models_by_language`` maps each built language code to its
+    :class:`PXFileModel`, or contains a single ``"multi"`` entry when the
+    config asked for one multilingual file. Pass this to :func:`write_px_file`
+    to write it to disk (or use :func:`build_px_file` to do both steps).
+    """
+
+    pxmetadata_id: str
+    models_by_language: Dict[str, PXFileModel]
+    config: PxbuildConfig
+    dims: Dims
+    pxmetadata: PxMetadata
+    output_filename: str
+    backend: "IBackendMethods"
+    main_language: str
+
+
+class _PxModelBuilder:
+    """Builds the in-memory PXFileModel(s) for a pxmetadata id.
+
+    This class only reads input JSONs/data and populates PXFileModel
+    instances; it never writes to disk. Use build_px_model()/build_px_file()
+    (module-level functions below) instead of instantiating this directly.
+    """
+
     LabelConstructionOptionDict = {
         "LabelConstructionOption.code": 0,
         "LabelConstructionOption.text": 1,
@@ -29,7 +57,7 @@ class LoadFromPxmetadata:
 
     def __init__(self, pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> None:
         configure_logger(debug)
-        PandasSparkBackend.set_backend(backend)
+        self._backend: IBackendMethods = create_backend(backend)
 
         self._pxmetadata_id = pxmetadata_id
 
@@ -43,7 +71,7 @@ class LoadFromPxmetadata:
             file_id = self._pxmetadata_model.dataset.data_file
         elif isinstance(self._pxmetadata_model.dataset.data_file, dict):
             file_id = next(iter(self._pxmetadata_model.dataset.data_file))
-        self._datadata = Datadatasource(file_id, self._config, self._pxmetadata_model)
+        self._datadata = Datadatasource(file_id, self._config, self._pxmetadata_model, self._backend)
 
         self._dims = Dims(self._loaded_jsons, self._datadata)
 
@@ -54,7 +82,7 @@ class LoadFromPxmetadata:
             self._output_filename = f"tab_{pxmetadata_id}{language_suffix}"
 
         ##################
-        self.models_for_pytest: dict = {}  # Todo make perfect reader, and let the pytest read the files
+        self.models_by_language: dict = {}
 
         self._last_updated = self.get_last_updated(self._pxstatistics)
         
@@ -67,7 +95,8 @@ class LoadFromPxmetadata:
 
         # loop in languages
         self._add_language_independent = True  # like AXIS_VERSION
-        Commons.set_main_language(self._config.admin.valid_languages[0])
+        self._decimals: int | None = None
+        self._main_language = self._config.admin.valid_languages[0]
         for language in self._config.admin.valid_languages:
 
             self._current_lang = language
@@ -88,36 +117,29 @@ class LoadFromPxmetadata:
             self.map_metaid_to_pxfile(out_model)
             self.map_cellnote_to_pxfile(out_model)
 
-            fixdata = MapData(self._datadata, self._pxmetadata_model, self._config, self._dims, self._loaded_jsons, self._current_lang)
+            fixdata = MapData(
+                self._datadata,
+                self._pxmetadata_model,
+                self._config,
+                self._dims,
+                self._loaded_jsons,
+                self._current_lang,
+                self._backend,
+                self._decimals,
+            )
             fixdata.map_data(out_model)
 
             if not self._config.admin.build_multilingual_files:
-                write_output(
-                    self._pxmetadata_id, self._config.admin.output_destination.px_folder_format, out_model, self._output_filename, self._config.code_page
-                )
-
-                self.models_for_pytest[language] = out_model
+                self.models_by_language[language] = out_model
                 out_model = PXFileModel()
             else:
                 self._add_language_independent = False
 
         if self._config.admin.build_multilingual_files:
-            write_output(self._pxmetadata_id, self._config.admin.output_destination.px_folder_format, out_model, self._output_filename, self._config.code_page)
-            self.models_for_pytest["multi"] = out_model
-
-        if self._config.admin.make_support_files:
-            support = SupportFiles(self._pxmetadata_model, self._config, self._dims, self._pxmetadata_id)
-            support.make_vs_file()
+            self.models_by_language["multi"] = out_model
 
         self._datadata._my_datasource.close()
 
-        # Make out_model accessible to users via the out_model property
-        self._out_model = out_model
-
-    @property
-    def out_model(self) -> PXFileModel:
-        return self._out_model
-        
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:
         if self._add_language_independent:
             metaid_table: List[str] = []
@@ -385,10 +407,10 @@ class LoadFromPxmetadata:
             show_decimals_values = [instance.show_decimals for instance in self._pxmetadata_model.dataset.measurements]
 
             if self._pxmetadata_model.dataset.stored_decimals:
-                Commons.set_decimals(max(self._pxmetadata_model.dataset.stored_decimals, max(show_decimals_values)))
+                self._decimals = max(self._pxmetadata_model.dataset.stored_decimals, max(show_decimals_values))
             else:
-                Commons.set_decimals(max(show_decimals_values))
-            out_model.decimals.set(Commons.get_decimals())
+                self._decimals = max(show_decimals_values)
+            out_model.decimals.set(self._decimals)
             out_model.showdecimals.set(min(show_decimals_values))
 
     def get_contact_string(self, in_data: PxStatistics, language: str) -> str:
@@ -547,8 +569,14 @@ def get_current_time() -> str:
 
 
 def write_output(
-    pxmetadata_id: str, px_folder_format: str, out_model: PXFileModel, output_filename: str, encoding: str | None = None
-) -> None:
+    pxmetadata_id: str,
+    px_folder_format: str,
+    out_model: PXFileModel,
+    output_filename: str,
+    backend: "IBackendMethods",
+    main_language: str,
+    encoding: str | None = None,
+) -> str:
     out_folder = px_folder_format.format(id=pxmetadata_id)
     out_file = f"{out_folder}/{output_filename}.px"
 
@@ -563,6 +591,52 @@ def write_output(
     if "utf" in encoding.lower() and "-sig" not in encoding.lower():
         encoding = encoding + "-sig"
 
-    out_model.write_to_file(out_file, encoding=encoding)
+    out_model.write_to_file(out_file, encoding=encoding, backend=backend, main_language=main_language)
 
     logger.info(f"File written to: {out_file}")
+
+    return out_file
+
+
+def build_px_model(pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> PxBuildModel:
+    """Build the in-memory PXFileModel(s) for a pxmetadata id. No file I/O happens here."""
+    builder = _PxModelBuilder(pxmetadata_id, config_file, backend, debug)
+    return PxBuildModel(
+        pxmetadata_id=pxmetadata_id,
+        models_by_language=builder.models_by_language,
+        config=builder._config,
+        dims=builder._dims,
+        pxmetadata=builder._pxmetadata_model,
+        output_filename=builder._output_filename,
+        backend=builder._backend,
+        main_language=builder._main_language,
+    )
+
+
+def write_px_file(model: PxBuildModel) -> List[str]:
+    """Write a previously built PxBuildModel to disk. Returns the written .px file path(s)."""
+    written_files: List[str] = []
+    for out_model in model.models_by_language.values():
+        out_file = write_output(
+            model.pxmetadata_id,
+            model.config.admin.output_destination.px_folder_format,
+            out_model,
+            model.output_filename,
+            model.backend,
+            model.main_language,
+            model.config.code_page,
+        )
+        written_files.append(out_file)
+
+    if model.config.admin.make_support_files:
+        support = SupportFiles(model.pxmetadata, model.config, model.dims, model.pxmetadata_id)
+        support.make_vs_file()
+
+    return written_files
+
+
+def build_px_file(pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> tuple[PxBuildModel, List[str]]:
+    """Convenience wrapper: build the in-memory model(s) and write them to disk in one call."""
+    model = build_px_model(pxmetadata_id, config_file, backend, debug)
+    written_files = write_px_file(model)
+    return model, written_files

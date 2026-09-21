@@ -2,19 +2,17 @@ from .pandas_wrapper import PandasWrapper
 from .spark_wrapper import SparkWrapper
 from ._backend_methods import IBackendMethods
 
-class PandasSparkBackend:
 
-    @classmethod
-    def set_backend(cls, backend: str):
-        if backend not in ['pandas', 'spark']:
-            raise ValueError("Backend must be either 'pandas' or 'spark'.")
-        if backend == 'spark':
-            cls.backend = SparkWrapper()
-        else:
-            cls.backend = PandasWrapper()
-            
-    from typing import Tuple
+def create_backend(backend: str) -> "IBackendMethods":
+    """Create a fresh backend instance for the requested engine.
 
-    @staticmethod
-    def get_backend() -> "IBackendMethods":
-        return PandasSparkBackend.backend
+    This replaces the old ``PandasSparkBackend`` singleton: callers must
+    hold on to the returned instance and pass it explicitly to whatever
+    needs it, instead of relying on process-global state.
+    """
+    if backend == "spark":
+        return SparkWrapper()
+    elif backend == "pandas":
+        return PandasWrapper()
+    else:
+        raise ValueError("Backend must be either 'pandas' or 'spark'.")

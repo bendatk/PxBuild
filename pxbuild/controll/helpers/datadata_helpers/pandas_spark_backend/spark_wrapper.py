@@ -5,7 +5,6 @@ from functools import reduce
 from .....models.output.pxfile.keywords._data import _PxData
 from .....models.input.pydantic_pxmetadata import Measurement
 from ._backend_methods import IBackendMethods
-from pxbuild.models.output.pxfile.util.commons import Commons
 
 import operator
 import shutil
@@ -319,7 +318,8 @@ class SparkWrapper(IBackendMethods):
     def round_by_decimals(
             self, 
             df: "SparkDataFrame", 
-            measurements: List[Measurement]
+            measurements: List[Measurement],
+            decimals: int
     ) -> "SparkDataFrame":
         
         from pyspark.sql.functions import round as spark_round, col
@@ -327,7 +327,7 @@ class SparkWrapper(IBackendMethods):
         for my_cont in measurements:
             df = df.withColumn(
                 my_cont.column_name, 
-                spark_round(col(my_cont.column_name), Commons.get_decimals())
+                spark_round(col(my_cont.column_name), decimals)
             )
         return df
 

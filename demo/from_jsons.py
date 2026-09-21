@@ -7,4 +7,5 @@ sys.path.insert(1, my)
 
 print("paths", sys.path[0], sys.path[1])
 
-dummy = pxbuild.LoadFromPxmetadata("03024", "example_data/pxbuildconfig/ssb_config.json")
+model, written_files = pxbuild.build_px_file("03024", "example_data/pxbuildconfig/ssb_config.json")
+print("Written files:", written_files)

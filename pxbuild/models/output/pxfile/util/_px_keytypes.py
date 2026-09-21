@@ -6,8 +6,32 @@ These classes have 2 purposes:
 They used to be just namedTuples, but we wanted to use pydantic for validation
 """
 
+import contextvars
+from contextlib import contextmanager
+
 from ._line_validator import LineValidator
-from .commons import Commons
+
+# Which language is considered the "main" one for the file currently being
+# rendered/written. Only set for the duration of a render via
+# main_language_context(); defaults to None (no language considered "main",
+# so language suffixes are always shown) instead of raising like the old
+# Commons global did when nothing had set it yet.
+_main_language_var: "contextvars.ContextVar[str | None]" = contextvars.ContextVar("px_main_language", default=None)
+
+
+@contextmanager
+def main_language_context(main_language: str | None):
+    """Scope the "main language" used when rendering keywords with a language.
+
+    Used by PXFileModel.write_to_file/__str__ so the language used for
+    rendering is explicit and reset afterwards, instead of a process-global
+    that is set once and never cleared.
+    """
+    token = _main_language_var.set(main_language)
+    try:
+        yield
+    finally:
+        _main_language_var.reset(token)
 
 
 class _KeytypeLang:
@@ -20,7 +44,7 @@ class _KeytypeLang:
         self.lang = lang
 
     def __str__(self):
-        return f"[{self.lang}]" if self.lang and Commons.get_main_language() != self.lang else ""
+        return f"[{self.lang}]" if self.lang and _main_language_var.get() != self.lang else ""
 
     def __eq__(self, other):
         if type(self) is type(other):

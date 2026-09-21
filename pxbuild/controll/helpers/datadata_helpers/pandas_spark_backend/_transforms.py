@@ -37,7 +37,7 @@ class ITransforms(ABC):
         pass
 
     @abstractmethod
-    def round_by_decimals(self, df: "SparkDataFrame | PandasDataFrame", measurements: List[Measurement]) -> "PandasDataFrame | SparkDataFrame":
+    def round_by_decimals(self, df: "SparkDataFrame | PandasDataFrame", measurements: List[Measurement], decimals: int) -> "PandasDataFrame | SparkDataFrame":
         pass
 
     @abstractmethod

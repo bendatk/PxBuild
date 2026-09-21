@@ -7,10 +7,8 @@ from .csv_datasource import CsvDatasource
 from .spark_datasource import SparkDatasource
 from .abstract_datasource import AbstractDatasource
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
-from pxbuild.models.output.pxfile.util.commons import Commons
 from ...helpers.logger_config import logger
-from .pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
-from ....models.output.pxfile.util.commons import Commons
+from .pandas_spark_backend._backend_methods import IBackendMethods
 from pxbuild.models.input.pydantic_pxbuildconfig import ResourceType3
 
 if TYPE_CHECKING:
@@ -21,17 +19,18 @@ class PxDataSourceError(Exception):
     pass
 
 class Datadatasource:
-    def __init__(self, file_id: str, config: PxbuildConfig, pxmetadata: PxMetadata) -> None:
+    def __init__(self, file_id: str, config: PxbuildConfig, pxmetadata: PxMetadata, backend: "IBackendMethods") -> None:
         data_file_path_format = config.admin.px_data_resource.adress_format
         data_file_resorce_type = config.admin.px_data_resource.resource_type
         self.measurements = pxmetadata.dataset.measurements
+        self._backend = backend
 
         if data_file_resorce_type == ResourceType3.file:
             self._data_file_path = data_file_path_format.format(id=file_id)
             if self._data_file_path.endswith(".parquet"):
-                self._my_datasource: AbstractDatasource = ParquetDatasource(self._data_file_path)
+                self._my_datasource: AbstractDatasource = ParquetDatasource(self._data_file_path, self._backend)
             elif self._data_file_path.endswith(".csv"):
-                self._my_datasource: AbstractDatasource = CsvDatasource(self._data_file_path)
+                self._my_datasource: AbstractDatasource = CsvDatasource(self._data_file_path, self._backend)
             else:
                 raise NotImplementedError("Sorry, not implemented yet. Files must end with .parquet or .csv")
         elif data_file_resorce_type == ResourceType3.dataframe and isinstance(pxmetadata.dataset.data_file, dict):
@@ -46,7 +45,6 @@ class Datadatasource:
             else:
                 self._my_datasource: AbstractDatasource = SparkDatasource(dataframe)
 
-        self._backend = PandasSparkBackend.get_backend()
         self._raw_df = self._my_datasource.get_raw_data()
 
         self._validate_data(self._raw_df, self._data_file_path)
@@ -86,11 +84,11 @@ class Datadatasource:
         return my_out
     
 
-    def round_by_decimals(self, df: "pandas.DataFrame | SparkDataFrame") -> "pandas.DataFrame | SparkDataFrame":
-        return self._backend.round_by_decimals(df, self.measurements)
+    def round_by_decimals(self, df: "pandas.DataFrame | SparkDataFrame", decimals: int) -> "pandas.DataFrame | SparkDataFrame":
+        return self._backend.round_by_decimals(df, self.measurements, decimals)
 
 
-    def get_tidy_df(self, measure_dim_name: str, measurement_code_by_column_name: dict) -> "pandas.DataFrame | SparkDataFrame":
+    def get_tidy_df(self, measure_dim_name: str, measurement_code_by_column_name: dict, decimals: int) -> "pandas.DataFrame | SparkDataFrame":
         # measure_dim_name is contvariable_code from config
         # column_code_map is
         #        for measurement_var in self._pxmetadata_model.dataset.measurements:
@@ -105,7 +103,7 @@ class Datadatasource:
         #  it is when we do pd.wide_to_long, this strange mix of column names and code is needed: The code in the cell is the columnnane minus "VALUE"
 
 
-        raw_data = self.round_by_decimals(self._my_datasource.get_raw_data())
+        raw_data = self.round_by_decimals(self._my_datasource.get_raw_data(), decimals)
 
         logger.debug(f"raw_data.columns: {raw_data.columns}")
 

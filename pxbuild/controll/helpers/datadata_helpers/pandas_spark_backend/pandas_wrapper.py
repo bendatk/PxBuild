@@ -4,7 +4,6 @@ from pyarrow.parquet import ParquetFile
 import numpy as np
 from .....models.output.pxfile.keywords._data import _PxData
 from io import TextIOWrapper
-from .....models.output.pxfile.util.commons import Commons
 from .....models.input.pydantic_pxmetadata import Measurement
 from ._backend_methods import IBackendMethods
 
@@ -30,9 +29,9 @@ class PandasWrapper(IBackendMethods):
     def rename(self, df: pd.DataFrame, measurement_code_by_column_name: dict) -> pd.DataFrame:
         return df.rename(columns=measurement_code_by_column_name)
 
-    def round_by_decimals(self, df: pd.DataFrame, measurements: List[Measurement]) -> pd.DataFrame:
+    def round_by_decimals(self, df: pd.DataFrame, measurements: List[Measurement], decimals: int) -> pd.DataFrame:
         for my_cont in measurements:
-            df[my_cont.column_name] = df[my_cont.column_name].round(Commons.get_decimals())
+            df[my_cont.column_name] = df[my_cont.column_name].round(decimals)
         return df
 
     def get_timeperiodes(self, df: pd.DataFrame, column_name: str) -> List[str]:

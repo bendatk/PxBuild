@@ -1,7 +1,6 @@
 import pyarrow.parquet as pq, pandas
 from .abstract_datasource import AbstractDatasource
 from ...helpers.logger_config import logger
-from .pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

@@ -85,7 +85,8 @@ from pxbuild.models.output.pxfile.keywords._variablecode import _Variablecode
 from pxbuild.models.output.pxfile.keywords._meta_id import _MetaId
 from pxbuild.models.output.pxfile.keywords._data import _Data
 from pxbuild.models.output.pxfile.util._px_super import _SuperKeyword
-from ....controll.helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import PandasSparkBackend
+from ....controll.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
+from pxbuild.models.output.pxfile.util._px_keytypes import main_language_context
 
 class PXFileModel:
     """
@@ -269,24 +270,24 @@ class PXFileModel:
         """Numbers and quoted dots"""
 
     def __str__(self):
-        attrs = vars(self)
-        attr_strings = [str(value) for value in attrs.values() if str(value) != ""]
-        return "\n".join(attr_strings)
-    
-    def write_to_file(self, file_path: str, encoding: str) -> None:
-        backend = PandasSparkBackend.get_backend()
+        with main_language_context(None):
+            attrs = vars(self)
+            attr_strings = [str(value) for value in attrs.values() if str(value) != ""]
+            return "\n".join(attr_strings)
+
+    def write_to_file(self, file_path: str, encoding: str, backend: "IBackendMethods", main_language: str | None = None) -> None:
         attrs = vars(self)
 
         sig_encoding = encoding
         plain_encoding = encoding.replace("-sig", "")
         first_write = True
 
-        with open(file_path, "wb") as f:
+        with main_language_context(main_language), open(file_path, "wb") as f:
             for value in attrs.values():
                 current_encoding = sig_encoding if first_write else plain_encoding
 
                 if isinstance(value, _Data) and backend.backend_name == "spark":
-                    value.write_to_file(file_path, f, current_encoding)
+                    value.write_to_file(file_path, f, current_encoding, backend)
                     first_write = False
                     continue
 

@@ -16,7 +16,7 @@
 
          - adressFormat(*) type: string
 
-            Description: The path or url to the json, given its id ( id is the first argument to LoadFromPxmetadata). Example: example_data/pxmetadata/{id}.json
+            Description: The path or url to the json, given its id ( id is the first argument to build_px_model/build_px_file). Example: example_data/pxmetadata/{id}.json
 
      - pxStatisticsResource(*) ND
 
@@ -136,7 +136,7 @@
 
  - datasymbolSum ND
 
-    Description: This if used to indicate how a sum of differing numbers of dots will be shown. The sum is stored as “…….”.
+    Description: This if used to indicate how a sum of differing numbers of dots will be shown. The sum is stored as ï¿½ï¿½ï¿½.ï¿½.
 
  - source ND
 
