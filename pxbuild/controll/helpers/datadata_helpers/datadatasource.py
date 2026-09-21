@@ -21,7 +21,7 @@ class PxDataSourceError(Exception):
 class Datadatasource:
     def __init__(self, file_id: str, config: PxbuildConfig, pxmetadata: PxMetadata, backend: "IBackendMethods") -> None:
         data_file_path_format = config.admin.px_data_resource.adress_format
-        data_file_resorce_type = config.admin.px_data_resource.resource_type
+        data_file_resorce_type = ResourceType3(config.admin.px_data_resource.resource_type)
         self.measurements = pxmetadata.dataset.measurements
         self._backend = backend
 

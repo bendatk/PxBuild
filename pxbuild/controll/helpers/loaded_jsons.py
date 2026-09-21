@@ -20,7 +20,7 @@ class LoadedJsons:
         self._config = LoadedJsons.load_config(config_file)
 
         pxmetadata_format = self._config.admin.px_metadata_resource.adress_format
-        pxmetadata_source_type = self._config.admin.px_metadata_resource.resource_type
+        pxmetadata_source_type = ResourceType(self._config.admin.px_metadata_resource.resource_type)
         if isinstance(pxmetadata_format, str) and pxmetadata_source_type == ResourceType.file:
             # pxmetadataFormat="example_data/pxmetadata/{id}.json"
             pxmetadata_file = pxmetadata_format.format(id=self._pxmetadata_id)
@@ -32,7 +32,7 @@ class LoadedJsons:
 
         
         pxstatistics_format = self._config.admin.px_statistics_resource.adress_format
-        pxstatistics_source_type = self._config.admin.px_statistics_resource.resource_type
+        pxstatistics_source_type = ResourceType1(self._config.admin.px_statistics_resource.resource_type)
         if isinstance(pxstatistics_format, str) and pxstatistics_source_type == ResourceType1.file:
             # pxstatisticsFormat="example_data/pxstatistics/pxstatistics_{id}.json"
             pxstatistics_file = pxstatistics_format.format(id=self._pxmetadata_model.dataset.statistics_id)
@@ -48,7 +48,7 @@ class LoadedJsons:
         if self._pxmetadata_model.dataset.coded_dimensions:
 
             # pxcodesFormat="example_data/pxcodes/{id}.json"
-            pxcodes_source_type = self._config.admin.px_codes_resource.resource_type
+            pxcodes_source_type = ResourceType1(self._config.admin.px_codes_resource.resource_type)
             for dimension in self._pxmetadata_model.dataset.coded_dimensions:
 
                 if dimension.codelist_id not in self._resolved_pxcodes_ids:
