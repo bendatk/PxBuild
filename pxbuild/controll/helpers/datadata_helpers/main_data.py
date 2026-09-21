@@ -40,6 +40,7 @@ class MapData:
         self._cubemaths_helper_by_codeid: Dict[str, CubemathsHelper] = dict()
         # The CubemathsHelpers is initalized in  init_cubemaths_helpers_and_calculate_matrix_size()
         self._backend = backend
+        self.matrix_size: int | None = None
 
     def map_data(self, out_model: PXFileModel) -> None:
         # /// MINDEX:
@@ -64,6 +65,7 @@ class MapData:
         start_get_data = time.time()
 
         matrix_size = self.init_cubemaths_helpers_and_calculate_matrix_size()
+        self.matrix_size = matrix_size
 
         missing_row_symbol = self._pxmetadata_model.dataset.row_missing
         missing_cell_symbol = self._pxmetadata_model.dataset.cell_missing

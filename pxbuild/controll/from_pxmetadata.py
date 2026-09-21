@@ -1,12 +1,14 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Dict
+from time import perf_counter
+from typing import List, Dict, Optional
 
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata, AttachmentItem
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.input.pydantic_pxstatistics import PxStatistics
 
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+from pxbuild.operations_on_model.output.validator.validate_px import Validate
 
 from .helpers.datadata_helpers.datadatasource import Datadatasource
 from .helpers.datadata_helpers.main_data import MapData
@@ -19,13 +21,69 @@ from .helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBac
 
 
 @dataclass
+class ValidationSummary:
+    """Lightweight, serializable summary of a Validate() run for one built PXFileModel."""
+
+    is_valid: bool
+    passed_count: int
+    failed_count: int
+    errors: List[str] = field(default_factory=list)
+
+    @classmethod
+    def from_validate(cls, validation: Validate) -> "ValidationSummary":
+        return cls(
+            is_valid=validation.is_valid(),
+            passed_count=len(validation.passed),
+            failed_count=len(validation.failed),
+            errors=[str(rep) for rep in validation.failed],
+        )
+
+
+@dataclass
+class PxBuildStatistics:
+    """Statistics about a build, deliberately excluding the (potentially huge) DATA values.
+
+    row_count/cell_count both describe the number of data cells actually written
+    (they are the same number for this file format: one row == one cell). matrix_size
+    is the theoretical size implied by the dimensions/codelists and should equal
+    row_count/cell_count for a well-formed build.
+    """
+
+    languages: List[str]
+    decimals: Optional[int] = None
+    matrix_size: Optional[int] = None
+    row_count: Optional[int] = None
+    cell_count: Optional[int] = None
+    build_seconds: Optional[float] = None
+    write_seconds: Optional[float] = None
+    output_files: List[str] = field(default_factory=list)
+
+
+def _count_data_rows(out_model: PXFileModel) -> Optional[int]:
+    if not out_model.data.has_value():
+        return None
+    raw = out_model.data.get_value()
+    try:
+        return int(len(raw))
+    except TypeError:
+        # Spark DataFrames/Columns don't support len(); fall back to .count().
+        return int(raw.count())
+
+
+@dataclass
 class PxBuildModel:
-    """In-memory result of building a PX file: no I/O has happened yet.
+    """Result of building a PX file: the in-memory model plus statistics/validation.
 
     ``models_by_language`` maps each built language code to its
     :class:`PXFileModel`, or contains a single ``"multi"`` entry when the
-    config asked for one multilingual file. Pass this to :func:`write_px_file`
-    to write it to disk (or use :func:`build_px_file` to do both steps).
+    config asked for one multilingual file. Typed keyword access is available
+    on the built PXFileModel(s) directly (e.g. ``model.get_model().title.get_value()``),
+    or via the convenience properties below (``.title``, ``.contents``, ...),
+    which read from the model's main language. DATA is never eagerly copied
+    here: only aggregate counts are captured in ``statistics``.
+
+    Pass this to :func:`write_px_file` to write it to disk (or use
+    :func:`build_px_file` to do both steps in one call).
     """
 
     pxmetadata_id: str
@@ -36,6 +94,29 @@ class PxBuildModel:
     output_filename: str
     backend: "IBackendMethods"
     main_language: str
+    statistics: PxBuildStatistics
+    validation_by_language: Dict[str, ValidationSummary]
+
+    def get_model(self, language: str | None = None) -> PXFileModel:
+        """Return the built PXFileModel for a language, or the main/only one built."""
+        key = language or ("multi" if "multi" in self.models_by_language else self.main_language)
+        return self.models_by_language[key]
+
+    @property
+    def is_valid(self) -> bool:
+        return all(summary.is_valid for summary in self.validation_by_language.values())
+
+    @property
+    def table_id(self) -> str:
+        return self.get_model().tableid.get_value()
+
+    @property
+    def title(self) -> str:
+        return self.get_model().title.get_value(self.main_language)
+
+    @property
+    def contents(self) -> str:
+        return self.get_model().contents.get_value(self.main_language)
 
 
 class _PxModelBuilder:
@@ -96,7 +177,9 @@ class _PxModelBuilder:
         # loop in languages
         self._add_language_independent = True  # like AXIS_VERSION
         self._decimals: int | None = None
+        self._matrix_size: int | None = None
         self._main_language = self._config.admin.valid_languages[0]
+        build_start = perf_counter()
         for language in self._config.admin.valid_languages:
 
             self._current_lang = language
@@ -128,6 +211,8 @@ class _PxModelBuilder:
                 self._decimals,
             )
             fixdata.map_data(out_model)
+            if fixdata.matrix_size is not None:
+                self._matrix_size = fixdata.matrix_size
 
             if not self._config.admin.build_multilingual_files:
                 self.models_by_language[language] = out_model
@@ -139,6 +224,15 @@ class _PxModelBuilder:
             self.models_by_language["multi"] = out_model
 
         self._datadata._my_datasource.close()
+        self.build_seconds = perf_counter() - build_start
+
+        self.validation_by_language: Dict[str, ValidationSummary] = {
+            lang: ValidationSummary.from_validate(Validate(model)) for lang, model in self.models_by_language.items()
+        }
+
+        first_model = next(iter(self.models_by_language.values()))
+        self.row_count = _count_data_rows(first_model)
+        self.cell_count = self.row_count
 
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:
         if self._add_language_independent:
@@ -599,8 +693,20 @@ def write_output(
 
 
 def build_px_model(pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> PxBuildModel:
-    """Build the in-memory PXFileModel(s) for a pxmetadata id. No file I/O happens here."""
+    """Build the in-memory PXFileModel(s) for a pxmetadata id. No file I/O happens here.
+
+    Validation runs automatically as part of the build; see the returned model's
+    ``validation_by_language``/``is_valid`` for the results.
+    """
     builder = _PxModelBuilder(pxmetadata_id, config_file, backend, debug)
+    statistics = PxBuildStatistics(
+        languages=list(builder.models_by_language.keys()),
+        decimals=builder._decimals,
+        matrix_size=builder._matrix_size,
+        row_count=builder.row_count,
+        cell_count=builder.cell_count,
+        build_seconds=builder.build_seconds,
+    )
     return PxBuildModel(
         pxmetadata_id=pxmetadata_id,
         models_by_language=builder.models_by_language,
@@ -610,11 +716,17 @@ def build_px_model(pxmetadata_id: str, config_file: str | dict, backend: str = "
         output_filename=builder._output_filename,
         backend=builder._backend,
         main_language=builder._main_language,
+        statistics=statistics,
+        validation_by_language=builder.validation_by_language,
     )
 
 
 def write_px_file(model: PxBuildModel) -> List[str]:
-    """Write a previously built PxBuildModel to disk. Returns the written .px file path(s)."""
+    """Write a previously built PxBuildModel to disk. Returns the written .px file path(s).
+
+    Also records the written paths and elapsed write time onto ``model.statistics``.
+    """
+    write_start = perf_counter()
     written_files: List[str] = []
     for out_model in model.models_by_language.values():
         out_file = write_output(
@@ -632,11 +744,18 @@ def write_px_file(model: PxBuildModel) -> List[str]:
         support = SupportFiles(model.pxmetadata, model.config, model.dims, model.pxmetadata_id)
         support.make_vs_file()
 
+    model.statistics.output_files = written_files
+    model.statistics.write_seconds = perf_counter() - write_start
+
     return written_files
 
 
-def build_px_file(pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> tuple[PxBuildModel, List[str]]:
-    """Convenience wrapper: build the in-memory model(s) and write them to disk in one call."""
+def build_px_file(pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> PxBuildModel:
+    """Convenience wrapper: build the in-memory model(s) and write them to disk in one call.
+
+    Returns the built :class:`PxBuildModel`, whose ``.statistics.output_files`` holds
+    the written .px file path(s).
+    """
     model = build_px_model(pxmetadata_id, config_file, backend, debug)
-    written_files = write_px_file(model)
-    return model, written_files
+    write_px_file(model)
+    return model
