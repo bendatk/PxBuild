@@ -9,18 +9,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    assignees:
-      - "JohannesFinsveen"
-    reviewers:
-      - "JohannesFinsveen"  
     groups:
       small-change:
         patterns:
-        - "*"
+          - "*"
         update-types:
-        - "minor"
-        - "patch"        
-    
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"

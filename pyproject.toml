@@ -1,8 +1,8 @@
 [project]
 name = "pxbuild"
 version = "0.2.4"
-description = "Tool for building px-files"
-authors = [{ name = "Team Nettop" }]
+description = "Tool for building px-files (fork maintained by Statistics Finland)"
+authors = [{ name = "Statistics Finland - Team Times" }, { name = "SSB - Team Nettop (original project)" }]
 license = "Apache-2.0"
 readme = "README.md"
 requires-python = ">=3.10.12"

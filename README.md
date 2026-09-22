@@ -1,6 +1,7 @@
 AI has been used in development.
 # disclaimer
-This is a work in progress and is not recommended for use in production
+This repository is a fork of the original pxbuild project developed by SSB. It is maintained by Statistics Finland as a separate fork.
+This project is under active development and can be used in production where appropriate. Users are responsible for validating that the generated output meets their requirements.
 # pxbuild
 Purpose: Creating px-files (.px, .vs and .agg -files), which is one of the datasource-types for the awesome PxWeb ( see https://github.com/statisticssweden/PxWeb )
 
