@@ -3,11 +3,11 @@ from pxbuild.models.input.pydantic_pxcodes import PxCodes
 from .abstract_dim import AbstractDim
 from ..input.pydantic_pxmetadata import Note
 from typing import List
-from pxbuild.controll.helpers.datadata_helpers.datadatasource import Datadatasource
-from pxbuild.controll.helpers.loaded_jsons import LoadedJsons
+from pxbuild.control.helpers.datadata_helpers.datadatasource import Datadatasource
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
 
 
-from pxbuild.controll.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
 
 
 class TimeDim(AbstractDim):

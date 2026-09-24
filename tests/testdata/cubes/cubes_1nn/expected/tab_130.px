@@ -1,0 +1,151 @@
+CHARSET="ANSI";
+AXIS-VERSION="2013";
+CODEPAGE="WINDOWS-1252";
+LANGUAGE="no";
+LANGUAGES="no","en";
+NEXT-UPDATE="20230913 08:00";
+TABLEID="00130";
+SYNONYMS="ord til søk Words for search";
+DECIMALS=2;
+SHOWDECIMALS=0;
+MATRIX="tab_130";
+AGGREGALLOWED=NO;
+SUBJECT-CODE="uh";
+SUBJECT-AREA="Utenriksøkonomi";
+SUBJECT-AREA[en]="External economy";
+TITLE="Testkube 00130, as 00103 but testing stupid columnnames in CSV, etter Dimensjon 1, Dimensjon 2, Dimensjon 3, år og statistikkvariabel";
+TITLE[en]="Test cube 00130, as 00103 but testing stupid columnnames in CSV, by Dimension 1, Dimension 2, Dimension 3, year and contents";
+DESCRIPTIONDEFAULT=NO;
+CONTENTS="Testkube 00130, as 00103 but testing stupid columnnames in CSV";
+CONTENTS[en]="Test cube 00130, as 00103 but testing stupid columnnames in CSV";
+STUB="Dimensjon 1","Dimensjon 2","Dimensjon 3","år";
+STUB[en]="Dimension 1","Dimension 2","Dimension 3","year";
+HEADING="statistikkvariabel";
+HEADING[en]="contents";
+CONTVARIABLE="statistikkvariabel";
+CONTVARIABLE[en]="contents";
+VALUES("statistikkvariabel")="Måling 1","Måling 2";
+VALUES[en]("contents")="Measure 1","Measure 2";
+VALUES("år")="2000";
+VALUES[en]("year")="2000";
+VALUES("Dimensjon 1")="Kode 1 for dim 1","Kode 2 for dim 1","Kode 3 for dim 1";
+VALUES[en]("Dimension 1")="Code 1 for dim 1","Code 2 for dim 1","Code 3 for dim 1";
+VALUES("Dimensjon 2")="Kode 1 for dim 2","Kode 2 for dim 2","Kode 3 for dim 2";
+VALUES[en]("Dimension 2")="Code 1 for dim 2","Code 2 for dim 2","Code 3 for dim 2";
+VALUES("Dimensjon 3")="Kode 1 for dim 3","Kode 2 for dim 3","Kode 3 for dim 3";
+VALUES[en]("Dimension 3")="Code 1 for dim 3","Code 2 for dim 3","Code 3 for dim 3";
+TIMEVAL("år")=TLIST(A1,"2000");
+TIMEVAL[en]("year")=TLIST(A1,"2000");
+CODES("statistikkvariabel")="Measure1","Measure2";
+CODES[en]("contents")="Measure1","Measure2";
+CODES("år")="2000";
+CODES[en]("year")="2000";
+CODES("Dimensjon 1")="01","02","03";
+CODES[en]("Dimension 1")="01","02","03";
+CODES("Dimensjon 2")="01","02","03";
+CODES[en]("Dimension 2")="01","02","03";
+CODES("Dimensjon 3")="01","02","03";
+CODES[en]("Dimension 3")="01","02","03";
+PRESTEXT("Dimensjon 1")=1;
+PRESTEXT[en]("Dimension 1")=1;
+PRESTEXT("Dimensjon 2")=1;
+PRESTEXT[en]("Dimension 2")=1;
+PRESTEXT("Dimensjon 3")=1;
+PRESTEXT[en]("Dimension 3")=1;
+DOMAIN("Dimensjon 3")="pxcodes_dim3_no";
+DOMAIN[en]("Dimension 3")="pxcodes_dim3_en";
+VARIABLE-TYPE("statistikkvariabel")="C";
+VARIABLE-TYPE[en]("contents")="C";
+VARIABLE-TYPE("år")="T";
+VARIABLE-TYPE[en]("year")="T";
+VARIABLE-TYPE("Dimensjon 1")="N";
+VARIABLE-TYPE[en]("Dimension 1")="N";
+VARIABLE-TYPE("Dimensjon 2")="N";
+VARIABLE-TYPE[en]("Dimension 2")="N";
+VARIABLE-TYPE("Dimensjon 3")="N";
+VARIABLE-TYPE[en]("Dimension 3")="N";
+ELIMINATION("Dimensjon 1")=YES;
+ELIMINATION[en]("Dimension 1")=YES;
+ELIMINATION("Dimensjon 2")=YES;
+ELIMINATION[en]("Dimension 2")=YES;
+ELIMINATION("Dimensjon 3")=YES;
+ELIMINATION[en]("Dimension 3")=YES;
+PRECISION("statistikkvariabel","Måling 2")=2;
+PRECISION[en]("contents","Measure 2")=2;
+LAST-UPDATED("Måling 1")="20230906 08:00";
+LAST-UPDATED[en]("Measure 1")="20230906 08:00";
+LAST-UPDATED("Måling 2")="20230906 08:00";
+LAST-UPDATED[en]("Measure 2")="20230906 08:00";
+DAYADJ("Måling 1")=NO;
+DAYADJ[en]("Measure 1")=NO;
+DAYADJ("Måling 2")=NO;
+DAYADJ[en]("Measure 2")=NO;
+SEASADJ("Måling 1")=NO;
+SEASADJ[en]("Measure 1")=NO;
+SEASADJ("Måling 2")=NO;
+SEASADJ[en]("Measure 2")=NO;
+UNITS="";
+UNITS[en]="";
+UNITS("Måling 1")="tonn";
+UNITS[en]("Measure 1")="tonnes";
+UNITS("Måling 2")="kr";
+UNITS[en]("Measure 2")="NOK";
+CONTACT("Måling 1")="En eller annen, Statistisk sentralbyrå#+47 1234 5678#mailme@ssb.no";
+CONTACT[en]("Measure 1")="Somebody, Statistics Norway#+47 1234 5678#mailme@ssb.no";
+CONTACT("Måling 2")="En eller annen, Statistisk sentralbyrå#+47 1234 5678#mailme@ssb.no";
+CONTACT[en]("Measure 2")="Somebody, Statistics Norway#+47 1234 5678#mailme@ssb.no";
+REFPERIOD("Måling 1")="Utgangen av veka";
+REFPERIOD[en]("Measure 1")="End of week";
+REFPERIOD("Måling 2")="Utgangen av veka";
+REFPERIOD[en]("Measure 2")="End of week";
+SOURCE="Statistisk sentralbyrå";
+SOURCE[en]="Statistics Norway";
+META-ID("KORTNAVN:laks")="tablelevel";
+DATASYMBOL1=".";
+DATASYMBOL1[en]=".";
+DATASYMBOL2="..";
+DATASYMBOL2[en]="..";
+DATASYMBOL3=":";
+DATASYMBOL3[en]=":";
+DATASYMBOLSUM=".";
+DATASYMBOLSUM[en]=".";
+DATASYMBOLNIL="-";
+DATASYMBOLNIL[en]="-";
+VARIABLECODE("statistikkvariabel")="ContentsCode";
+VARIABLECODE[en]("contents")="ContentsCode";
+VARIABLECODE("år")="Tid";
+VARIABLECODE[en]("year")="Tid";
+VARIABLECODE("Dimensjon 1")="coded_dim1";
+VARIABLECODE[en]("Dimension 1")="coded_dim1";
+VARIABLECODE("Dimensjon 2")="coded_dim2";
+VARIABLECODE[en]("Dimension 2")="coded_dim2";
+VARIABLECODE("Dimensjon 3")="coded_dim3";
+VARIABLECODE[en]("Dimension 3")="coded_dim3";
+DATA=
+1111 1112 
+. 1122 
+.. 1132 
+... 1212 
+.... 1222 
+..... 1232 
+...... 1312 
+- 1322 
+1331 1332 
+2111 2112 
+2121 . 
+2131 .. 
+2211 ... 
+2221 .... 
+2231 ..... 
+2311 ...... 
+2321 - 
+2331 2332 
+..... 3112 
+3121 ..... 
+...... ...... 
+3211 3212 
+3221 3222 
+3231 3232 
+... ... 
+3321 3322 
+3331 3332;

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
-    from .....controll.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
+    from .....control.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
 
 
 class _Data(_PxSingle):

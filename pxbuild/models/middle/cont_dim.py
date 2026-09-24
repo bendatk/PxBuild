@@ -1,7 +1,7 @@
 from typing import Dict, List
 from .abstract_dim import AbstractDim
-from pxbuild.controll.helpers.loaded_jsons import LoadedJsons
-from pxbuild.controll.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
+from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
 
 
 class ContDim(AbstractDim):

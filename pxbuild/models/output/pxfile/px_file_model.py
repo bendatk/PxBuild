@@ -85,7 +85,7 @@ from pxbuild.models.output.pxfile.keywords._variablecode import _Variablecode
 from pxbuild.models.output.pxfile.keywords._meta_id import _MetaId
 from pxbuild.models.output.pxfile.keywords._data import _Data
 from pxbuild.models.output.pxfile.util._px_super import _SuperKeyword
-from ....controll.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
+from ....control.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
 from pxbuild.models.output.pxfile.util._px_keytypes import main_language_context
 
 class PXFileModel:

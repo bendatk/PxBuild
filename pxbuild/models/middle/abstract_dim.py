@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict
-from pxbuild.controll.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
 
 
 class AbstractDim(ABC):

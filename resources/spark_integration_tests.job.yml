@@ -1,0 +1,36 @@
+resources:
+  jobs:
+    spark_integration_tests:
+      name: pxbuild-spark-integration-tests
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: spark_pytest_15_4
+          existing_cluster_id: ${var.cluster_id_15_4}
+          spark_python_task:
+            python_file: ../tests/run_databricks_spark_tests.py
+            parameters:
+              - ${workspace.file_path}
+              - ${var.spark_temp_volume}
+              - "15.4"
+          libraries:
+            - whl: ../dist/*.whl
+        - task_key: spark_pytest_16_4
+          existing_cluster_id: ${var.cluster_id_16_4}
+          spark_python_task:
+            python_file: ../tests/run_databricks_spark_tests.py
+            parameters:
+              - ${workspace.file_path}
+              - ${var.spark_temp_volume}
+              - "16.4"
+          libraries:
+            - whl: ../dist/*.whl
+        - task_key: spark_pytest_17_3
+          existing_cluster_id: ${var.cluster_id_17_3}
+          spark_python_task:
+            python_file: ../tests/run_databricks_spark_tests.py
+            parameters:
+              - ${workspace.file_path}
+              - ${var.spark_temp_volume}
+              - "17.3"
+          libraries:
+            - whl: ../dist/*.whl

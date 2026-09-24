@@ -1,3 +1,11 @@
+# Normalize line endings for text files across OSes
 * text=auto
+
+# Preserve test outputs and expecteds exactly as-is
+tests/testdata/**/*.px -text
+tests/testdata/**/expected/** -text
+
 *.ipynb filter=nbstripout
 *.ipynb diff=ipynb
+
+

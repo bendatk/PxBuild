@@ -4,17 +4,18 @@ from pxbuild.operations_on_model.output.refine.fix_the_variable_type_keyword imp
     fix_the_variable_type_keyword,
 )
 from pxbuild.operations_on_model.output.validator.validate_px import Validate
-from pxbuild.controll.load_from_pxfile import Loader
+from pxbuild.control.load_from_pxfile import Loader
 from pxbuild.operations_on_model.output.refine.apply_default_language import (
     apply_default_language,
 )
 from pxbuild.operations_on_model.output.refine.trickle_measurement_to_contentsvalues import (
     trickle_measurement_to_contentsvalues,
 )
+from tests._paths import data_path
 
 
 def test_valdidate_ok() -> None:
-    big_ok_file = Loader("testdata/statfin_khi_pxt_11xm_full.px")
+    big_ok_file = Loader(data_path("px_files", "statfin_khi_pxt_11xm_full.px"))
     big_ok_model: PXFileModel = big_ok_file.outModel
     apply_default_language(big_ok_model)
     trickle_measurement_to_contentsvalues(big_ok_model)

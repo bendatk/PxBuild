@@ -62,3 +62,7 @@ uv run pytest
 ```
 pre-commit install
 ```
+
+### Azure Databricks Spark tests
+See [docs/databricks-spark-tests.md](docs/databricks-spark-tests.md) for running
+the marked Spark integration tests as an Azure Databricks bundle job.

@@ -1,0 +1,65 @@
+bundle:
+  name: pxbuild-spark-tests
+  databricks_cli_version: ">= 1.13.0"
+
+include:
+  - resources/*.yml
+
+artifacts:
+  default:
+    type: whl
+    path: .
+    dynamic_version: true
+    build: uv run python -c "import shutil; shutil.rmtree('dist', ignore_errors=True)" && uv build --wheel --out-dir dist
+
+sync:
+  include:
+    - tests/**
+  # sync.include adds files to the default bundle tree; it does not limit it.
+  # Keep developer-local environments and generated artifacts out of uploads.
+  exclude:
+    - .databricks/**
+    - .git/**
+    - .pytest_cache/**
+    - .venv/**
+    - .github/**
+    - .vscode/**
+    - CodeGenerator/**
+    - build/**
+    - demo/**
+    - dist/**
+    - docs/**
+    - example_data/**
+    - jsonformats/**
+    - pxbuild/**
+    - tests/control/**
+    - tests/models/**
+    - tests/operations_on_model/**
+    - tests/.generated/**
+    - tests/testdata/cubes/cubes_1nn/**
+    - tests/testdata/cubes/cubes_2nn/**
+    - tests/testdata/px_files/**
+    - tests/testdata/reference/**
+    - tests/testdata/validation/**
+    - "**/__pycache__/**"
+
+variables:
+  # Set locally with BUNDLE_VAR_<variable> or in the ignored
+  # .databricks/bundle/<target>/variable-overrides.json file.
+  cluster_id_15_4:
+    description: Existing Azure Databricks Runtime 15.4 cluster ID.
+  cluster_id_16_4:
+    description: Existing Azure Databricks Runtime 16.4 cluster ID.
+  cluster_id_17_3:
+    description: Existing Azure Databricks Runtime 17.3 cluster ID.
+  spark_temp_volume:
+    description: Writable Unity Catalog Volume path used for temporary Spark output.
+
+targets:
+  # This target deploys only the remote Spark test job. It is not an
+  # application/package deployment environment. Authentication comes from a
+  # local Databricks CLI profile selected with DATABRICKS_CONFIG_PROFILE or
+  # --profile.
+  spark_tests:
+    default: true
+    mode: development

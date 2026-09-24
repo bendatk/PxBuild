@@ -4,8 +4,8 @@ from ..input.pydantic_pxmetadata import CodedDimension
 from ..input.pydantic_pxcodes import Grouping
 from ..input.pydantic_pxmetadata import DomainIdFrom
 
-from pxbuild.controll.helpers.loaded_jsons import LoadedJsons
-from pxbuild.controll.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
+from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
 from pxbuild.models.input.helper_pxcodes import HelperPxCodes
 
 
