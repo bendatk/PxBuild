@@ -23,6 +23,8 @@ config["admin"]["outputDestination"] = {
     "pxFolderFormat": str(project_root / f"demo/{id}"),
     "aggFolderFormat": str(project_root / f"demo/{id}")
 }
+config['admin']['buildMultilingualFiles']
+
 
 
 model: PxBuildModel = build_px_file(
@@ -41,3 +43,14 @@ print(model.get_model().title.get_value(model.main_language))
 print(model.get_model().contents.get_value(model.main_language))
 for note_key, note_value in model.get_model().note.get_sorted_value_by_key().items():
     print(f"{note_key.variable}[{note_key.lang}]: {note_value.get_value()}")
+
+
+config['admin']['buildMultilingualFiles'] = False
+
+model: PxBuildModel = build_px_file(
+    pxmetadata_id=id,
+    config_file=config,
+    backend='pandas',
+    debug=True
+)
+

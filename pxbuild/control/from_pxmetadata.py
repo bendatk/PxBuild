@@ -165,11 +165,10 @@ class _PxModelBuilder:
 
         self._dims = Dims(self._loaded_jsons, self._datadata)
 
-        # Derive output filename
-        language_suffix = "" if self._config.admin.build_multilingual_files else f"_{self._config.admin.valid_languages[0]}"
+        # Derive output filename. A per-language suffix is added at write time (see write_px_file).
         self._output_filename = self._pxmetadata_model.dataset.output_file_name if self._pxmetadata_model.dataset.output_file_name else None
         if self._output_filename == None:
-            self._output_filename = f"tab_{pxmetadata_id}{language_suffix}"
+            self._output_filename = f"tab_{pxmetadata_id}"
 
         ##################
         self.models_by_language: dict = {}
@@ -630,6 +629,9 @@ class _PxModelBuilder:
             out_model.language.set(current_lang)
             if in_config.admin.build_multilingual_files:
                 out_model.languages.set(in_config.admin.valid_languages)
+            else:
+                # Single-language file: LANGUAGES must still be present, listing only this file's language.
+                out_model.languages.set([current_lang])
             out_model.axis_version.set(str(in_config.axis_version))
             if in_config.charset is not None:
                 out_model.charset.set(str(in_config.charset))
@@ -745,14 +747,17 @@ def write_px_file(model: PxBuildModel) -> List[str]:
 
     write_start = perf_counter()
     written_files: List[str] = []
-    for out_model in model.models_by_language.values():
+    for lang, out_model in model.models_by_language.items():
+        # Single-language files get a per-language suffix so they don't overwrite each other,
+        # and are rendered with that language as "main" so keywords omit the [lang] tag.
+        is_multi = lang == "multi"
         out_file = write_output(
             model.pxmetadata_id,
             model.config.admin.output_destination.px_folder_format,
             out_model,
-            model.output_filename,
+            model.output_filename if is_multi else f"{model.output_filename}_{lang}",
             model.backend,
-            model.main_language,
+            model.main_language if is_multi else lang,
             model.config.code_page,
         )
         written_files.append(out_file)
