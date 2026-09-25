@@ -6,8 +6,8 @@ from tests._paths import data_path, load_testdata_config
 
 
 class TestCube2:
-    def test_cube_2_ok(self, tmp_path):
-        config = load_testdata_config(data_path("cubes", "cube_2", "test_config.json"), tmp_path)
+    def test_cube_2_ok(self):
+        config = load_testdata_config(data_path("cubes", "cube_2", "test_config.json"))
         model = pxbuild.build_px_file("2", config)
 
         assert model.statistics.output_files

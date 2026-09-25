@@ -8,8 +8,8 @@ from tests._paths import data_path, load_testdata_config
 class TestCubes2nn:
     # 200: many notes and metaid
 
-    def test_cube_200_ok(self, tmp_path):
-        config = load_testdata_config(data_path("cubes", "cubes_2nn", "config.json"), tmp_path)
+    def test_cube_200_ok(self):
+        config = load_testdata_config(data_path("cubes", "cubes_2nn", "config.json"))
         model = pxbuild.build_px_file("200", config)
 
         assert model.statistics.output_files

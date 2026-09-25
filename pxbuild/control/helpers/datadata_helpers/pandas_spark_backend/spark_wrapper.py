@@ -7,7 +7,6 @@ from .....models.input.pydantic_pxmetadata import Measurement
 from ._backend_methods import IBackendMethods
 
 import operator
-import shutil
 import glob
 import os
 import uuid
@@ -133,12 +132,17 @@ class SparkWrapper(IBackendMethods):
 
         dbutils = get_dbutils(self.get_spark())
 
-        if part_files:
-            self.trim_trailing_whitespace(part_files[-1])
-
+        first_row = True
         for part in part_files:
             with open(part, 'rb') as infile:
-                shutil.copyfileobj(infile, output_handle)
+                for line in infile:
+                    line = line.rstrip(b"\r\n")
+                    if not line:
+                        continue
+                    if not first_row:
+                        output_handle.write(b"\n")
+                    output_handle.write(line.rstrip() + b" ")
+                    first_row = False
 
         try:
             rc = dbutils.fs.rm(temp_volume_base_path, True)

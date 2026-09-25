@@ -30,9 +30,8 @@ class _Data(_PxSingle):
             raise type(e)(msg) from e
     
     def __str__(self):
-        # Override parent method to add extra line feed before printing the actual data
         if self.has_value():
-            return f"{self._keyword}=\n{self._px_value};"
+            return f"{self._keyword}=\n{self._px_value} \n;"
         else:
             return ""
 
@@ -42,7 +41,7 @@ class _Data(_PxSingle):
             if file_path.endswith(".px") and len(file_path) > 3:
                 file_path = file_path[:-3]
             backend.write_pxdata_to_file(self._px_value, f, file_path, self._px_value._columns_per_line)
-            f.write(";".encode(encoding))
+            f.write("\n;".encode(encoding))
         else:
             raise ValueError(f"Cannot write {self._keyword} without value.")
         

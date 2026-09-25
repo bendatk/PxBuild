@@ -4,15 +4,15 @@ import pandas as pd
 import pytest
 
 import pxbuild
-from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+from pxbuild.control.from_pxmetadata import PxBuildModel
 from tests._paths import data_path, load_testdata_config
 
 PXMETADATA_ID = "11lv"
 DATASET_ENCODING = "utf-8-sig"
 
 
-def _build_inmemory_config(output_dir) -> dict:
-    config = load_testdata_config(data_path("real_world", "11lv", "config.json"), output_dir)
+def _build_inmemory_config() -> dict:
+    config = load_testdata_config(data_path("real_world", "11lv", "config.json"))
     dataframe = pd.read_parquet(data_path("real_world", "11lv", "11lv.parquet"))
     metadata_dict = config["admin"]["pxMetadataResource"]["adressFormat"]
     metadata_dict["dataset"]["dataFile"] = {PXMETADATA_ID: dataframe}
@@ -27,8 +27,8 @@ def _build_inmemory_config(output_dir) -> dict:
 
 
 @pytest.fixture()
-def built_model(tmp_path) -> PXFileModel:
-    config = _build_inmemory_config(tmp_path)
+def built_model() -> PxBuildModel:
+    config = _build_inmemory_config()
 
     model = pxbuild.build_px_file(PXMETADATA_ID, config, backend="pandas")
 
@@ -36,7 +36,7 @@ def built_model(tmp_path) -> PXFileModel:
     return model
 
 
-def test_build_px_file_from_inmemory_dataframe_matches_expected_px_file(built_model: PXFileModel) -> None:
+def test_build_px_file_from_inmemory_dataframe_matches_expected_px_file(built_model: PxBuildModel) -> None:
     output_file = built_model.statistics.output_files[0]
 
     with open(output_file, encoding=DATASET_ENCODING) as fh:
