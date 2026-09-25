@@ -74,6 +74,18 @@ class PxBuildStatistics:
     write_seconds: Optional[float] = None
     output_files: List[str] = field(default_factory=list)
 
+    def __str__(self) -> str:
+        return (
+            f"Languages: {self.languages}\n"
+            f"Decimals: {self.decimals}\n"
+            f"Matrix size: {self.matrix_size}\n"
+            f"Row count: {self.row_count}\n"
+            f"Cell count: {self.cell_count}\n"
+            f"Build seconds: {self.build_seconds}\n"
+            f"Write seconds: {self.write_seconds}\n"
+            f"Output files: {', '.join(self.output_files)}"
+        )
+
 
 @dataclass
 class PxBuildModel:
@@ -114,14 +126,6 @@ class PxBuildModel:
     @property
     def table_id(self) -> str:
         return self.get_model().tableid.get_value()
-
-    @property
-    def title(self) -> str:
-        return self.get_model().title.get_value(self.main_language)
-
-    @property
-    def contents(self) -> str:
-        return self.get_model().contents.get_value(self.main_language)
 
 
 class _PxModelBuilder:
