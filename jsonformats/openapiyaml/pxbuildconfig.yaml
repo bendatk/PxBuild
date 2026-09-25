@@ -64,13 +64,17 @@ components:
                             type: string
                             enum:
                               - file
+                              - dictionary
                               - s3_todo
                               - api_todo
                             default: file
                             description: This defaults to file. Which currently is the only working value.
                         adressFormat:
-                            type: string
-                            description: "The path or url to the json, given its id ( id is the first argument to LoadFromPxmetadata). Example: example_data/pxmetadata/{id}.json"
+                            oneOf:
+                              - type: string
+                                description: "The path or url to the json, given its id ( id is the first argument to LoadFromPxmetadata). Example: example_data/pxmetadata/{id}.json"
+                              - type: object
+                                description: "Dictionary containing pxmetadata"
                   pxStatisticsResource:
                       type: object
                       description: What resource provides the pxstatistics-json
@@ -81,12 +85,16 @@ components:
                             type: string
                             enum:
                               - file
+                              - dictionary
                               - s3_todo
                               - api_todo
                             default: file
                         adressFormat:
-                            type: string
-                            description: "The path or url to the json, given its id (id is taken from pxmetadata/dataset/statisticsId.) Example: example_data/pxstatistics/pxstatistics_{id}.json"
+                          oneOf:
+                            - type: string
+                              description: "The path or url to the json, given its id (id is taken from pxmetadata/dataset/statisticsId.) Example: example_data/pxstatistics/pxstatistics_{id}.json"
+                            - type: object
+                              description: "Dictionary containing pxstatistics"
                   pxCodesResource:
                       type: object
                       description: What resource provides the pxcodes-json
@@ -97,12 +105,16 @@ components:
                             type: string
                             enum:
                               - file
+                              - dictionary
                               - s3_todo
                               - api_todo
                             default: file
                         adressFormat:
-                            type: string
-                            description: "The path or url to the json, given its id. Example: example_data/pxcodes/{id}.json"
+                            oneOf:
+                              - type: string
+                                description: "The path or url to the json, given its id (id is taken from pxmetadata/dataset/codesId). Example: example_data/pxcodes/{id}.json"
+                              - type: object
+                                description: "Dictionary containing pxcodes"
                   pxDataResource:
                       type: object
                       description: What resource provides the datadata
@@ -113,6 +125,7 @@ components:
                             type: string
                             enum:
                               - file
+                              - dataframe
                               - s3_todo
                               - api_todo
                             default: file
@@ -141,6 +154,10 @@ components:
                      items:
                         type: string
                      description: The 2-letter languagecodes. Probably ISO 639, but the real constraint is that it has to match your pxweb
+                  makeSupportFiles:
+                    type: boolean
+                    description: If True, the pxbuild will create support files like vs and agg files.
+                    default: true
                   buildMultilingualFiles:
                      type: boolean
                      description: make multilingual PX-files, not one for each language. If true, the first entry in validLanguages will be used for language keyword.
@@ -176,7 +193,6 @@ components:
               description: "example: iso-8859-1"
             descriptionDefault:
               type: boolean
-              default: false
             contvariable:
               type: object
               minProperties: 1
@@ -188,10 +204,18 @@ components:
               type: string
               description: Code for content variable
               default: ContentCode
+            contvariableType:
+              type: string
+              description: Name of the content variable type
+              default: C
             timevariableCode:
               type: string
               description: Code for the time variable
               default: Time
+            timevariableType:
+              type: string
+              description: Name of the time variable type
+              default: T
             datasymbol1:
               type: object
               additionalProperties:

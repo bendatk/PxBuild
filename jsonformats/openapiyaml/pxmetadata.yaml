@@ -66,16 +66,30 @@ components:
               type: integer
               description: "How many decimals should be stored in the PxFile. Default is the max number of decimals shown."
             statisticsId:
-               type: string
-               description: "Id of group of tables in the registry of statistics. example: '8765'"
+              type: string
+              description: "Id of group of tables in the registry of statistics. example: '8765'"
             dataFile:
-               type: string
-               description: "TODO: Er dette en filsti eller en url. required? Adress to the parquet-file with datadata"
+              oneOf:
+                - type: string
+                  description: "TODO: Er dette en filsti eller en url. required? Adress to the parquet-file with datadata"
+                - type: object
+                  description: "Dataframe"
+            outputFileName:
+              type: string
+              description: "Name of the output file. For multilingual defaults to tab_{tableId} or tab_{tableId}_{language} if not multilingual"
+            matrix:
+              type: string
+              description: "The matrix of the table. Defaults to outputFileName excluding language suffix"
             baseTitle:
               type: object
               additionalProperties:
                 type: string
               description: "Text to which tableid is prefixed and _by_ variable list is appended. Is used for the CONTENTS keyword. example: no Utenrikshandel med varer"
+            description:
+              type: object
+              additionalProperties:
+                type: string
+              description: "Fixed header for the entire table. This header should include the base population/concept and any grouping variables that distinguish different tables, if needed."
             searchKeywords:
               type: object
               additionalProperties:
@@ -95,11 +109,38 @@ components:
                 columnName:
                   type: string
                   description: name of column in dataset
+                code:
+                  type: string
+                  description: the code of the dimension( aka variable). Defaults to columName if missing
+                codelistId:
+                  type: string
+                  description: A Link to a PxCodes document
                 timePeriodFormat:
                   type: string
                   description: "example: yyyy"
+                isHeading:
+                  type: boolean
+                  description: If true the dimension is a heading otherwise it is a stub
                 label:
                   $ref: '#/components/schemas/StringByLanguage'
+                metaId:
+                  type: array
+                  description: For MetaId keyword
+                  items:
+                    type: string
+                notes:
+                  $ref: '#/components/schemas/Notes'
+                valueNotes:
+                  type: array
+                  description: "Notes on the values in the time dimension."
+                  items:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                        description: "Value note is referring to. Must exist in the time dimension."
+                      note:
+                        $ref: '#/components/schemas/Note'
             codedDimensions:
               type: array
               description: Also known as classification variables
@@ -129,6 +170,13 @@ components:
             copyright:
                type: boolean
                default: false
+            creationDateformat:
+                type: string
+                description: "Format for datetime.strptime reading creationDate. Default is the pxweb standard which is CCYYMMDD hh:mm"
+                default: "%Y%m%d %H:%M"
+            creationDate:
+              type: string
+              description: "Date for CREATION-DATE keyword. Default is the current date. Format specified in creationDateformat"
             firstPublished:
                type: string
                description: The date when the data cube was first published in the format CCYYMMDD hh:mm
@@ -146,6 +194,10 @@ components:
                   codelistId:
                     type: string
                     description: A Link to a PxCodes document
+            isHeadingContdim:
+              type: boolean
+              default: true
+              description: Defaults to heading
 
 
     CodedDimension:
@@ -159,14 +211,34 @@ components:
                     description: name of column in dataset
                   code:
                     type: string
-                    description: the code of the dimention( aka variable). Defaults to columName if missing
+                    description: the code of the dimension( aka variable). Defaults to columName if missing
                   isGeoVariableType:
                     type: boolean
                     default: false
                     description: Geo variable or not
+                  geoVariableLabel:
+                    $ref: '#/components/schemas/StringByLanguage'
+                    description: Label for the geo variable. Maps to MAP keyword
+                  domainIdFrom:
+                    type: string
+                    enum:
+                      - codelistId
+                      - firstGroupingLabel
+                      - firstGroupingFilenameBase
+                    description: "How to construct the domain label. Defaults to codelistId."
+                  variableType:
+                    type: string
+                    description: Variable type
+                    default: N
+                  isHeading:
+                    type: boolean
+                    description: If true the dimension is a heading otherwise it is a stub
                   codelistId:
                     type: string
                     description: A Link to a PxCodes document
+                  eliminationEnable:
+                    type: boolean
+                    description: Is elimination keyword created
                   labelConstructionOption:
                     type: string
                     enum:
@@ -174,7 +246,6 @@ components:
                       - text
                       - code_text
                       - text_code
-                    default: text
                     description: Construct label for codelist entry as text or code or text then code or code then text
                   label:
                     $ref: '#/components/schemas/StringByLanguage'
@@ -196,7 +267,6 @@ components:
               - columnName
               - label
               - showDecimals
-              - aggregationAllowed
               - unitOfMeasure
             properties:
               columnName:
@@ -218,10 +288,8 @@ components:
                 description: Empty if not a price
               isSeasonallyAdjusted:
                 type: boolean
-                default: false
               isWorkingdaysAdjusted:
                 type: boolean
-                default: false
               aggregationAllowed:
                 type: boolean
                 description: Is it meaningfull to sum this measurement

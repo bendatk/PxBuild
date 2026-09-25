@@ -1,6 +1,6 @@
 # from .pydantic_pxcodes import PxCodes, Grouping, Valueitem, Note
-from pxbuild.controll.helpers.datadata_helpers.datadatasource import Datadatasource
-from pxbuild.controll.helpers.loaded_jsons import LoadedJsons
+from pxbuild.control.helpers.datadata_helpers.datadatasource import Datadatasource
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
 
 from typing import Dict, List
 
@@ -34,23 +34,37 @@ class Dims:
                 )
 
             for n_dim in meta.coded_dimensions:
-                n_dim.codelist_id
                 temp_cd = CodedDim(n_dim, pxcodes_helper_by_codelist_id[n_dim.codelist_id], in_loaded_jsons)
                 n_code = temp_cd.get_code()
-                self._stubCodes.append(n_code)
+                # Defaults to stub as is_heading is optional property without default value
+                if n_dim.is_heading:
+                    self._headingCodes.append(n_code)
+                else:
+                    self._stubCodes.append(n_code)
                 self.dim_by_code[n_code] = temp_cd
                 self.coded_dimensions.append(temp_cd)
 
         # CONT
         self.contdim: ContDim = ContDim(in_loaded_jsons)
         contdim_code = self.contdim.get_code()
-        self._headingCodes.append(contdim_code)
+        if meta.is_heading_contdim or meta.is_heading_contdim is None:
+            self._headingCodes.append(contdim_code)
+        else:
+            self._stubCodes.append(contdim_code)
         self.dim_by_code[contdim_code] = self.contdim
 
         # TIME
-        self.time: TimeDim = TimeDim(in_loaded_jsons, in_datadatasource)
+        if meta.time_dimension.codelist_id:
+            pxcodes_time = in_loaded_jsons.get_resolved_pxcodes_ids().get(meta.time_dimension.codelist_id, None)
+        else:
+            pxcodes_time = None
+        self.time: TimeDim = TimeDim(in_loaded_jsons, in_datadatasource, pxcodes_time)
         time_code = self.time.get_code()
-        self._headingCodes.append(time_code)
+        # Defaults to heading as is_heading is optional property without default value
+        if meta.time_dimension.is_heading:
+            self._headingCodes.append(time_code)
+        else:
+            self._stubCodes.append(time_code)
         self.dim_by_code[time_code] = self.time
 
     def get_dims_in_output_order(self) -> List[AbstractDim]:

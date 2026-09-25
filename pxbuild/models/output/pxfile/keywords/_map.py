@@ -16,12 +16,12 @@ class _Map(_PxValueByKey):
         super().__init__("MAP")
         self._seen_languages = {}
 
-    def set(self, map: str, variable: str, lang: str = None) -> None:
+    def set(self, map: str, variable: str, lang: str = None, code: str = "") -> None:
         """Used for a geographic variable for which maps can be made. Example: "Sweden_municipality"."""
         LineValidator.is_not_None(self._keyword, map)
         LineValidator.is_string(self._keyword, map)
         my_value = _PxString(map)
-        my_key = _KeytypeVariableLang(variable, lang)
+        my_key = _KeytypeVariableLang(variable, lang, code)
         try:
             super().set(my_value, my_key)
         except Exception as e:

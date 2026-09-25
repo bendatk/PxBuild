@@ -1,7 +1,7 @@
 from typing import Dict, List
 from .abstract_dim import AbstractDim
-from pxbuild.controll.helpers.loaded_jsons import LoadedJsons
-from pxbuild.controll.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
+from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
 
 
 class ContDim(AbstractDim):
@@ -15,6 +15,7 @@ class ContDim(AbstractDim):
 
         languages = config.admin.valid_languages
 
+        self._variable_type = config.contvariable_type
         self._codes: List[str] = []
         self._labels_by_lang: Dict[str, List[str]] = {}
         self._labels_by_code: Dict[str, Dict[str, str]] = {}
@@ -44,4 +45,4 @@ class ContDim(AbstractDim):
         return self._for_get_data
 
     def get_variabletype(self) -> str:
-        return "C"
+        return "C" if self._variable_type is None else self._variable_type

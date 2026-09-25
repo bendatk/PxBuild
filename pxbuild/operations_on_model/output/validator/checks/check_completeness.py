@@ -1,8 +1,8 @@
+from typing import Any
+
+import pxbuild.models.output.pxfile.util.constants as const
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
 from ...validator.validationResult import ValidationResult
-import pxbuild.models.output.pxfile.util.constants as const
-
-from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
 
 
 class _Checker:
@@ -35,7 +35,9 @@ class _Checker:
                 self.indexByLangAndContentvalue[(lang, contentvalue)] = index
 
         for keyword_name in const.KEYWORDS_PYTHONIC_MAP:
-            keyword = model.get_attribute(const.KEYWORDS_PYTHONIC_MAP[keyword_name])
+            if keyword_name.lower().replace("-", "_") in const.VALIDATION_EXCLUDED_KEYWORDS:
+                continue
+            keyword: Any = model.get_attribute(const.KEYWORDS_PYTHONIC_MAP[keyword_name])
             if keyword.is_present() and keyword.completeness_type:
                 self.error_intro = f"For keyword {keyword._keyword}"
 
@@ -58,12 +60,12 @@ class _Checker:
                 else:  # pragma: no cover
                     raise Exception(f"{self.error_intro}:Sorry, unknown completeness_type:{keyword.completeness_type}")
 
-    def check_completeness_lang(self, keyword: _PxValueByKey) -> None:
+    def check_completeness_lang(self, keyword: Any) -> None:
         for lang in self.all_languages:
-            if not keyword.has_value(lang):
+            if not any(key.lang == lang for key in keyword._value_by_key):
                 self.val_result.add_error(f"{self.error_intro}:Missing value for lang:{lang}")
 
-    def check_completeness_each_variable(self, keyword: _PxValueByKey) -> None:
+    def check_completeness_each_variable(self, keyword: Any) -> None:
         for key in keyword._value_by_key:
             all_tuples_same_variable_index = [
                 k
@@ -78,7 +80,7 @@ class _Checker:
                         f"{self.error_intro}:Missing value for variable:{one_tuple[1]} and lang:{one_tuple[0]}"
                     )
 
-    def check_completeness_each_var_value(self, keyword: _PxValueByKey) -> None:
+    def check_completeness_each_var_value(self, keyword: Any) -> None:
         for key in keyword._value_by_key:
             vari_pos = self.variables[key.lang].index(key.variable)
             value_pos = self.model.values.get_value(key.variable, key.lang).index(key.value)
@@ -94,13 +96,13 @@ class _Checker:
                         f"{self.error_intro}:Missing value for variable:{vari_name},value: {value_name} and lang:{lang}"
                     )
 
-    def check_completeness_all_variables(self, keyword: _PxValueByKey) -> None:
+    def check_completeness_all_variables(self, keyword: Any) -> None:
         for lang in self.all_languages:
             for vari in self.variables[lang]:
                 if not keyword.has_value(vari, lang):
                     self.val_result.add_error(f"{self.error_intro}:Missing value for variable:{vari} and lang:{lang}")
 
-    def check_completeness_one_variable(self, keyword: _PxValueByKey) -> None:
+    def check_completeness_one_variable(self, keyword: Any) -> None:
         _seen_languages = {}
         the_one_index = ""
         for key in keyword._value_by_key:
@@ -118,7 +120,7 @@ class _Checker:
             if lang not in _seen_languages:
                 self.val_result.add_error(f"{self.error_intro}:Missing value for lang:{lang}")
 
-    def check_completeness_all_content(self, keyword: _PxValueByKey) -> None:
+    def check_completeness_all_content(self, keyword: Any) -> None:
         for lang in self.all_languages:
             for content in self.model.values.get_value(self.model.contvariable.get_value(lang), lang):
                 if not keyword.has_value(content, lang):

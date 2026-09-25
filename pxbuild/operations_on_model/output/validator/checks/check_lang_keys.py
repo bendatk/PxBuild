@@ -6,6 +6,8 @@ import pxbuild.models.output.pxfile.util.constants as const
 def check_lang_keys(model: PXFileModel) -> ValidationResult:
     val_result = ValidationResult(desc="Check if all language keys have a valid language")
     for key in const.LANGDEPENDENT_KEYWORDS:
+        if key in const.VALIDATION_EXCLUDED_KEYWORDS:
+            continue
         keyword = model.get_attribute(key)
         if keyword.is_present():
             for lang_key in keyword._value_by_key:

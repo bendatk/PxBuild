@@ -1,12 +1,9 @@
 # Security Policy
 
-SSB takes the security of our software products and services seriously, which 
-includes all source code repositories managed through our GitHub organization.
+Statistics Finland takes software security seriously and is committed to maintaining the integrity and reliability of the code we publish.
 
-We believe that responsible disclosure of security vulnerabilities helps us ensure
-the security and privacy of all our users.
+We believe that responsible disclosure of security vulnerabilities helps us ensure the security and privacy of our users.
 
 ## Reporting a Vulnerability
 
-If you believe you have found a security vulnerability in any of SSB's GitHub
-repositories, please report it to us using the [Github Private vulnerability reporting tool](https://github.com/pxtools/pxbuild/security/advisories).
+If you believe you have found a security vulnerability in any of Statistics Finland's GitHub repositories, please report it to us using the GitHub Private vulnerability reporting tool.

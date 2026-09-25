@@ -85,7 +85,8 @@ from pxbuild.models.output.pxfile.keywords._variablecode import _Variablecode
 from pxbuild.models.output.pxfile.keywords._meta_id import _MetaId
 from pxbuild.models.output.pxfile.keywords._data import _Data
 from pxbuild.models.output.pxfile.util._px_super import _SuperKeyword
-
+from ....control.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
+from pxbuild.models.output.pxfile.util._px_keytypes import main_language_context
 
 class PXFileModel:
     """
@@ -106,8 +107,6 @@ class PXFileModel:
         """List of Language-codes used in file."""
         self.creation_date = _CreationDate()
         """Date in 'Px Format'"""
-        self.first_published = _FirstPublished()
-        """In use?"""
         self.next_update = _NextUpdate()
         """Not in use. Date in 'Px  format'"""
         self.px_server = _PxServer()
@@ -162,8 +161,6 @@ class PXFileModel:
         """See pdf. TLIST(A1, ”1994”-”1996”);  eller TLIST(A1), ”1994”, ”1995”,"1996”; """
         self.codes = _Codes()
         """Codes of the values for the variable."""
-        self.units = _Units()
-        """Unit text, e.g. ton, NOK"""
         self.doublecolumn = _Doublecolumn()
         """This keyword is used to get code and text in separate columns for the specified variable """
         self.prestext = _Prestext()
@@ -198,6 +195,8 @@ class PXFileModel:
         """data is adjusted e.g. to take into account the number of working days"""
         self.seasadj = _Seasadj()
         """Is  the data seasonally adjusted"""
+        self.units = _Units()
+        """Unit text, e.g. ton, NOK"""
         self.contact = _Contact()
         """Is written in the form name, organization, telephone, fax, e-mail. Several persons can be stated in the same text string and are then divided by the #-sign"""
         self.refperiod = _Refperiod()
@@ -208,14 +207,18 @@ class PXFileModel:
         """The name of the database from where the statistics is retrieved"""
         self.source = _Source()
         """States the organization which is responsible for the statistics"""
-        self.official_statistics = _OfficialStatistics()
-        """Indicates if the data table is included in the official statistics of the organization."""
         self.survey = _Survey()
         """Hmm, try, pdf says: Is shown on information screen in PX-web if installation parameter true."""
         self.link = _Link()
         """Not in use?"""
         self.infofile = _Infofile()
         """Name of a file containing more information for the statistics. Working?"""
+        self.first_published = _FirstPublished()
+        """In use?"""
+        self.meta_id = _MetaId()
+        """The META-ID keyword is used to reference a external meta information about a table, variable or value. Requires a separate file to resolve to urls"""
+        self.official_statistics = _OfficialStatistics()
+        """Indicates if the data table is included in the official statistics of the organization."""
         self.info = _Info()
         """Not in use"""
         self.notex = _Notex()
@@ -226,8 +229,6 @@ class PXFileModel:
         """Mandatory footnote for value in variable"""
         self.valuenote = _Valuenote()
         """Non-mandatory footnote for value in variable"""
-        self.datanote = _Datanote()
-        """"""
         self.cellnotex = _Cellnotex()
         """As CELLNOTE but shown mandatory as for NOTEX."""
         self.cellnote = _Cellnote()
@@ -244,13 +245,15 @@ class PXFileModel:
         """Should be in config?"""
         self.datasymbol6 = _Datasymbol6()
         """Should be in config?"""
-        self.datasymbolnil = _Datasymbolnil()
-        """"""
         self.datasymbolsum = _Datasymbolsum()
+        """"""
+        self.datasymbolnil = _Datasymbolnil()
         """"""
         self.datanotecell = _Datanotecell()
         """"""
         self.datanotesum = _Datanotesum()
+        """"""
+        self.datanote = _Datanote()
         """"""
         self.keys = _Keys()
         """"""
@@ -262,16 +265,36 @@ class PXFileModel:
         """Not in normal use. See pdf"""
         self.variablecode = _Variablecode()
         """"""
-        self.meta_id = _MetaId()
-        """The META-ID keyword is used to reference a external meta information about a table, variable or value. Requires a separate file to resolve to urls"""
         self.unknown_keywords = ""
         self.data = _Data()
         """Numbers and quoted dots"""
 
     def __str__(self):
+        with main_language_context(None):
+            attrs = vars(self)
+            attr_strings = [str(value) for value in attrs.values() if str(value) != ""]
+            return "\n".join(attr_strings)
+
+    def write_to_file(self, file_path: str, encoding: str, backend: "IBackendMethods", main_language: str | None = None) -> None:
         attrs = vars(self)
-        attr_strings = [str(value) for value in attrs.values() if str(value) != ""]
-        return 'UNITS="This file was created from pxbuild.";\n' + "\n".join(attr_strings)
+
+        sig_encoding = encoding
+        plain_encoding = encoding.replace("-sig", "")
+        first_write = True
+
+        with main_language_context(main_language), open(file_path, "wb") as f:
+            for value in attrs.values():
+                current_encoding = sig_encoding if first_write else plain_encoding
+
+                if isinstance(value, _Data) and backend.backend_name == "spark":
+                    value.write_to_file(file_path, f, current_encoding, backend)
+                    first_write = False
+                    continue
+
+                value_str = str(value)
+                if value_str != "":
+                    f.write((value_str + "\n").encode(current_encoding))
+                    first_write = False
 
     def get_attribute(self, name: str) -> _SuperKeyword:
         return getattr(self, name)

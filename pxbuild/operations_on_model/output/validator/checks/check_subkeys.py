@@ -22,6 +22,8 @@ class _Checker:
 
         for keyword_name in const.KEYWORDS_PYTHONIC_MAP:
             keyword = model.get_attribute(const.KEYWORDS_PYTHONIC_MAP[keyword_name])
+            if keyword_name.lower().replace("-", "_") in const.VALIDATION_EXCLUDED_KEYWORDS:
+                continue
             if keyword.is_present() and keyword.has_subkey:
                 for key in keyword._value_by_key:
                     self.error_intro = f"For keyword {keyword._keyword}"

@@ -1,6 +1,7 @@
 AI has been used in development.
 # disclaimer
-This is WORK IN PROGRESS and is be no means ready for production.
+This repository is a fork of the original pxbuild project developed by SSB. It is maintained by Statistics Finland as a separate fork.
+This project is under active development and can be used in production where appropriate. Users are responsible for validating that the generated output meets their requirements.
 # pxbuild
 Purpose: Creating px-files (.px, .vs and .agg -files), which is one of the datasource-types for the awesome PxWeb ( see https://github.com/statisticssweden/PxWeb )
 
@@ -49,16 +50,19 @@ The from_jsons.py inside the demo folder, is probably a good starting point
 
 ### Requirements
 * Python 3.11
-* [Poetry](https://python-poetry.org/)
+* [uv](https://docs.astral.sh/uv/)
 
 
 ### Install and test
 ```
-poetry env use 3.11
-poetry install
-poetry run pytest
+uv sync --dev
+uv run pytest
 ```
 ### Setup git pre-commit hooks
 ```
 pre-commit install
 ```
+
+### Azure Databricks Spark tests
+See [docs/databricks-spark-tests.md](docs/databricks-spark-tests.md) for running
+the marked Spark integration tests as an Azure Databricks bundle job.
