@@ -8,7 +8,7 @@ class _Units(_PxValueByKey):
 
     pxvalue_type: str = "_PxString"
     has_subkey: bool = True
-    subkey_optional: bool = False
+    subkey_optional: bool = True
     completeness_type: str = "AllContent"
     may_have_language: bool = True
 

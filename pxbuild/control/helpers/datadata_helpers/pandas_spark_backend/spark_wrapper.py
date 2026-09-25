@@ -362,6 +362,9 @@ class SparkWrapper(IBackendMethods):
         
         return df.columns
 
+    def count_rows(self, data: "SparkDataFrame") -> int:
+        return int(data.count())
+
 
     def get_timeperiodes(
             self, 

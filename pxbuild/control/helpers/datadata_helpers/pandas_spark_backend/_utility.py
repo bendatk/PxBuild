@@ -16,5 +16,9 @@ class IUtility(ABC):
         pass
 
     @abstractmethod
+    def count_rows(self, data: "SparkDataFrame | PandasSeries") -> int:
+        pass
+
+    @abstractmethod
     def remove_trailing_zero_decimals(self, df: "SparkDataFrame | PandasDataFrame") -> "PandasSeries | SparkDataFrame":
         pass

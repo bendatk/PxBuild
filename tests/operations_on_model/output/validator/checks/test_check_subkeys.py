@@ -155,6 +155,17 @@ def test_check_subkeys_fails_content_missing_from_values():
     )
 
 
+def test_check_subkeys_allows_units_language_placeholders():
+    pxfile = _get_model()
+    pxfile.units.set("", None)
+    pxfile.units.set("", None, "sv")
+    pxfile.units.set("", None, "fi")
+
+    val_rep = check_valuebased_subkeys(pxfile)
+
+    assert val_rep.is_valid
+
+
 def test_check_subkeys_ok():
     pxfile = _get_model()
 

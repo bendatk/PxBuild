@@ -40,6 +40,21 @@ class ValidationSummary:
         )
 
 
+class PxBuildValidationError(ValueError):
+    """Raised when an invalid PX model is about to be written."""
+
+    def __init__(self, validation_by_language: Dict[str, ValidationSummary]) -> None:
+        self.validation_by_language = validation_by_language
+        details = []
+        for language, summary in validation_by_language.items():
+            if not summary.is_valid:
+                details.append(f"Language {language}:\n" + "\n".join(summary.errors))
+        message = "PX model validation failed; no files were written."
+        if details:
+            message += "\n" + "\n".join(details)
+        super().__init__(message)
+
+
 @dataclass
 class PxBuildStatistics:
     """Statistics about a build, deliberately excluding the (potentially huge) DATA values.
@@ -58,17 +73,6 @@ class PxBuildStatistics:
     build_seconds: Optional[float] = None
     write_seconds: Optional[float] = None
     output_files: List[str] = field(default_factory=list)
-
-
-def _count_data_rows(out_model: PXFileModel) -> Optional[int]:
-    if not out_model.data.has_value():
-        return None
-    raw = out_model.data.get_value()
-    try:
-        return int(len(raw))
-    except TypeError:
-        # Spark DataFrames/Columns don't support len(); fall back to .count().
-        return int(raw.count())
 
 
 @dataclass
@@ -232,7 +236,11 @@ class _PxModelBuilder:
         }
 
         first_model = next(iter(self.models_by_language.values()))
-        self.row_count = _count_data_rows(first_model)
+        self.row_count = (
+            self._backend.count_rows(first_model.data.get_value())
+            if first_model.data.has_value()
+            else None
+        )
         self.cell_count = self.row_count
 
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:
@@ -728,6 +736,9 @@ def write_px_file(model: PxBuildModel) -> List[str]:
 
     Also records the written paths and elapsed write time onto ``model.statistics``.
     """
+    if not model.is_valid:
+        raise PxBuildValidationError(model.validation_by_language)
+
     write_start = perf_counter()
     written_files: List[str] = []
     for out_model in model.models_by_language.values():

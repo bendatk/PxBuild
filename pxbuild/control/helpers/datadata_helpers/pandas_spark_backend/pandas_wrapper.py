@@ -26,6 +26,9 @@ class PandasWrapper(IBackendMethods):
     def get_columns_to_list(self, df: pd.DataFrame) -> List[str]:
         return df.columns.values.tolist()
 
+    def count_rows(self, data: pd.Series) -> int:
+        return len(data)
+
     def rename(self, df: pd.DataFrame, measurement_code_by_column_name: dict) -> pd.DataFrame:
         return df.rename(columns=measurement_code_by_column_name)
 

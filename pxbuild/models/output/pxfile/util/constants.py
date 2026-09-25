@@ -74,6 +74,7 @@ LANGDEPENDENT_KEYWORDS = [
     "variablecode",
     "meta_id",
 ]
+VALIDATION_EXCLUDED_KEYWORDS = {"meta_id"}
 CONTENT_INDEXED_KEYWORDS = [
     "units",
     "last_updated",
