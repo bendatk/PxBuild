@@ -14,9 +14,12 @@ from pxbuild.models.input.pydantic_pxbuildconfig import ResourceType3
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame
 
+
 class PxDataSourceError(Exception):
     """Custom exception for errors related to datasource."""
+
     pass
+
 
 class Datadatasource:
     def __init__(self, file_id: str, config: PxbuildConfig, pxmetadata: PxMetadata, backend: "IBackendMethods") -> None:
@@ -70,7 +73,9 @@ class Datadatasource:
 
         return identifier_columns
 
-    def add_missing_symbolcolumns(self, measurement_codes: list[str], df: "pandas.DataFrame | SparkDataFrame") -> "SparkDataFrame | pandas.DataFrame":
+    def add_missing_symbolcolumns(
+        self, measurement_codes: list[str], df: "pandas.DataFrame | SparkDataFrame"
+    ) -> "SparkDataFrame | pandas.DataFrame":
         return self._backend.add_missing_symbolcolumns(measurement_codes, df)
 
     def make_renamedict(self, measurement_code_by_column_name: dict, columns_in_datafile) -> dict:
@@ -82,13 +87,15 @@ class Datadatasource:
                 my_out[corresponding_symbol_column] = f"SYMBOL_{measurement_code_by_column_name[column_name]}"
 
         return my_out
-    
 
-    def round_by_decimals(self, df: "pandas.DataFrame | SparkDataFrame", decimals: int) -> "pandas.DataFrame | SparkDataFrame":
+    def round_by_decimals(
+        self, df: "pandas.DataFrame | SparkDataFrame", decimals: int
+    ) -> "pandas.DataFrame | SparkDataFrame":
         return self._backend.round_by_decimals(df, self.measurements, decimals)
 
-
-    def get_tidy_df(self, measure_dim_name: str, measurement_code_by_column_name: dict, decimals: int) -> "pandas.DataFrame | SparkDataFrame":
+    def get_tidy_df(
+        self, measure_dim_name: str, measurement_code_by_column_name: dict, decimals: int
+    ) -> "pandas.DataFrame | SparkDataFrame":
         # measure_dim_name is contvariable_code from config
         # column_code_map is
         #        for measurement_var in self._pxmetadata_model.dataset.measurements:
@@ -101,7 +108,6 @@ class Datadatasource:
         #  rename all {colname}_SYMBOL -> SYMBOL_{code}
         #  add missing SYMBOL_{code}
         #  it is when we do pd.wide_to_long, this strange mix of column names and code is needed: The code in the cell is the columnnane minus "VALUE"
-
 
         raw_data = self.round_by_decimals(self._my_datasource.get_raw_data(), decimals)
 
@@ -126,6 +132,6 @@ class Datadatasource:
             sep="_",
             suffix=f"(!?{'|'.join(measurement_codes)})",
         )
-        #logger.debug(f"Cols after wide_to_long: {tidy_df.columns}")
+        # logger.debug(f"Cols after wide_to_long: {tidy_df.columns}")
 
         return tidy_df

@@ -145,7 +145,9 @@ class _PxModelBuilder:
 
     PriceTypeDict = {"PriceType.current": "C", "PriceType.fixed": "F"}
 
-    def __init__(self, pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> None:
+    def __init__(
+        self, pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False
+    ) -> None:
         configure_logger(debug)
         self._backend: IBackendMethods = create_backend(backend)
 
@@ -166,7 +168,9 @@ class _PxModelBuilder:
         self._dims = Dims(self._loaded_jsons, self._datadata)
 
         # Derive output filename. A per-language suffix is added at write time (see write_px_file).
-        self._output_filename = self._pxmetadata_model.dataset.output_file_name if self._pxmetadata_model.dataset.output_file_name else None
+        self._output_filename = (
+            self._pxmetadata_model.dataset.output_file_name if self._pxmetadata_model.dataset.output_file_name else None
+        )
         if self._output_filename == None:
             self._output_filename = f"tab_{pxmetadata_id}"
 
@@ -174,11 +178,13 @@ class _PxModelBuilder:
         self.models_by_language: dict = {}
 
         self._last_updated = self.get_last_updated(self._pxstatistics)
-        
+
         if not self._pxmetadata_model.dataset.creation_date:
             self._creation_date = get_current_time()
         else:
-            self._creation_date = convert_to_pxdate_string(self._pxmetadata_model.dataset.creation_date, self._pxmetadata_model.dataset.creation_dateformat)
+            self._creation_date = convert_to_pxdate_string(
+                self._pxmetadata_model.dataset.creation_date, self._pxmetadata_model.dataset.creation_dateformat
+            )
 
         out_model = PXFileModel()
 
@@ -240,9 +246,7 @@ class _PxModelBuilder:
 
         first_model = next(iter(self.models_by_language.values()))
         self.row_count = (
-            self._backend.count_rows(first_model.data.get_value())
-            if first_model.data.has_value()
-            else None
+            self._backend.count_rows(first_model.data.get_value()) if first_model.data.has_value() else None
         )
         self.cell_count = self.row_count
 
@@ -267,11 +271,21 @@ class _PxModelBuilder:
         for my_cont in self._pxmetadata_model.dataset.measurements:
             if my_cont.meta_id:
                 out_model.meta_id.set(
-                    " ".join(my_cont.meta_id), contdim.get_label(lang), my_cont.label[self._current_lang], lang, my_cont.code
+                    " ".join(my_cont.meta_id),
+                    contdim.get_label(lang),
+                    my_cont.label[self._current_lang],
+                    lang,
+                    my_cont.code,
                 )
-        
+
         if self._pxmetadata_model.dataset.time_dimension.meta_id:
-            out_model.meta_id.set(" ".join(self._pxmetadata_model.dataset.time_dimension.meta_id), self._dims.time.get_label(lang), None, lang, "timedimension")
+            out_model.meta_id.set(
+                " ".join(self._pxmetadata_model.dataset.time_dimension.meta_id),
+                self._dims.time.get_label(lang),
+                None,
+                lang,
+                "timedimension",
+            )
 
     def map_cellnote_to_pxfile(self, out_model: PXFileModel) -> None:
         if not self._pxmetadata_model.dataset.cell_notes:
@@ -312,7 +326,10 @@ class _PxModelBuilder:
     def map_aggregallowed_to_pxfile(self, out_model: PXFileModel):
         # Check if all values in the array are True
         if self._add_language_independent:
-            all_boolean = all(isinstance(instance.aggregation_allowed, bool) for instance in self._pxmetadata_model.dataset.measurements)
+            all_boolean = all(
+                isinstance(instance.aggregation_allowed, bool)
+                for instance in self._pxmetadata_model.dataset.measurements
+            )
             all_true = all(instance.aggregation_allowed for instance in self._pxmetadata_model.dataset.measurements)
             if all_boolean:
                 out_model.aggregallowed.set(all_true)
@@ -376,9 +393,13 @@ class _PxModelBuilder:
                     if lang not in valuenote.note.text:
                         continue
                     if valuenote.note.is_mandatory:
-                        out_model.valuenotex.set(valuenote.note.text[lang], time.get_label(lang), valuenote.value, lang, time.get_code())
+                        out_model.valuenotex.set(
+                            valuenote.note.text[lang], time.get_label(lang), valuenote.value, lang, time.get_code()
+                        )
                     else:
-                        out_model.valuenote.set(valuenote.note.text[lang], time.get_label(lang), valuenote.value, lang, time.get_code())
+                        out_model.valuenote.set(
+                            valuenote.note.text[lang], time.get_label(lang), valuenote.value, lang, time.get_code()
+                        )
 
         if time._notes:
             for note in time._notes:
@@ -390,7 +411,13 @@ class _PxModelBuilder:
                     out_model.note.set(note.text[lang], time.get_label(lang), lang, time.get_code())
 
         if timescale and time_dim_column_name:
-            out_model.timeval.set(timescale=timescale, time_periods=time.get_codes(), variable=time_dim_column_name, lang=lang, code=time.get_code())
+            out_model.timeval.set(
+                timescale=timescale,
+                time_periods=time.get_codes(),
+                variable=time_dim_column_name,
+                lang=lang,
+                code=time.get_code(),
+            )
 
     def map_coded_dimensions_to_pxfile(self, out_model: PXFileModel):
 
@@ -411,7 +438,10 @@ class _PxModelBuilder:
 
                 if my_var.label_construction_option:
                     out_model.prestext.set(
-                        self.LabelConstructionOptionDict[str(my_var.label_construction_option)], my_funny_var_id, lang, n_var.get_code()
+                        self.LabelConstructionOptionDict[str(my_var.label_construction_option)],
+                        my_funny_var_id,
+                        lang,
+                        n_var.get_code(),
                     )
 
                 if n_var.get_pydantic().is_geo_variable_type:
@@ -419,7 +449,6 @@ class _PxModelBuilder:
                     if label:
                         out_model.map.set(map=label, variable=n_var.get_label(lang), lang=lang, code=n_var.get_code())
 
-                
                 if my_var.elimination_enable:
                     if not n_var.elimination_possible():
                         out_model.elimination.set("NO", my_funny_var_id, lang, n_var.get_code())
@@ -452,18 +481,20 @@ class _PxModelBuilder:
                                 continue
                             valuelabel = n_var.get_valuelabel(lang, valuecode)
                             if note.is_mandatory:
-                                out_model.valuenotex.set(note.text[lang], n_var.get_label(lang), valuelabel, lang, n_var.get_code())
+                                out_model.valuenotex.set(
+                                    note.text[lang], n_var.get_label(lang), valuelabel, lang, n_var.get_code()
+                                )
                             else:
-                                out_model.valuenote.set(note.text[lang], n_var.get_label(lang), valuelabel, lang, n_var.get_code())
+                                out_model.valuenote.set(
+                                    note.text[lang], n_var.get_label(lang), valuelabel, lang, n_var.get_code()
+                                )
 
     def map_measurements_to_pxfile(self, out_model: PXFileModel):
         contdim = self._dims.contdim
         lang = self._current_lang
 
         # Table wide units keyword is required to avoid crash
-        out_model.units.set(
-            "", None, lang, ""
-        )
+        out_model.units.set("", None, lang, "")
 
         for my_cont in self._pxmetadata_model.dataset.measurements:
 
@@ -534,8 +565,6 @@ class _PxModelBuilder:
                 if contact.name is None:
                     return contact_string
                 contact_string += f"{contact.name[language]}#{contact.phone}#{contact.email}##"
-            
-
 
         return contact_string[:-2]
 
@@ -610,7 +639,7 @@ class _PxModelBuilder:
                     temp_tags = in_model.dataset.search_keywords[lang]
                 if temp_tags:
                     out_model.synonyms.set(" ".join(temp_tags))
-                    
+
         if in_model.dataset.description and in_model.dataset.description[lang]:
             out_model.description.set(str(in_model.dataset.description[lang]), lang)
 
@@ -708,7 +737,9 @@ def write_output(
     return out_file
 
 
-def build_px_model(pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> PxBuildModel:
+def build_px_model(
+    pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False
+) -> PxBuildModel:
     """Build the in-memory PXFileModel(s) for a pxmetadata id. No file I/O happens here.
 
     Validation runs automatically as part of the build; see the returned model's
@@ -772,7 +803,9 @@ def write_px_file(model: PxBuildModel) -> List[str]:
     return written_files
 
 
-def build_px_file(pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False) -> PxBuildModel:
+def build_px_file(
+    pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False
+) -> PxBuildModel:
     """Convenience wrapper: build the in-memory model(s) and write them to disk in one call.
 
     Returns the built :class:`PxBuildModel`, whose ``.statistics.output_files`` holds

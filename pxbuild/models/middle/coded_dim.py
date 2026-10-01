@@ -19,7 +19,7 @@ class CodedDim(AbstractDim):
         self._raw = in_cd
 
         self._pxcodes_helper = in_helper_pxcodes
-        
+
         if in_cd.variable_type is None:
             self._variabletype = "G" if in_cd.is_geo_variable_type else "N"
         else:
@@ -27,11 +27,11 @@ class CodedDim(AbstractDim):
 
         self._column_name = in_cd.column_name
 
-        self._domain_id: dict[str,str] | str = self._raw.codelist_id
+        self._domain_id: dict[str, str] | str = self._raw.codelist_id
         groupings = self._pxcodes_helper.groupings()
         if groupings and len(groupings) > 0:
             if in_cd.domain_id_from == DomainIdFrom.first_grouping_label:
-                self._domain_id = groupings[0].label if groupings[0].label else self._domain_id 
+                self._domain_id = groupings[0].label if groupings[0].label else self._domain_id
             elif in_cd.domain_id_from == DomainIdFrom.first_grouping_filename_base:
                 self._domain_id = groupings[0].filename_base if groupings[0].filename_base else self._domain_id
 
@@ -71,7 +71,7 @@ class CodedDim(AbstractDim):
         elif isinstance(self._domain_id, dict):
             return self._domain_id.get(language, self._raw.codelist_id + "_" + language)
         return self._raw.codelist_id + "_" + language
-    
+
     def get_geo_label(self, language: str) -> str | None:
         labels = self.get_pydantic().geo_variable_label
         return labels[language] if labels is not None else None

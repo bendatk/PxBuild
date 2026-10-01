@@ -28,7 +28,7 @@ class _Data(_PxSingle):
         except Exception as e:
             msg = self._keyword + ":" + str(e)
             raise type(e)(msg) from e
-    
+
     def __str__(self):
         if self.has_value():
             return f"{self._keyword}=\n{self._px_value} \n;"
@@ -44,7 +44,7 @@ class _Data(_PxSingle):
             f.write("\n;".encode(encoding))
         else:
             raise ValueError(f"Cannot write {self._keyword} without value.")
-        
+
     def get_value(self):
         return super().get_value().get_value()
 

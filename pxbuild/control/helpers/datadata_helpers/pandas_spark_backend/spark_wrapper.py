@@ -14,12 +14,14 @@ import uuid
 if TYPE_CHECKING:
     from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
 
+
 class SparkWrapper(IBackendMethods):
 
     _TEMP_VOLUME_ENVIRONMENT_VARIABLE = "PXBUILD_SPARK_TEMP_VOLUME"
 
     def __init__(self) -> None:
         import importlib.util
+
         if importlib.util.find_spec("pyspark.sql") is None:
             raise ImportError("SparkWrapper requires a Spark environment with pyspark available.")
 
@@ -45,31 +47,29 @@ class SparkWrapper(IBackendMethods):
                     break
                 end_position -= 1
             file.truncate(end_position)
-    
+
     @staticmethod
     def get_spark() -> "SparkSession":
         try:
             from databricks.connect import DatabricksSession
+
             return DatabricksSession.builder.getOrCreate()
         except ImportError:
             from pyspark.sql import SparkSession
-            return SparkSession.builder.getOrCreate() # type: ignore
-        
+
+            return SparkSession.builder.getOrCreate()  # type: ignore
+
     SPARKDATAFRAMETYPES = [
-        "<class 'pyspark.sql.dataframe.DataFrame'>", 
+        "<class 'pyspark.sql.dataframe.DataFrame'>",
         "<class 'pyspark.sql.connect.dataframe.DataFrame'>",
-        "<class 'pyspark.sql.classic.dataframe.DataFrame'>"
+        "<class 'pyspark.sql.classic.dataframe.DataFrame'>",
     ]
 
-    # 
+    #
     # File I/O methods
     #
     def write_pxdata_to_file(
-        self,
-        data: _PxData, 
-        output_handle: BufferedWriter, 
-        temp_volume_base_path: str, 
-        columns_per_line: int
+        self, data: _PxData, output_handle: BufferedWriter, temp_volume_base_path: str, columns_per_line: int
     ):
         from pyspark.sql import functions as F
 
@@ -78,8 +78,7 @@ class SparkWrapper(IBackendMethods):
 
         line_idx = (F.col("out_index") / columns_per_line).cast("long")
         df_grouped = (
-            df
-            .withColumn("line_idx", line_idx)
+            df.withColumn("line_idx", line_idx)
             .groupBy("line_idx")
             .agg(
                 F.concat_ws(
@@ -93,7 +92,7 @@ class SparkWrapper(IBackendMethods):
                 ).alias("out_concat")
             )
         )
-    
+
         # todo: this is quite a arbitrary way to set the number of partitions - memory should be taken into account also
         # num_partitions = None
         # if Commons.get_matrix_size():
@@ -110,13 +109,8 @@ class SparkWrapper(IBackendMethods):
         # else:
         #     df_grouped = df_grouped.repartitionByRange("line_idx")
 
-        df_sorted = (
-                df_grouped
-                .repartitionByRange("line_idx")
-                .sortWithinPartitions("line_idx")
-                .select("out_concat")
-            )
-        
+        df_sorted = df_grouped.repartitionByRange("line_idx").sortWithinPartitions("line_idx").select("out_concat")
+
         df_sorted.write.mode("overwrite").text(temp_volume_base_path)
 
         part_files = sorted(glob.glob(os.path.join(temp_volume_base_path, "part-*.txt")))
@@ -124,17 +118,19 @@ class SparkWrapper(IBackendMethods):
         def get_dbutils(spark):
             try:
                 from pyspark.dbutils import DBUtils
+
                 dbutils = DBUtils(spark)
             except ImportError:
                 import IPython
-                dbutils = IPython.get_ipython().user_ns["dbutils"] # type: ignore
+
+                dbutils = IPython.get_ipython().user_ns["dbutils"]  # type: ignore
             return dbutils
 
         dbutils = get_dbutils(self.get_spark())
 
         first_row = True
         for part in part_files:
-            with open(part, 'rb') as infile:
+            with open(part, "rb") as infile:
                 for line in infile:
                     line = line.rstrip(b"\r\n")
                     if not line:
@@ -149,22 +145,13 @@ class SparkWrapper(IBackendMethods):
         except Exception:
             pass
 
-
     def read_parquet(self, parquet: ParquetFile):
         pass
 
-
     def read_csv(self, filepath) -> "SparkDataFrame":
         return (
-            self.get_spark()
-            .read
-            .option("header", True)
-            .option("sep", ";")
-            .option("inferSchema", False)
-            .csv(filepath)
+            self.get_spark().read.option("header", True).option("sep", ";").option("inferSchema", False).csv(filepath)
         )
-
-
 
     #
     # Transform methods
@@ -175,52 +162,43 @@ class SparkWrapper(IBackendMethods):
         for col_helper in cubemaths_helper_by_codeid.values():
             mapping = [(k, v) for k, v in col_helper._position_of_value.items()]
             mapping_df = df.sparkSession.createDataFrame(mapping, [col_helper._colname_in_dataframe, "pos"])
-            
-            df = df.join(mapping_df, on=col_helper._colname_in_dataframe, how="left")
-            
-            df = df.withColumn(
-                f"int_{col_helper._colname_in_dataframe}",
-                col("pos") * lit(col_helper.factor)
-            )
-            df = df.drop("pos") 
 
-        columns_to_sum = [f"int_{col_helper._colname_in_dataframe}" for col_helper in cubemaths_helper_by_codeid.values()]
+            df = df.join(mapping_df, on=col_helper._colname_in_dataframe, how="left")
+
+            df = df.withColumn(f"int_{col_helper._colname_in_dataframe}", col("pos") * lit(col_helper.factor))
+            df = df.drop("pos")
+
+        columns_to_sum = [
+            f"int_{col_helper._colname_in_dataframe}" for col_helper in cubemaths_helper_by_codeid.values()
+        ]
         return self.add_sum_column(df, "out_index", columns_to_sum)
-    
-    def add_sum_column(
-            self, 
-            df: "SparkDataFrame", 
-            sum_col_name: str, 
-            columns: list[str]
-    ) -> "SparkDataFrame":
-        
+
+    def add_sum_column(self, df: "SparkDataFrame", sum_col_name: str, columns: list[str]) -> "SparkDataFrame":
+
         from pyspark.sql.functions import col
 
         return df.withColumn(sum_col_name, reduce(operator.add, (col(c) for c in columns)))
 
-
     def merge(
-            self, 
-            df1: "SparkDataFrame", 
-            df2: "SparkDataFrame", 
-            on: str, 
-            how: Literal["left", "right", "outer", "inner", "cross"] = "left"
+        self,
+        df1: "SparkDataFrame",
+        df2: "SparkDataFrame",
+        on: str,
+        how: Literal["left", "right", "outer", "inner", "cross"] = "left",
     ) -> "SparkDataFrame":
         return df1.join(df2, on=on, how=how)
 
-
-
-
     def wide_to_long(
-            self, df: "SparkDataFrame", 
-            identifier_cols: list, 
-            stubnames: list, 
-            measurement_codes: list, 
-            j_column_name: str, 
-            sep: str, 
-            suffix: str
+        self,
+        df: "SparkDataFrame",
+        identifier_cols: list,
+        stubnames: list,
+        measurement_codes: list,
+        j_column_name: str,
+        sep: str,
+        suffix: str,
     ) -> "SparkDataFrame":
-        
+
         from pyspark.sql.functions import expr
 
         unpivoted_dfs = {}
@@ -250,10 +228,7 @@ class SparkWrapper(IBackendMethods):
 
             stack_expression = f"stack({len(measurement_codes)}, {', '.join(stack_expr_parts)})"
 
-            unpivoted_df = df_casted.selectExpr(
-                *identifier_cols,
-                f"{stack_expression} as ({j_column_name}, `{stub}`)"
-            )
+            unpivoted_df = df_casted.selectExpr(*identifier_cols, f"{stack_expression} as ({j_column_name}, `{stub}`)")
             unpivoted_dfs[stub] = unpivoted_df
 
         if not unpivoted_dfs:
@@ -271,24 +246,14 @@ class SparkWrapper(IBackendMethods):
 
         return result_df
 
-
-    def rename(
-            self, 
-            df: "SparkDataFrame", 
-            rename_map: dict
-    ) -> "SparkDataFrame":
+    def rename(self, df: "SparkDataFrame", rename_map: dict) -> "SparkDataFrame":
 
         for old_name, new_name in rename_map.items():
             if old_name in df.columns:
                 df = df.withColumnRenamed(old_name, new_name)
         return df
 
-
-    def add_missing_symbolcolumns(
-            self, 
-            measurement_codes: list, 
-            df: "SparkDataFrame"
-    ) -> "SparkDataFrame":
+    def add_missing_symbolcolumns(self, measurement_codes: list, df: "SparkDataFrame") -> "SparkDataFrame":
         from pyspark.sql.functions import lit
 
         for code in measurement_codes:
@@ -297,119 +262,70 @@ class SparkWrapper(IBackendMethods):
                 df = df.withColumn(column_name, lit(""))
         return df
 
-
-    def add_missing_rows(
-            self, 
-            matrix_size: int, 
-            missing_row_symbol: str, 
-            df: "SparkDataFrame"
-    ) -> "SparkDataFrame":
+    def add_missing_rows(self, matrix_size: int, missing_row_symbol: str, df: "SparkDataFrame") -> "SparkDataFrame":
 
         spark = df.sparkSession
         out_index_df = spark.range(0, matrix_size).withColumnRenamed("id", "out_index")
         merged_df = out_index_df.join(df, on="out_index", how="left")
-        merged_df = merged_df.fillna({ "out_value": missing_row_symbol })
+        merged_df = merged_df.fillna({"out_value": missing_row_symbol})
 
         return merged_df.orderBy("out_index")
-    
 
-    def add_out_value(
-            self, 
-            df: "SparkDataFrame", 
-            missing_cell_symbol: str
-    ) -> "SparkDataFrame":
+    def add_out_value(self, df: "SparkDataFrame", missing_cell_symbol: str) -> "SparkDataFrame":
 
         from pyspark.sql.functions import when, col, lit, trim
 
         return df.withColumn(
             "out_value",
-            when(
-                col("SYMBOL").isNotNull() & (trim(col("SYMBOL")) != ""),
-                col("SYMBOL").cast("string")
-            ).when(
-                col("VALUE").isNotNull() & (trim(col("VALUE")) != ""),
-                col("VALUE").cast("string")
-            ).otherwise(lit(missing_cell_symbol))
+            when(col("SYMBOL").isNotNull() & (trim(col("SYMBOL")) != ""), col("SYMBOL").cast("string"))
+            .when(col("VALUE").isNotNull() & (trim(col("VALUE")) != ""), col("VALUE").cast("string"))
+            .otherwise(lit(missing_cell_symbol)),
         )
 
-
     def round_by_decimals(
-            self, 
-            df: "SparkDataFrame", 
-            measurements: List[Measurement],
-            decimals: int
+        self, df: "SparkDataFrame", measurements: List[Measurement], decimals: int
     ) -> "SparkDataFrame":
-        
+
         from pyspark.sql.functions import round as spark_round, col
 
         for my_cont in measurements:
-            df = df.withColumn(
-                my_cont.column_name, 
-                spark_round(col(my_cont.column_name), decimals)
-            )
+            df = df.withColumn(my_cont.column_name, spark_round(col(my_cont.column_name), decimals))
         return df
-
-
-
 
     #
     # Utility methods
     #
-    def get_columns_to_list(
-            self, 
-            df: "SparkDataFrame"
-    ) -> List[str]:
-        
+    def get_columns_to_list(self, df: "SparkDataFrame") -> List[str]:
+
         return df.columns
 
     def count_rows(self, data: "SparkDataFrame") -> int:
         return int(data.count())
 
-
-    def get_timeperiodes(
-            self, 
-            df: "SparkDataFrame", 
-            column_name: str
-    ) -> list:
+    def get_timeperiodes(self, df: "SparkDataFrame", column_name: str) -> list:
 
         distinct_values = [row[column_name] for row in df.select(column_name).distinct().collect()]
         return sorted(distinct_values, reverse=False)
 
+    def remove_trailing_zero_decimals(self, df: "SparkDataFrame") -> "SparkDataFrame":
 
-    def remove_trailing_zero_decimals(
-            self, 
-            df: "SparkDataFrame"
-    ) -> "SparkDataFrame":
-        
         from pyspark.sql.functions import when, col, regexp_replace
 
-        mask = (
-            col("out_value").cast("string").rlike(r"^-?\d+\.?\d*$") & 
-            col("out_value").cast("string").contains(".")
-        )
+        mask = col("out_value").cast("string").rlike(r"^-?\d+\.?\d*$") & col("out_value").cast("string").contains(".")
 
         df = df.withColumn(
             "out_value",
-            when(~mask, col("out_value"))
-            .otherwise(
-                regexp_replace(
-                    regexp_replace(col("out_value").cast("string"), r"0+$", ""), 
-                    r"\.$", ""
-                )
-            )
+            when(~mask, col("out_value")).otherwise(
+                regexp_replace(regexp_replace(col("out_value").cast("string"), r"0+$", ""), r"\.$", "")
+            ),
         )
         return df
-
-
 
     #
     # Validation methods
     #
     def validate_codelist_vs_data_values(
-            self, 
-            df: "SparkDataFrame", 
-            coded_dimensions: list, 
-            resolved_pxcodes_ids: dict
+        self, df: "SparkDataFrame", coded_dimensions: list, resolved_pxcodes_ids: dict
     ) -> None:
         from pyspark.sql.functions import col
 
@@ -420,8 +336,7 @@ class SparkWrapper(IBackendMethods):
             codelist_values = [item.code for item in resolved_pxcodes_ids[coded_dim.codelist_id].valueitems]
 
             invalid_values = (
-                df
-                .filter(~col(dim_column_name).isin(codelist_values) & col(dim_column_name).isNotNull())
+                df.filter(~col(dim_column_name).isin(codelist_values) & col(dim_column_name).isNotNull())
                 .select(dim_column_name)
                 .distinct()
                 .limit(21)
@@ -429,22 +344,15 @@ class SparkWrapper(IBackendMethods):
             )
 
             if len(invalid_values) > 20:
-                raise ValueError(
-                    f"There are more than 20 invalid values in the data for '{dim_column_name}'."
-                )
+                raise ValueError(f"There are more than 20 invalid values in the data for '{dim_column_name}'.")
             elif invalid_values:
                 missing_values = [row[dim_column_name] for row in invalid_values]
                 raise ValueError(
                     f"Values {missing_values} in dataset for coded dimension '{dim_column_name}' are not in codelist '{coded_dim.codelist_id}'."
                 )
 
-    def validate_coded_values(
-            self, 
-            df: "SparkDataFrame", 
-            column: str, 
-            codelist: list
-    ) -> None:
-        
+    def validate_coded_values(self, df: "SparkDataFrame", column: str, codelist: list) -> None:
+
         from pyspark.sql.functions import col
 
         invalid_rows = df.filter(~col(column).isin(codelist) & ~col(column).isNull())
@@ -453,16 +361,11 @@ class SparkWrapper(IBackendMethods):
             err_mess = f"There are rows with invalid values in column '{column}'."
             print(invalid_rows.limit(10).toPandas())
             raise ValueError(err_mess)
-    
 
-    def validate_data(
-            self, 
-            df: "SparkDataFrame", 
-            data_file_path: str
-    ) -> None:
-        
+    def validate_data(self, df: "SparkDataFrame", data_file_path: str) -> None:
+
         from pyspark.sql.functions import col
-        
+
         # TODO: Read valid_symbol_entries from a configuration or constants file
         valid_symbol_entries = ["", ".", "..", "...", "....", ".....", "......", "-"]
         colnames = df.columns
@@ -476,13 +379,9 @@ class SparkWrapper(IBackendMethods):
             if col_name.endswith("_SYMBOL"):
                 col_without_symbol = col_name[:-7]
                 if col_without_symbol not in colnames:
-                    raise ValueError(
-                        f"Found {col_name}, but no matching {col_without_symbol}."
-                    )
+                    raise ValueError(f"Found {col_name}, but no matching {col_without_symbol}.")
 
-                invalid_rows = df.filter(
-                    ~col(col_name).isin(valid_symbol_entries) & ~col(col_name).isNull()
-                )
+                invalid_rows = df.filter(~col(col_name).isin(valid_symbol_entries) & ~col(col_name).isNull())
 
                 # Check if there are invalid rows
                 if invalid_rows.limit(1).count() > 0:

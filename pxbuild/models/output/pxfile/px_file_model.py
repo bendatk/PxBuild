@@ -88,6 +88,7 @@ from pxbuild.models.output.pxfile.util._px_super import _SuperKeyword
 from ....control.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
 from pxbuild.models.output.pxfile.util._px_keytypes import main_language_context
 
+
 class PXFileModel:
     """
     This class holds the information of a PxFile
@@ -275,7 +276,9 @@ class PXFileModel:
             attr_strings = [str(value) for value in attrs.values() if str(value) != ""]
             return "\n".join(attr_strings)
 
-    def write_to_file(self, file_path: str, encoding: str, backend: "IBackendMethods", main_language: str | None = None) -> None:
+    def write_to_file(
+        self, file_path: str, encoding: str, backend: "IBackendMethods", main_language: str | None = None
+    ) -> None:
         attrs = vars(self)
 
         sig_encoding = encoding

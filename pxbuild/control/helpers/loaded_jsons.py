@@ -30,7 +30,6 @@ class LoadedJsons:
             pxmetadata_input = pxmetadata_format
         self._pxmetadata_model = PxMetadata(**pxmetadata_input)
 
-        
         pxstatistics_format = self._config.admin.px_statistics_resource.adress_format
         pxstatistics_source_type = ResourceType1(self._config.admin.px_statistics_resource.resource_type)
         if isinstance(pxstatistics_format, str) and pxstatistics_source_type == ResourceType1.file:
@@ -41,7 +40,6 @@ class LoadedJsons:
         elif isinstance(pxstatistics_format, dict) and pxstatistics_source_type == ResourceType1.dictionary:
             pxstatistics_input = pxstatistics_format
         self._pxstatistics = PxStatistics(**pxstatistics_input)
-
 
         self._resolved_pxcodes_ids: Dict[str, PxCodes] = {}
         pxcodes_format = self._config.admin.px_codes_resource.adress_format
@@ -60,8 +58,11 @@ class LoadedJsons:
                         json1 = pxcodes_format.get(dimension.codelist_id, {})
 
                     self._resolved_pxcodes_ids[dimension.codelist_id] = PxCodes(**json1)
-        
-        if self._pxmetadata_model.dataset.time_dimension.codelist_id and self._pxmetadata_model.dataset.time_dimension.codelist_id not in self._resolved_pxcodes_ids:
+
+        if (
+            self._pxmetadata_model.dataset.time_dimension.codelist_id
+            and self._pxmetadata_model.dataset.time_dimension.codelist_id not in self._resolved_pxcodes_ids
+        ):
             time_codelist_id = self._pxmetadata_model.dataset.time_dimension.codelist_id
             if isinstance(pxcodes_format, str) and pxcodes_source_type == ResourceType1.file:
                 tmp_path = pxcodes_format.format(id=time_codelist_id)

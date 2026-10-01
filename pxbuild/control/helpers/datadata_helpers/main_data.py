@@ -17,6 +17,7 @@ from .pandas_spark_backend._backend_methods import IBackendMethods
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame
 
+
 class MapData:
     def __init__(
         self,
@@ -59,7 +60,9 @@ class MapData:
             return
 
         self._backend.validate_codelist_vs_data_values(
-            self._datadata._raw_df, self._pxmetadata_model.dataset.coded_dimensions, self._loaded_jsons._resolved_pxcodes_ids
+            self._datadata._raw_df,
+            self._pxmetadata_model.dataset.coded_dimensions,
+            self._loaded_jsons._resolved_pxcodes_ids,
         )
 
         start_get_data = time.time()
@@ -106,7 +109,7 @@ class MapData:
         array_size = curr_factor
 
         return array_size
-    
+
     def add_missing_rows(self, matrix_size, missing_row_symbol, df):
         return self._backend.add_missing_rows(matrix_size, missing_row_symbol, df)
 

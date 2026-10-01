@@ -358,9 +358,7 @@ with open(file_path_to_pxfiledir + "/px_file_model.py", "wt", encoding="utf-8-si
     model_py.write("    def __str__(self):\n")
     model_py.write("        attrs = vars(self)\n")
     model_py.write('        attr_strings = [str(value) for value in attrs.values() if str(value) != ""]\n')
-    model_py.write(
-        '        return "\\n".join(attr_strings)\n\n'
-    )
+    model_py.write('        return "\\n".join(attr_strings)\n\n')
     model_py.write("    def get_attribute(self, name:str) -> _SuperKeyword:\n")
     model_py.write("        return getattr(self, name)\n")
 
