@@ -1,4 +1,5 @@
-import pyarrow.parquet as pq, pandas
+import pandas
+import pyarrow.parquet as pq
 from .abstract_datasource import AbstractDatasource
 from ...helpers.logger_config import logger
 from .pandas_spark_backend._backend_methods import IBackendMethods

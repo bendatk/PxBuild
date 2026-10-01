@@ -5,6 +5,7 @@ from typing import List, TYPE_CHECKING
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame
 
+
 # Interface for utility functions
 class IUtility(ABC):
     @abstractmethod

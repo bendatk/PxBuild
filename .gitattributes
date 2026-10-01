@@ -7,5 +7,3 @@ tests/testdata/**/expected/** -text
 
 *.ipynb filter=nbstripout
 *.ipynb diff=ipynb
-
-

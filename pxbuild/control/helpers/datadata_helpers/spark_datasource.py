@@ -1,6 +1,4 @@
-import pyarrow.parquet as pq, pandas
 from .abstract_datasource import AbstractDatasource
-from ...helpers.logger_config import logger
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

@@ -18,7 +18,7 @@ class _Doublecolumn(_PxValueByKey):
 
     def set(self, doublecolumn: bool, variable: str, lang: str = None, code: str = "") -> None:
         """This keyword is used to get code and text in separate columns for the specified variable"""
-        LineValidator.is_not_None(self._keyword, doublecolumn)
+        LineValidator.is_not_none(self._keyword, doublecolumn)
         LineValidator.is_bool(self._keyword, doublecolumn)
         my_value = _PxBool(doublecolumn)
         my_key = _KeytypeVariableLang(variable, lang, code)

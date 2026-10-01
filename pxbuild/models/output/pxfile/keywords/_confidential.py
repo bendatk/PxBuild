@@ -16,7 +16,7 @@ class _Confidential(_PxSingle):
 
     def set(self, confidential: int) -> None:
         """Not in use."""
-        LineValidator.is_not_None(self._keyword, confidential)
+        LineValidator.is_not_none(self._keyword, confidential)
         LineValidator.is_int(self._keyword, confidential)
         my_value = _PxInt(confidential)
         try:

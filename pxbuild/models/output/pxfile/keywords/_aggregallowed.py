@@ -16,7 +16,7 @@ class _Aggregallowed(_PxSingle):
 
     def set(self, aggregallowed: bool) -> None:
         """False if the contents of the table cannot be aggregated"""
-        LineValidator.is_not_None(self._keyword, aggregallowed)
+        LineValidator.is_not_none(self._keyword, aggregallowed)
         LineValidator.is_bool(self._keyword, aggregallowed)
         my_value = _PxBool(aggregallowed)
         try:

@@ -1,9 +1,9 @@
 my pc:
-C:\Users\jfi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts\datamodel-codegen.exe 
+C:\Users\jfi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts\datamodel-codegen.exe
 
 *** Scripts\datamodel-codegen.exe --input pxmetadata.yaml --input-file-type openapi --snake-case-field --encoding utf-8 --target-python-version 3.11 --collapse-root-models  --use-schema-description   --use-field-description  --output ..\..\pxbuild\models\input\pydantic_pxmetadata.py
 
-*** Scripts\datamodel-codegen.exe --input pxcodes.yaml --input-file-type openapi --snake-case-field --encoding utf-8 --target-python-version 3.11 --collapse-root-models  --use-schema-description   --use-field-description  --output  ..\..\pxbuild\models\input\pydantic_pxcodes.py 
+*** Scripts\datamodel-codegen.exe --input pxcodes.yaml --input-file-type openapi --snake-case-field --encoding utf-8 --target-python-version 3.11 --collapse-root-models  --use-schema-description   --use-field-description  --output  ..\..\pxbuild\models\input\pydantic_pxcodes.py
 
 *** Scripts\datamodel-codegen.exe --input pxstatistics.yaml --input-file-type openapi --snake-case-field --encoding utf-8 --target-python-version 3.11 --collapse-root-models  --use-schema-description   --use-field-description  --output ..\..\pxbuild\models\input\pydantic_pxstatistics.py
 
@@ -145,7 +145,7 @@ options:
   --encoding ENCODING   The encoding of input and output (default: cp1252)
   --debug               show debug message
   --disable-warnings    disable warnings
-  
+
     --custom-file-header CUSTOM_FILE_HEADER
                         Custom file header
   --custom-file-header-path CUSTOM_FILE_HEADER_PATH

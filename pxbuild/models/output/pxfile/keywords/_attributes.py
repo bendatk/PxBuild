@@ -17,7 +17,7 @@ class _Attributes(_PxValueByKey):
 
     def set(self, attributes: list[str], codes: list[str] = None) -> None:
         """Not in normal use. See pdf"""
-        LineValidator.is_not_None(self._keyword, attributes)
+        LineValidator.is_not_none(self._keyword, attributes)
         LineValidator.is_list_of_strings(self._keyword, attributes)
         my_value = _PxStringList(attributes)
         my_key = _KeytypeCodes(codes)

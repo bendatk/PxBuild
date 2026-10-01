@@ -18,7 +18,7 @@ class _Info(_PxValueByKey):
 
     def set(self, info: str, lang: str = None) -> None:
         """Not in use"""
-        LineValidator.is_not_None(self._keyword, info)
+        LineValidator.is_not_none(self._keyword, info)
         LineValidator.is_string(self._keyword, info)
         my_value = _PxString(info)
         my_key = _KeytypeLang(lang)

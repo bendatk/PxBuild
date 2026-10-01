@@ -16,7 +16,7 @@ class _DefaultGraph(_PxSingle):
 
     def set(self, default_graph: int) -> None:
         """Not in use"""
-        LineValidator.is_not_None(self._keyword, default_graph)
+        LineValidator.is_not_none(self._keyword, default_graph)
         LineValidator.is_int(self._keyword, default_graph)
         my_value = _PxInt(default_graph)
         try:

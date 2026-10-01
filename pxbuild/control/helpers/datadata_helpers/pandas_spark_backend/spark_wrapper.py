@@ -71,19 +71,19 @@ class SparkWrapper(IBackendMethods):
     def write_pxdata_to_file(
         self, data: _PxData, output_handle: BufferedWriter, temp_volume_base_path: str, columns_per_line: int
     ):
-        from pyspark.sql import functions as F
+        from pyspark.sql import functions as spark_functions
 
         temp_volume_base_path = self.get_temp_output_path(temp_volume_base_path)
         df = data._data.select("out_index", "out_value")
 
-        line_idx = (F.col("out_index") / columns_per_line).cast("long")
+        line_idx = (spark_functions.col("out_index") / columns_per_line).cast("long")
         df_grouped = (
             df.withColumn("line_idx", line_idx)
             .groupBy("line_idx")
             .agg(
-                F.concat_ws(
+                spark_functions.concat_ws(
                     " ",
-                    F.expr(
+                    spark_functions.expr(
                         "transform("
                         "   sort_array(collect_list(struct(out_index, out_value))), "
                         "   x -> x.out_value"
@@ -141,7 +141,7 @@ class SparkWrapper(IBackendMethods):
                     first_row = False
 
         try:
-            rc = dbutils.fs.rm(temp_volume_base_path, True)
+            dbutils.fs.rm(temp_volume_base_path, True)
         except Exception:
             pass
 

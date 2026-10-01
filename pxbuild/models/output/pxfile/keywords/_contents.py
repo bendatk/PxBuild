@@ -18,7 +18,7 @@ class _Contents(_PxValueByKey):
 
     def set(self, contents: str, lang: str = None) -> None:
         """Sort of a base title?"""
-        LineValidator.is_not_None(self._keyword, contents)
+        LineValidator.is_not_none(self._keyword, contents)
         LineValidator.is_string(self._keyword, contents)
         my_value = _PxString(contents)
         my_key = _KeytypeLang(lang)

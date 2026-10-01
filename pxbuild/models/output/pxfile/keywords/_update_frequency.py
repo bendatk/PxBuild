@@ -16,7 +16,7 @@ class _UpdateFrequency(_PxSingle):
 
     def set(self, update_frequency: str) -> None:
         """Not in use"""
-        LineValidator.is_not_None(self._keyword, update_frequency)
+        LineValidator.is_not_none(self._keyword, update_frequency)
         LineValidator.is_string(self._keyword, update_frequency)
         my_value = _PxString(update_frequency)
         try:

@@ -6,8 +6,8 @@ from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.input.pydantic_pxstatistics import PxStatistics
 from pxbuild.models.input.pydantic_pxcodes import PxCodes
-from ..helpers.logger_config import logger
 from pxbuild.models.input.pydantic_pxbuildconfig import ResourceType, ResourceType1
+
 
 # Class for loading all jsons into pydantic. And nothing else.
 class LoadedJsons:

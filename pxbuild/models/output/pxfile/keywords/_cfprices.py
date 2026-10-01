@@ -18,7 +18,7 @@ class _Cfprices(_PxValueByKey):
 
     def set(self, cfprices: str, content: str = None, lang: str = None, code: str = "") -> None:
         """Indicates if data is in current or fixed prices. C is used for Current and F for Fixed prices"""
-        LineValidator.is_not_None(self._keyword, cfprices)
+        LineValidator.is_not_none(self._keyword, cfprices)
         LineValidator.is_string(self._keyword, cfprices)
         LineValidator.regexp_string("^(C|F)$", self._keyword, cfprices)
         my_value = _PxString(cfprices)

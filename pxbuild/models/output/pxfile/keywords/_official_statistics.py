@@ -16,7 +16,7 @@ class _OfficialStatistics(_PxSingle):
 
     def set(self, official_statistics: bool) -> None:
         """Indicates if the data table is included in the official statistics of the organization."""
-        LineValidator.is_not_None(self._keyword, official_statistics)
+        LineValidator.is_not_none(self._keyword, official_statistics)
         LineValidator.is_bool(self._keyword, official_statistics)
         my_value = _PxBool(official_statistics)
         try:

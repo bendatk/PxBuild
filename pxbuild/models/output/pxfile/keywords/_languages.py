@@ -16,7 +16,7 @@ class _Languages(_PxSingle):
 
     def set(self, languages: list[str]) -> None:
         """List of Language-codes used in file."""
-        LineValidator.is_not_None(self._keyword, languages)
+        LineValidator.is_not_none(self._keyword, languages)
         LineValidator.is_list_of_strings(self._keyword, languages)
         LineValidator.regexp_item_string("^[a-z]{2}$", self._keyword, languages)
         LineValidator.unique(self._keyword, languages)

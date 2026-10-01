@@ -7,7 +7,7 @@ class LineValidator:
     """
 
     @staticmethod
-    def is_not_None(keyword: str, input_value) -> None:
+    def is_not_none(keyword: str, input_value) -> None:
         if input_value is None:
             raise ValueError(f"{keyword}: value is empty")
 

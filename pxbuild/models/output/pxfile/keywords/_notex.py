@@ -19,7 +19,7 @@ class _Notex(_PxValueByKey):
 
     def set(self, notex: str, variable: str = None, lang: str = None, code: str = "") -> None:
         """Mandatory footnote for variable or table if no variable is given"""
-        LineValidator.is_not_None(self._keyword, notex)
+        LineValidator.is_not_none(self._keyword, notex)
         LineValidator.is_string(self._keyword, notex)
         my_value = _PxString(notex)
         self.occurence_counter += 1

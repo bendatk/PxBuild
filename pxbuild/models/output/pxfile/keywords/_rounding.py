@@ -16,7 +16,7 @@ class _Rounding(_PxSingle):
 
     def set(self, rounding: int) -> None:
         """Not in normal use"""
-        LineValidator.is_not_None(self._keyword, rounding)
+        LineValidator.is_not_none(self._keyword, rounding)
         LineValidator.is_int(self._keyword, rounding)
         LineValidator.in_range(0, 1, self._keyword, rounding)
         my_value = _PxInt(rounding)

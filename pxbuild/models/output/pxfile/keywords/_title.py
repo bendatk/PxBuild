@@ -18,7 +18,7 @@ class _Title(_PxValueByKey):
 
     def set(self, title: str, lang: str = None) -> None:
         """The title of the table, reflecting its contents and variables"""
-        LineValidator.is_not_None(self._keyword, title)
+        LineValidator.is_not_none(self._keyword, title)
         LineValidator.is_string(self._keyword, title)
         my_value = _PxString(title)
         my_key = _KeytypeLang(lang)

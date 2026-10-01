@@ -18,7 +18,7 @@ class _Link(_PxValueByKey):
 
     def set(self, link: str, lang: str = None) -> None:
         """Not in use?"""
-        LineValidator.is_not_None(self._keyword, link)
+        LineValidator.is_not_none(self._keyword, link)
         LineValidator.is_string(self._keyword, link)
         my_value = _PxString(link)
         my_key = _KeytypeLang(lang)

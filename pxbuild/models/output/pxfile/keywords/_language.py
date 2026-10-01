@@ -16,7 +16,7 @@ class _Language(_PxSingle):
 
     def set(self, language: str) -> None:
         """Language-code with 2 letters,sv for Swedish, en for English etc. Default language"""
-        LineValidator.is_not_None(self._keyword, language)
+        LineValidator.is_not_none(self._keyword, language)
         LineValidator.is_string(self._keyword, language)
         LineValidator.regexp_string("^[a-z]{2}$", self._keyword, language)
         my_value = _PxString(language)

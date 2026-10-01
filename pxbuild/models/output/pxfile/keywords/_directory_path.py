@@ -16,7 +16,7 @@ class _DirectoryPath(_PxSingle):
 
     def set(self, directory_path: str) -> None:
         """Not in use"""
-        LineValidator.is_not_None(self._keyword, directory_path)
+        LineValidator.is_not_none(self._keyword, directory_path)
         LineValidator.is_string(self._keyword, directory_path)
         my_value = _PxString(directory_path)
         try:

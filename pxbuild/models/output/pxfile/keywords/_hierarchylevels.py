@@ -18,7 +18,7 @@ class _Hierarchylevels(_PxValueByKey):
 
     def set(self, hierarchylevels: int, variable: str, lang: str = None) -> None:
         """Not in normal use. See pdf"""
-        LineValidator.is_not_None(self._keyword, hierarchylevels)
+        LineValidator.is_not_none(self._keyword, hierarchylevels)
         LineValidator.is_int(self._keyword, hierarchylevels)
         my_value = _PxInt(hierarchylevels)
         my_key = _KeytypeVariableLang(variable, lang)

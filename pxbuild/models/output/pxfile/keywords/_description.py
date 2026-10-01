@@ -18,7 +18,7 @@ class _Description(_PxValueByKey):
 
     def set(self, description: str, lang: str = None) -> None:
         """Use title instead?"""
-        LineValidator.is_not_None(self._keyword, description)
+        LineValidator.is_not_none(self._keyword, description)
         LineValidator.is_string(self._keyword, description)
         my_value = _PxString(description)
         my_key = _KeytypeLang(lang)

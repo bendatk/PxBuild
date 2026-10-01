@@ -74,11 +74,11 @@ to_native_types = {
 
 # contains list of validation method-stubs for valueTypes. The keyWord and inputvalue is added in generation.
 valuetype_line_val = {
-    "_PxStringList": ["is_not_None(", "is_list_of_strings("],
-    "_PxString": ["is_not_None(", "is_string("],
-    "_PxBString": ["is_not_None(", "is_string("],
-    "_PxBool": ["is_not_None(", "is_bool("],
-    "_PxInt": ["is_not_None(", "is_int("],
+    "_PxStringList": ["is_not_none(", "is_list_of_strings("],
+    "_PxString": ["is_not_none(", "is_string("],
+    "_PxBString": ["is_not_none(", "is_string("],
+    "_PxBool": ["is_not_none(", "is_bool("],
+    "_PxInt": ["is_not_none(", "is_int("],
 }
 
 
@@ -174,13 +174,13 @@ class MyKeyword:
         filehandle.write(f'    completeness_type:str = "{self.completeness_type}"\n')
         filehandle.write(f"    may_have_language:bool = {self.has_lang}\n\n")
 
-        filehandle.write(f"    def __init__(self) -> None:\n")
+        filehandle.write("    def __init__(self) -> None:\n")
         filehandle.write(f'        super().__init__("{self.keyword}")\n')
         if self.has_lang:
             filehandle.write("        self._seen_languages={}\n")
         if self.is_duplicate_keypart_allowed:
             filehandle.write("        self.occurence_counter = 0\n")
-        filehandle.write(f"\n")
+        filehandle.write("\n")
 
     def set_writer(self, filehandle) -> None:
         filehandle.write(f"    def set(self, {kw.params_in_set}) -> None:\n")
@@ -199,7 +199,7 @@ class MyKeyword:
         # keytype_contructor (except for "pure" keywords )
         if self.classnames["Key"]:
             if kw.is_duplicate_keypart_allowed:
-                filehandle.write(f"        self.occurence_counter += 1\n")
+                filehandle.write("        self.occurence_counter += 1\n")
                 filehandle.write(
                     f"        my_key = {self.classnames['Key']}({dict_as_call(self.keyParams)}, self.occurence_counter)\n"
                 )
@@ -208,62 +208,62 @@ class MyKeyword:
 
             self.catch_duplicate_writer(filehandle, "super().set(my_value,my_key)")
             if self.has_lang:
-                filehandle.write(f"        self._seen_languages[lang]=1\n")
+                filehandle.write("        self._seen_languages[lang]=1\n")
 
         else:
             self.catch_duplicate_writer(filehandle, "super().set(my_value)")
-        filehandle.write(f"\n")
+        filehandle.write("\n")
 
     def catch_duplicate_writer(self, filehandle, codeline: str) -> None:
-        filehandle.write(f"        try:\n")
+        filehandle.write("        try:\n")
         filehandle.write(f"            {codeline}\n")
-        filehandle.write(f"        except Exception as e:\n")
-        filehandle.write(f'            msg = self._keyword + ":" +str(e)\n')
-        filehandle.write(f"            raise type(e)(msg) from e\n")
+        filehandle.write("        except Exception as e:\n")
+        filehandle.write('            msg = self._keyword + ":" +str(e)\n')
+        filehandle.write("            raise type(e)(msg) from e\n")
 
     def get_and_has_value_writer(self, filehandle) -> None:
         if self.classnames["Super"] == "_PxSingle":
             filehandle.write(f"    def get_value(self) -> {dict_as_returntype(self.valueParams)}:\n")
-            filehandle.write(f"        return super().get_value().get_value()")
+            filehandle.write("        return super().get_value().get_value()")
         if len(self.keyParams) > 0:
             filehandle.write(
                 f"    def get_value(self, {dict_as_signature(self.keyParams)}) -> {dict_as_returntype(self.valueParams)}:\n"
             )
             if kw.is_duplicate_keypart_allowed:
-                filehandle.write(f"        #TODO how should this function? Any usecases?\n")
+                filehandle.write("        #TODO how should this function? Any usecases?\n")
                 filehandle.write(f"        my_key = {self.classnames['Key']}({dict_as_call(self.keyParams)},1)\n")
             else:
                 filehandle.write(f"        my_key = {self.classnames['Key']}({dict_as_call(self.keyParams)})\n")
-            filehandle.write(f"        return super().get_value(my_key).get_value()")
-        filehandle.write(f"\n\n")
+            filehandle.write("        return super().get_value(my_key).get_value()")
+        filehandle.write("\n\n")
 
         if self.classnames["Super"] == "_PxSingle":
-            filehandle.write(f"    def has_value(self) -> bool:\n")
-            filehandle.write(f"        return super().has_value()")
+            filehandle.write("    def has_value(self) -> bool:\n")
+            filehandle.write("        return super().has_value()")
         if len(self.keyParams) > 0:
             filehandle.write(f"    def has_value(self, {dict_as_signature(self.keyParams)}) -> bool:\n")
             if kw.is_duplicate_keypart_allowed:
-                filehandle.write(f"        #TODO how should this function? Any usecases?\n")
+                filehandle.write("        #TODO how should this function? Any usecases?\n")
                 filehandle.write(f"        my_key = {self.classnames['Key']}({dict_as_call(self.keyParams)},1)\n")
             else:
                 filehandle.write(f"        my_key = {self.classnames['Key']}({dict_as_call(self.keyParams)})\n")
-            filehandle.write(f"        return super().has_value(my_key)")
-        filehandle.write(f"\n\n")
+            filehandle.write("        return super().has_value(my_key)")
+        filehandle.write("\n\n")
 
     def get_lang_utils_writer(self, filehandle) -> None:
         if not self.has_lang:
             return
 
-        filehandle.write(f"    def get_used_languages(self) -> list[str]:\n")
-        filehandle.write(f"       return list(self._seen_languages.keys())\n\n")
-        filehandle.write(f"    def reset_language_none_to(self,lang:str)->None:\n")
-        filehandle.write(f"        if not lang:\n")
-        filehandle.write(f"            return\n")
-        filehandle.write(f"        if None in self.get_used_languages():\n")
-        filehandle.write(f"             super().reset_language_none_to(lang)\n")
-        filehandle.write(f"             #unsee None\n")
-        filehandle.write(f"             del self._seen_languages[None]\n")
-        filehandle.write(f"             self._seen_languages[lang]=1\n")
+        filehandle.write("    def get_used_languages(self) -> list[str]:\n")
+        filehandle.write("       return list(self._seen_languages.keys())\n\n")
+        filehandle.write("    def reset_language_none_to(self,lang:str)->None:\n")
+        filehandle.write("        if not lang:\n")
+        filehandle.write("            return\n")
+        filehandle.write("        if None in self.get_used_languages():\n")
+        filehandle.write("             super().reset_language_none_to(lang)\n")
+        filehandle.write("             #unsee None\n")
+        filehandle.write("             del self._seen_languages[None]\n")
+        filehandle.write("             self._seen_languages[lang]=1\n")
 
 
 # ---------------  end of class ----------------------------

@@ -16,7 +16,7 @@ class _Charset(_PxSingle):
 
     def set(self, charset: str) -> None:
         """Not in use"""
-        LineValidator.is_not_None(self._keyword, charset)
+        LineValidator.is_not_none(self._keyword, charset)
         LineValidator.is_string(self._keyword, charset)
         my_value = _PxString(charset)
         try:

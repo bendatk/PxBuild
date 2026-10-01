@@ -141,4 +141,3 @@
  - source ND
 
     Description: The source for the cubes, shown inside the About table part of PxWeb. Example: Statistics Norway
-

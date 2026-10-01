@@ -7,6 +7,7 @@ from typing import Union, TYPE_CHECKING
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame
 
+
 # Interface for validation
 class IValidation(ABC):
     @abstractmethod

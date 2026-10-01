@@ -18,7 +18,7 @@ class _Datasymbol5(_PxValueByKey):
 
     def set(self, datasymbol5: str, lang: str = None) -> None:
         """Should be in config?"""
-        LineValidator.is_not_None(self._keyword, datasymbol5)
+        LineValidator.is_not_none(self._keyword, datasymbol5)
         LineValidator.is_string(self._keyword, datasymbol5)
         my_value = _PxString(datasymbol5)
         my_key = _KeytypeLang(lang)

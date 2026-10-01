@@ -116,7 +116,7 @@ class Loader:
         keyword = ""
         lang_value = ""
         if items_before_subkey[0].is_type_quoted() or items_before_subkey[0].string == "":
-            raise Exception(f"Hmm, expected non-empty UnquotedItem.")
+            raise Exception("Hmm, expected non-empty UnquotedItem.")
         else:
             if "[" in items_before_subkey[0].string:
                 keyword, string_after = items_before_subkey[0].get_before_and_after("[")
@@ -188,7 +188,7 @@ class Loader:
         elif my_attri.pxvalue_type == "_PxStringList":
             print("Stringlist")
             if Loader.is_even(len(items)):
-                raise ValueError(f"Bad list")
+                raise ValueError("Bad list")
             if not items[0].is_type_quoted():
                 raise ValueError(f"Value for keypart {keypart}: List must start with quoted string")
 

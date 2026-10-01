@@ -26,7 +26,5 @@ jobs:
         run: uv sync --locked --dev
       - name: Run tests
         run: uv run pytest
-      - name: Lint
-        run: uv run flake8 . || echo "Linting errors found, but we're treating this as a warning."
-      - name: Format
-        run: uv run black . --check || echo "Formatting errors found, but we're treating this as a warning."
+      - name: Run pre-commit checks
+        run: uv run pre-commit run --all-files

@@ -14,7 +14,7 @@ def process_properties2(node_name: str, node_values: dict, required: bool, depth
 
     if "$ref" in node_values:
         my_type = (
-            f" type:  [" + node_values["$ref"].split("/")[-1] + "](#" + node_values["$ref"].split("/")[-1].lower() + ")"
+            " type:  [" + node_values["$ref"].split("/")[-1] + "](#" + node_values["$ref"].split("/")[-1].lower() + ")"
         )
 
     node_name_display = node_name + "(*)" if required else node_name

@@ -18,7 +18,7 @@ class _Contvariable(_PxValueByKey):
 
     def set(self, contvariable: str, lang: str = None) -> None:
         """which variable is the content variable"""
-        LineValidator.is_not_None(self._keyword, contvariable)
+        LineValidator.is_not_none(self._keyword, contvariable)
         LineValidator.is_string(self._keyword, contvariable)
         my_value = _PxString(contvariable)
         my_key = _KeytypeLang(lang)

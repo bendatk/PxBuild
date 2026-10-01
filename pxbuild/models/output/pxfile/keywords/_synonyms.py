@@ -16,7 +16,7 @@ class _Synonyms(_PxSingle):
 
     def set(self, synonyms: str) -> None:
         """In use?"""
-        LineValidator.is_not_None(self._keyword, synonyms)
+        LineValidator.is_not_none(self._keyword, synonyms)
         LineValidator.is_string(self._keyword, synonyms)
         my_value = _PxString(synonyms)
         try:

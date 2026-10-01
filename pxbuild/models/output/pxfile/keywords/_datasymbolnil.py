@@ -18,7 +18,7 @@ class _Datasymbolnil(_PxValueByKey):
 
     def set(self, datasymbolnil: str, lang: str = None) -> None:
         """ """
-        LineValidator.is_not_None(self._keyword, datasymbolnil)
+        LineValidator.is_not_none(self._keyword, datasymbolnil)
         LineValidator.is_string(self._keyword, datasymbolnil)
         my_value = _PxString(datasymbolnil)
         my_key = _KeytypeLang(lang)

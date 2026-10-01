@@ -16,7 +16,7 @@ class _Tableid(_PxSingle):
 
     def set(self, tableid: str) -> None:
         """Id of table"""
-        LineValidator.is_not_None(self._keyword, tableid)
+        LineValidator.is_not_none(self._keyword, tableid)
         LineValidator.is_string(self._keyword, tableid)
         my_value = _PxString(tableid)
         try:

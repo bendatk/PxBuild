@@ -18,7 +18,7 @@ class _Heading(_PxValueByKey):
 
     def set(self, heading: list[str], lang: str = None) -> None:
         """Variables in heading"""
-        LineValidator.is_not_None(self._keyword, heading)
+        LineValidator.is_not_none(self._keyword, heading)
         LineValidator.is_list_of_strings(self._keyword, heading)
         my_value = _PxStringList(heading)
         my_key = _KeytypeLang(lang)

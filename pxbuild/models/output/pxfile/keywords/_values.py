@@ -18,7 +18,7 @@ class _Values(_PxValueByKey):
 
     def set(self, values: list[str], variable: str, lang: str = None, code: str = "") -> None:
         """Labels of the values for the variable."""
-        LineValidator.is_not_None(self._keyword, values)
+        LineValidator.is_not_none(self._keyword, values)
         LineValidator.is_list_of_strings(self._keyword, values)
         my_value = _PxStringList(values)
         my_key = _KeytypeVariableLang(variable, lang, code)

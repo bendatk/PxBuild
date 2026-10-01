@@ -4,7 +4,7 @@ from typing import Optional, TYPE_CHECKING
 import pandas as pd
 
 if TYPE_CHECKING:
-    from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
+    from pyspark.sql import DataFrame as SparkDataFrame
 
 
 class _PxTlist:
@@ -115,7 +115,7 @@ class _PxStringList:
         if type(list_of_strings) is not list:
             raise ValueError(f"list_of_strings must be list not {type(list_of_strings)}")
         if len(list_of_strings) < 1:
-            raise ValueError(f"list_of_strings must have a least one value")
+            raise ValueError("list_of_strings must have a least one value")
 
     def __str__(self):
         line_len = 0

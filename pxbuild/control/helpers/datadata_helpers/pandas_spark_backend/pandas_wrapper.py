@@ -3,7 +3,6 @@ from typing import Literal, List
 from pyarrow.parquet import ParquetFile
 import numpy as np
 from .....models.output.pxfile.keywords._data import _PxData
-from io import TextIOWrapper
 from .....models.input.pydantic_pxmetadata import Measurement
 from ._backend_methods import IBackendMethods
 

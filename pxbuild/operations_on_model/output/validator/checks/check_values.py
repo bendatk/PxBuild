@@ -7,7 +7,7 @@ def check_values(model: PXFileModel) -> ValidationResult:
         desc="Check if all combination of language and variables has a value-list. And that a variable has the same number of values in all langs."
     )
     if not model.values.is_present():
-        val_result.add_error(f"Can't find mandatory keyword VALUES.")
+        val_result.add_error("Can't find mandatory keyword VALUES.")
         return val_result
 
     lengths_by_variable = {}

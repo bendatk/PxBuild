@@ -16,7 +16,7 @@ class _Decimals(_PxSingle):
 
     def set(self, decimals: int) -> None:
         """Number of desimals in stored data."""
-        LineValidator.is_not_None(self._keyword, decimals)
+        LineValidator.is_not_none(self._keyword, decimals)
         LineValidator.is_int(self._keyword, decimals)
         LineValidator.in_range(0, 15, self._keyword, decimals)
         my_value = _PxInt(decimals)

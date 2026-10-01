@@ -171,7 +171,7 @@ class _PxModelBuilder:
         self._output_filename = (
             self._pxmetadata_model.dataset.output_file_name if self._pxmetadata_model.dataset.output_file_name else None
         )
-        if self._output_filename == None:
+        if self._output_filename is None:
             self._output_filename = f"tab_{pxmetadata_id}"
 
         ##################
@@ -614,7 +614,7 @@ class _PxModelBuilder:
         if self._add_language_independent:
             out_model.tableid.set(in_model.dataset.table_id)
 
-            if self._pxmetadata_model.dataset.matrix == None:
+            if self._pxmetadata_model.dataset.matrix is None:
                 matrix = f"tab_{self._pxmetadata_id}"
             else:
                 matrix = self._pxmetadata_model.dataset.matrix
@@ -692,7 +692,7 @@ class _PxModelBuilder:
 
 def convert_to_pxdate_string(date_string: str, date_format: str) -> str:
     dtm_date = datetime.strptime(date_string, date_format)
-    px_date_string = dtm_date.strftime(f"%Y%m%d %H:%M")
+    px_date_string = dtm_date.strftime("%Y%m%d %H:%M")
 
     return px_date_string
 

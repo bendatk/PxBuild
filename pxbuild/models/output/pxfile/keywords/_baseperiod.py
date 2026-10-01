@@ -18,7 +18,7 @@ class _Baseperiod(_PxValueByKey):
 
     def set(self, baseperiod: str, content: str = None, lang: str = None, code: str = "") -> None:
         """Base period for, for instance index series"""
-        LineValidator.is_not_None(self._keyword, baseperiod)
+        LineValidator.is_not_none(self._keyword, baseperiod)
         LineValidator.is_string(self._keyword, baseperiod)
         my_value = _PxString(baseperiod)
         my_key = _KeytypeContentLang(content, lang, code)

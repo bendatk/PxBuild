@@ -18,7 +18,7 @@ class _Elimination(_PxValueByKey):
 
     def set(self, elimination: str, variable: str, lang: str = None, code: str = "") -> None:
         """bool eller string"""
-        LineValidator.is_not_None(self._keyword, elimination)
+        LineValidator.is_not_none(self._keyword, elimination)
         LineValidator.is_string(self._keyword, elimination)
         my_value = _PxBString(elimination)
         my_key = _KeytypeVariableLang(variable, lang, code)

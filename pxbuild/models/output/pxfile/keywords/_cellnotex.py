@@ -19,7 +19,7 @@ class _Cellnotex(_PxValueByKey):
 
     def set(self, cellnotex: str, values: list[str], lang: str = None) -> None:
         """As CELLNOTE but shown mandatory as for NOTEX."""
-        LineValidator.is_not_None(self._keyword, cellnotex)
+        LineValidator.is_not_none(self._keyword, cellnotex)
         LineValidator.is_string(self._keyword, cellnotex)
         my_value = _PxString(cellnotex)
         self.occurence_counter += 1

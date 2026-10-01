@@ -16,7 +16,7 @@ class _FirstPublished(_PxSingle):
 
     def set(self, first_published: str) -> None:
         """In use?"""
-        LineValidator.is_not_None(self._keyword, first_published)
+        LineValidator.is_not_none(self._keyword, first_published)
         LineValidator.is_string(self._keyword, first_published)
         my_value = _PxString(first_published)
         try:

@@ -18,7 +18,7 @@ class _Infofile(_PxValueByKey):
 
     def set(self, infofile: str, lang: str = None) -> None:
         """Name of a file containing more information for the statistics. Working?"""
-        LineValidator.is_not_None(self._keyword, infofile)
+        LineValidator.is_not_none(self._keyword, infofile)
         LineValidator.is_string(self._keyword, infofile)
         my_value = _PxString(infofile)
         my_key = _KeytypeLang(lang)

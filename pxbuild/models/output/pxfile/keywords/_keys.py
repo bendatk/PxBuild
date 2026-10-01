@@ -18,7 +18,7 @@ class _Keys(_PxValueByKey):
 
     def set(self, keys: str, variable: str, lang: str = None) -> None:
         """ """
-        LineValidator.is_not_None(self._keyword, keys)
+        LineValidator.is_not_none(self._keyword, keys)
         LineValidator.is_string(self._keyword, keys)
         LineValidator.regexp_string("^(CODES|VALUES)$", self._keyword, keys)
         my_value = _PxString(keys)

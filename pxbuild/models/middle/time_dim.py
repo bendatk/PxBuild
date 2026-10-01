@@ -1,7 +1,6 @@
 from pxbuild.models.input.pydantic_pxcodes import PxCodes
 
 from .abstract_dim import AbstractDim
-from ..input.pydantic_pxmetadata import Note
 from typing import List
 from pxbuild.control.helpers.datadata_helpers.datadatasource import Datadatasource
 from pxbuild.control.helpers.loaded_jsons import LoadedJsons

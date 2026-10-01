@@ -19,8 +19,8 @@
 		"pxFolderFormat": "example_data/pxbuild_output/output_{id}",
 		"aggFolderFormat": "example_data/pxbuild_output"
 	}
-	
-  },	
+
+  },
   "charset": "ANSI",
   "axisVersion": "2013",
   "codePage": "WINDOWS-1252",
@@ -36,5 +36,5 @@
   "datasymbol6": null,
   "datasymbolNil": { "no": ".", "en": "."  },
   "datasymbolSum": { "no": ".", "en": "."  },
-  "source": { "no": "Statistisk sentralbyrå", "en": "Statistics Norway"  } 
+  "source": { "no": "Statistisk sentralbyrå", "en": "Statistics Norway"  }
 }

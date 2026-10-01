@@ -8,8 +8,8 @@
   "contacts":[
   {
     "phone": "+47 4080001",
-    "email": "bhe@ssb.no",                  
-    "name": {"no":"Henrik Bråthen, Statistisk sentralbyrå","en":"Henrik Bråthen, Statistics Norway"}  
+    "email": "bhe@ssb.no",
+    "name": {"no":"Henrik Bråthen, Statistisk sentralbyrå","en":"Henrik Bråthen, Statistics Norway"}
   }
   ]
 }

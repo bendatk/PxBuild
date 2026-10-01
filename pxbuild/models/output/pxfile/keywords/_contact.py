@@ -18,7 +18,7 @@ class _Contact(_PxValueByKey):
 
     def set(self, contact: str, content: str = None, lang: str = None, code: str = "") -> None:
         """Is written in the form name, organization, telephone, fax, e-mail. Several persons can be stated in the same text string and are then divided by the #-sign"""
-        LineValidator.is_not_None(self._keyword, contact)
+        LineValidator.is_not_none(self._keyword, contact)
         LineValidator.is_string(self._keyword, contact)
         my_value = _PxString(contact)
         my_key = _KeytypeContentLang(content, lang, code)
