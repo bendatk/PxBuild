@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-#from pandas import DataFrame as PandasDataFrame
+
+# from pandas import DataFrame as PandasDataFrame
 import pandas as pd
 from typing import Union, TYPE_CHECKING
 
@@ -17,5 +18,7 @@ class IValidation(ABC):
         pass
 
     @abstractmethod
-    def validate_codelist_vs_data_values(self, df: "Union[SparkDataFrame, pd.DataFrame]", coded_dimensions: list, resolved_pxcodes_ids: dict) -> None:
+    def validate_codelist_vs_data_values(
+        self, df: "Union[SparkDataFrame, pd.DataFrame]", coded_dimensions: list, resolved_pxcodes_ids: dict
+    ) -> None:
         pass

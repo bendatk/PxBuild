@@ -40,6 +40,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["pxbuild"]
 
+[tool.uv]
+exclude-newer = "7 days"
+
 [tool.black]
 line-length = 120
 

@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 
 
 class Attribute(BaseModel):
-    column_name: Optional[str] = Field(None, alias='columnName')
+    column_name: Optional[str] = Field(None, alias="columnName")
     """
     name of column in dataset
     """
@@ -19,7 +19,7 @@ class Attribute(BaseModel):
     """
     the code of the measurement
     """
-    codelist_id: Optional[str] = Field(None, alias='codelistId')
+    codelist_id: Optional[str] = Field(None, alias="codelistId")
     """
     A Link to a PxCodes document
     """
@@ -30,9 +30,9 @@ class DomainIdFrom(Enum):
     How to construct the domain label. Defaults to codelistId.
     """
 
-    codelist_id = 'codelistId'
-    first_grouping_label = 'firstGroupingLabel'
-    first_grouping_filename_base = 'firstGroupingFilenameBase'
+    codelist_id = "codelistId"
+    first_grouping_label = "firstGroupingLabel"
+    first_grouping_filename_base = "firstGroupingFilenameBase"
 
 
 class LabelConstructionOption(Enum):
@@ -40,10 +40,10 @@ class LabelConstructionOption(Enum):
     Construct label for codelist entry as text or code or text then code or code then text
     """
 
-    code = 'code'
-    text = 'text'
-    code_text = 'code_text'
-    text_code = 'text_code'
+    code = "code"
+    text = "text"
+    code_text = "code_text"
+    text_code = "text_code"
 
 
 class PriceType(Enum):
@@ -51,16 +51,16 @@ class PriceType(Enum):
     Empty if not a price
     """
 
-    current = 'Current'
-    fixed = 'Fixed'
+    current = "Current"
+    fixed = "Fixed"
 
 
 class AttachmentItem(BaseModel):
-    dimension_code: str = Field(..., alias='dimensionCode')
+    dimension_code: str = Field(..., alias="dimensionCode")
     """
     The code of the dimension (found in config for time and measure)
     """
-    value_code: str = Field(..., alias='valueCode')
+    value_code: str = Field(..., alias="valueCode")
     """
     The code of the Value
     """
@@ -76,12 +76,12 @@ class CellNote(BaseModel):
     Attaches the text on a point/subcube of the cube. The array has one or zero entries for each dimension. No entry for a dimension means everything.
     """
     text: Dict[str, str]
-    is_mandatory: bool = Field(..., alias='isMandatory')
+    is_mandatory: bool = Field(..., alias="isMandatory")
 
 
 class Note(BaseModel):
     text: Dict[str, str]
-    is_mandatory: bool = Field(..., alias='isMandatory')
+    is_mandatory: bool = Field(..., alias="isMandatory")
 
 
 class ValueNote(BaseModel):
@@ -93,7 +93,7 @@ class ValueNote(BaseModel):
 
 
 class TimeDimension(BaseModel):
-    column_name: Optional[str] = Field(None, alias='columnName')
+    column_name: Optional[str] = Field(None, alias="columnName")
     """
     name of column in dataset
     """
@@ -101,32 +101,32 @@ class TimeDimension(BaseModel):
     """
     the code of the dimension( aka variable). Defaults to columName if missing
     """
-    codelist_id: Optional[str] = Field(None, alias='codelistId')
+    codelist_id: Optional[str] = Field(None, alias="codelistId")
     """
     A Link to a PxCodes document
     """
-    time_period_format: Optional[str] = Field(None, alias='timePeriodFormat')
+    time_period_format: Optional[str] = Field(None, alias="timePeriodFormat")
     """
     example: yyyy
     """
-    is_heading: Optional[bool] = Field(None, alias='isHeading')
+    is_heading: Optional[bool] = Field(None, alias="isHeading")
     """
     If true the dimension is a heading otherwise it is a stub
     """
     label: Optional[Dict[str, str]] = None
-    meta_id: Optional[List[str]] = Field(None, alias='metaId')
+    meta_id: Optional[List[str]] = Field(None, alias="metaId")
     """
     For MetaId keyword
     """
     notes: Optional[List[Note]] = None
-    value_notes: Optional[List[ValueNote]] = Field(None, alias='valueNotes')
+    value_notes: Optional[List[ValueNote]] = Field(None, alias="valueNotes")
     """
     Notes on the values in the time dimension.
     """
 
 
 class CodedDimension(BaseModel):
-    column_name: str = Field(..., alias='columnName')
+    column_name: str = Field(..., alias="columnName")
     """
     name of column in dataset
     """
@@ -134,35 +134,35 @@ class CodedDimension(BaseModel):
     """
     the code of the dimension( aka variable). Defaults to columName if missing
     """
-    is_geo_variable_type: Optional[bool] = Field(False, alias='isGeoVariableType')
+    is_geo_variable_type: Optional[bool] = Field(False, alias="isGeoVariableType")
     """
     Geo variable or not
     """
-    geo_variable_label: Optional[Dict[str, str]] = Field(None, alias='geoVariableLabel')
+    geo_variable_label: Optional[Dict[str, str]] = Field(None, alias="geoVariableLabel")
     """
     Label for the geo variable. Maps to MAP keyword
     """
-    domain_id_from: Optional[DomainIdFrom] = Field(None, alias='domainIdFrom')
+    domain_id_from: Optional[DomainIdFrom] = Field(None, alias="domainIdFrom")
     """
     How to construct the domain label. Defaults to codelistId.
     """
-    variable_type: Optional[str] = Field('N', alias='variableType')
+    variable_type: Optional[str] = Field("N", alias="variableType")
     """
     Variable type
     """
-    is_heading: Optional[bool] = Field(None, alias='isHeading')
+    is_heading: Optional[bool] = Field(None, alias="isHeading")
     """
     If true the dimension is a heading otherwise it is a stub
     """
-    codelist_id: str = Field(..., alias='codelistId')
+    codelist_id: str = Field(..., alias="codelistId")
     """
     A Link to a PxCodes document
     """
-    elimination_enable: Optional[bool] = Field(True, alias='eliminationEnable')
+    elimination_enable: Optional[bool] = Field(True, alias="eliminationEnable")
     """
     Is elimination keyword created
     """
-    label_construction_option: Optional[LabelConstructionOption] = Field(None, alias='labelConstructionOption')
+    label_construction_option: Optional[LabelConstructionOption] = Field(None, alias="labelConstructionOption")
     """
     Construct label for codelist entry as text or code or text then code or code then text
     """
@@ -172,14 +172,14 @@ class CodedDimension(BaseModel):
     Applies only to some of the file-export formats. See DOUBLECOLUMN-keyword
     """
     notes: Optional[List[Note]] = None
-    meta_id: Optional[List[str]] = Field(None, alias='metaId')
+    meta_id: Optional[List[str]] = Field(None, alias="metaId")
     """
     For MetaId keyword
     """
 
 
 class Measurement(BaseModel):
-    column_name: str = Field(..., alias='columnName')
+    column_name: str = Field(..., alias="columnName")
     """
     name of column in dataset
     """
@@ -188,25 +188,25 @@ class Measurement(BaseModel):
     the code of the measurement. Defaults to columName if missing
     """
     label: Dict[str, str]
-    show_decimals: int = Field(..., alias='showDecimals')
+    show_decimals: int = Field(..., alias="showDecimals")
     """
     number of decimal to use in output
     """
-    price_type: Optional[PriceType] = Field(None, alias='priceType')
+    price_type: Optional[PriceType] = Field(None, alias="priceType")
     """
     Empty if not a price
     """
-    is_seasonally_adjusted: Optional[bool] = Field(None, alias='isSeasonallyAdjusted')
-    is_workingdays_adjusted: Optional[bool] = Field(None, alias='isWorkingdaysAdjusted')
-    aggregation_allowed: Optional[bool] = Field(None, alias='aggregationAllowed')
+    is_seasonally_adjusted: Optional[bool] = Field(None, alias="isSeasonallyAdjusted")
+    is_workingdays_adjusted: Optional[bool] = Field(None, alias="isWorkingdaysAdjusted")
+    aggregation_allowed: Optional[bool] = Field(None, alias="aggregationAllowed")
     """
     Is it meaningfull to sum this measurement
     """
-    base_period: Optional[Dict[str, str]] = Field(None, alias='basePeriod')
+    base_period: Optional[Dict[str, str]] = Field(None, alias="basePeriod")
     """
     For index example: '1. kvartal 2010'
     """
-    reference_period: Optional[Dict[str, str]] = Field(None, alias='referencePeriod')
+    reference_period: Optional[Dict[str, str]] = Field(None, alias="referencePeriod")
     """
     Text with information on the reference period for the statistics.
     """
@@ -214,12 +214,12 @@ class Measurement(BaseModel):
     """
     Sort order for measurement in dimension, document order is default
     """
-    unit_of_measure: Dict[str, str] = Field(..., alias='unitOfMeasure')
+    unit_of_measure: Dict[str, str] = Field(..., alias="unitOfMeasure")
     """
     Text including unit multiplier
     """
     notes: Optional[List[Note]] = None
-    meta_id: Optional[List[str]] = Field(None, alias='metaId')
+    meta_id: Optional[List[str]] = Field(None, alias="metaId")
     """
     For MetaId keyword
     """
@@ -230,20 +230,20 @@ class Dataset(BaseModel):
     Payload
     """
 
-    table_id: str = Field(..., alias='tableId')
+    table_id: str = Field(..., alias="tableId")
     """
     example: '07459' To be used as id in PxWeb Url
     """
-    stored_decimals: Optional[int] = Field(None, alias='storedDecimals')
+    stored_decimals: Optional[int] = Field(None, alias="storedDecimals")
     """
     How many decimals should be stored in the PxFile. Default is the max number of decimals shown.
     """
-    statistics_id: Optional[str] = Field(None, alias='statisticsId')
+    statistics_id: Optional[str] = Field(None, alias="statisticsId")
     """
     Id of group of tables in the registry of statistics. example: '8765'
     """
-    data_file: Optional[Union[str, Dict[str, Any]]] = Field(None, alias='dataFile')
-    output_file_name: Optional[str] = Field(None, alias='outputFileName')
+    data_file: Optional[Union[str, Dict[str, Any]]] = Field(None, alias="dataFile")
+    output_file_name: Optional[str] = Field(None, alias="outputFileName")
     """
     Name of the output file. For multilingual defaults to tab_{tableId} or tab_{tableId}_{language} if not multilingual
     """
@@ -251,7 +251,7 @@ class Dataset(BaseModel):
     """
     The matrix of the table. Defaults to outputFileName excluding language suffix
     """
-    base_title: Dict[str, str] = Field(..., alias='baseTitle')
+    base_title: Dict[str, str] = Field(..., alias="baseTitle")
     """
     Text to which tableid is prefixed and _by_ variable list is appended. Is used for the CONTENTS keyword. example: no Utenrikshandel med varer
     """
@@ -259,14 +259,14 @@ class Dataset(BaseModel):
     """
     Fixed header for the entire table. This header should include the base population/concept and any grouping variables that distinguish different tables, if needed.
     """
-    search_keywords: Optional[Dict[str, List[str]]] = Field(None, alias='searchKeywords')
+    search_keywords: Optional[Dict[str, List[str]]] = Field(None, alias="searchKeywords")
     """
     Array of keywords by language for search. Is used for the SYNONYMS keyword. example:'{en: [External trade, export]}'
     """
     notes: Optional[List[Note]] = None
-    cell_notes: Optional[List[CellNote]] = Field(None, alias='cellNotes')
-    time_dimension: TimeDimension = Field(..., alias='timeDimension')
-    coded_dimensions: Optional[List[CodedDimension]] = Field(None, alias='codedDimensions')
+    cell_notes: Optional[List[CellNote]] = Field(None, alias="cellNotes")
+    time_dimension: TimeDimension = Field(..., alias="timeDimension")
+    coded_dimensions: Optional[List[CodedDimension]] = Field(None, alias="codedDimensions")
     """
     Also known as classification variables
     """
@@ -274,34 +274,34 @@ class Dataset(BaseModel):
     """
     Also known as content variables
     """
-    meta_id: Optional[List[str]] = Field(None, alias='metaId')
+    meta_id: Optional[List[str]] = Field(None, alias="metaId")
     """
     For MetaId keyword
     """
-    row_missing: Optional[str] = Field('.', alias='rowMissing')
+    row_missing: Optional[str] = Field(".", alias="rowMissing")
     """
     Value to insert in data when row is missing.
     """
-    cell_missing: Optional[str] = Field('.', alias='cellMissing')
+    cell_missing: Optional[str] = Field(".", alias="cellMissing")
     """
     Value to insert in data when cell is missing.
     """
-    official_statistics: Optional[bool] = Field(False, alias='officialStatistics')
+    official_statistics: Optional[bool] = Field(False, alias="officialStatistics")
     copyright: Optional[bool] = False
-    creation_dateformat: Optional[str] = Field('%Y%m%d %H:%M', alias='creationDateformat')
+    creation_dateformat: Optional[str] = Field("%Y%m%d %H:%M", alias="creationDateformat")
     """
     Format for datetime.strptime reading creationDate. Default is the pxweb standard which is CCYYMMDD hh:mm
     """
-    creation_date: Optional[str] = Field(None, alias='creationDate')
+    creation_date: Optional[str] = Field(None, alias="creationDate")
     """
     Date for CREATION-DATE keyword. Default is the current date. Format specified in creationDateformat
     """
-    first_published: Optional[str] = Field(None, alias='firstPublished')
+    first_published: Optional[str] = Field(None, alias="firstPublished")
     """
     The date when the data cube was first published in the format CCYYMMDD hh:mm
     """
     attributes: Optional[List[Attribute]] = None
-    is_heading_contdim: Optional[bool] = Field(None, alias='isHeadingContdim')
+    is_heading_contdim: Optional[bool] = Field(None, alias="isHeadingContdim")
     """
     Defaults to heading
     """

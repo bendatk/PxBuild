@@ -35,9 +35,7 @@ def databricks_cli(args: list[str], profile: str | None) -> str:
 
 
 def load_variable_overrides(target: str) -> dict[str, str]:
-    path = os.path.join(
-        ".databricks", "bundle", target, "variable-overrides.json"
-    )
+    path = os.path.join(".databricks", "bundle", target, "variable-overrides.json")
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
@@ -50,9 +48,7 @@ def current_wheel_name() -> str:
 
 
 def cleanup_cluster(cluster_id: str, keep_wheel: str, profile: str | None) -> None:
-    library_statuses = json.loads(
-        databricks_cli(["libraries", "cluster-status", cluster_id], profile)
-    )
+    library_statuses = json.loads(databricks_cli(["libraries", "cluster-status", cluster_id], profile))
     stale = [
         lib["library"]
         for lib in library_statuses
@@ -64,9 +60,7 @@ def cleanup_cluster(cluster_id: str, keep_wheel: str, profile: str | None) -> No
         print(f"{cluster_id}: nothing to clean up")
         return
     payload = {"cluster_id": cluster_id, "libraries": stale}
-    databricks_cli(
-        ["libraries", "uninstall", "--json", json.dumps(payload)], profile
-    )
+    databricks_cli(["libraries", "uninstall", "--json", json.dumps(payload)], profile)
     print(f"{cluster_id}: marked {len(stale)} stale pxbuild wheel(s) for uninstall")
 
 
@@ -81,10 +75,7 @@ def main() -> None:
     for key in ("cluster_id_15_4", "cluster_id_16_4", "cluster_id_17_3"):
         cleanup_cluster(overrides[key], keep_wheel, args.profile)
 
-    print(
-        "Uninstall requests are pending; the cluster library list only "
-        "clears once each cluster is restarted."
-    )
+    print("Uninstall requests are pending; the cluster library list only " "clears once each cluster is restarted.")
 
 
 if __name__ == "__main__":
@@ -93,5 +84,3 @@ if __name__ == "__main__":
     except subprocess.CalledProcessError as exc:
         print(exc.stderr, file=sys.stderr)
         sys.exit(exc.returncode)
-
-

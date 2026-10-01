@@ -9,7 +9,6 @@ from ._backend_methods import IBackendMethods
 
 
 class PandasWrapper(IBackendMethods):
-
     @property
     def backend_name(self) -> str:
         return "pandas"
@@ -68,17 +67,26 @@ class PandasWrapper(IBackendMethods):
             err_mess = f"There are rows with invalid values in column '{column}'."
             raise ValueError(err_mess)
 
-    def wide_to_long(self, df: pd.DataFrame, identifier_cols: list[str], stubnames: list[str], measurement_codes: list[str], j_column_name: str, sep: str, suffix: str) -> pd.DataFrame:
+    def wide_to_long(
+        self,
+        df: pd.DataFrame,
+        identifier_cols: list[str],
+        stubnames: list[str],
+        measurement_codes: list[str],
+        j_column_name: str,
+        sep: str,
+        suffix: str,
+    ) -> pd.DataFrame:
         return pd.wide_to_long(
             df, stubnames=stubnames, i=identifier_cols, j=j_column_name, sep=sep, suffix=suffix
         ).reset_index()
 
     def read_parquet(self, parquet: ParquetFile) -> pd.DataFrame:
         return parquet.read().to_pandas()
-    
+
     def read_csv(self, filepath) -> pd.DataFrame:
         return pd.read_csv(filepath, sep=";", dtype=str)
-    
+
     def add_sum_column(self, df: pd.DataFrame, sum_col_name: str, columns: list[str]) -> pd.DataFrame:
         df[sum_col_name] = df[columns].sum(axis=1)
         return df
@@ -88,7 +96,7 @@ class PandasWrapper(IBackendMethods):
         df1: pd.DataFrame,
         df2: pd.DataFrame,
         on: str,
-        how: Literal["left", "right", "outer", "inner", "cross"] = "left"
+        how: Literal["left", "right", "outer", "inner", "cross"] = "left",
     ) -> pd.DataFrame:
         return pd.merge(df1, df2, on=on, how=how)
 
@@ -139,7 +147,7 @@ class PandasWrapper(IBackendMethods):
 
         df["out_value"] = np.select(conditions, choices, missing_cell_symbol)
         return df
-    
+
     def add_missing_rows(self, matrix_size, missing_row_symbol, df: pd.DataFrame) -> pd.DataFrame:
         # sorts on index as sideeffect :-)
         matrix_df = pd.DataFrame({"out_index": range(matrix_size)})
@@ -148,16 +156,17 @@ class PandasWrapper(IBackendMethods):
         # Fill missing values with "MISSING"
         merged_df["out_value"] = merged_df["out_value"].fillna(missing_row_symbol)
         return merged_df
-    
+
     def remove_trailing_zero_decimals(self, df: pd.DataFrame) -> pd.Series:
         out_data = df["out_value"]
-        mask = (
-            out_data.astype(str).str.replace('.', '', 1).str.isdigit() &
-            out_data.astype(str).str.contains('.', regex=False)
+        mask = out_data.astype(str).str.replace(".", "", 1).str.isdigit() & out_data.astype(str).str.contains(
+            ".", regex=False
         )
-        return out_data.where(~mask, out_data.astype(str).str.rstrip('0').str.rstrip('.'))
+        return out_data.where(~mask, out_data.astype(str).str.rstrip("0").str.rstrip("."))
 
-    def validate_codelist_vs_data_values(self, df: pd.DataFrame, coded_dimensions: list, resolved_pxcodes_ids: dict) -> None:
+    def validate_codelist_vs_data_values(
+        self, df: pd.DataFrame, coded_dimensions: list, resolved_pxcodes_ids: dict
+    ) -> None:
         for coded_dim in coded_dimensions:
             dim_code = coded_dim.code
             dim_column_name = coded_dim.column_name
@@ -167,6 +176,6 @@ class PandasWrapper(IBackendMethods):
             if missing_values:
                 raise ValueError(
                     'Values {} in dataset for coded dimension "{}" are not in codelist "{}".'.format(
-                        ', '.join(f'"{x}"' for x in list(missing_values)), dim_code, coded_dim.codelist_id
+                        ", ".join(f'"{x}"' for x in list(missing_values)), dim_code, coded_dim.codelist_id
                     )
                 )

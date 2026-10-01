@@ -5,8 +5,8 @@ from ._validation import IValidation
 from ._utility import IUtility
 from ._fileio import IFileIO
 
-class IBackendMethods(IFileIO, ITransforms, IValidation, IUtility, ABC):
 
+class IBackendMethods(IFileIO, ITransforms, IValidation, IUtility, ABC):
     @property
     @abstractmethod
     def backend_name(self) -> str:

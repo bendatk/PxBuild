@@ -12,9 +12,8 @@ class CsvDatasource(AbstractDatasource):
         print("Debug: Reading csv file:", filepath)
         self._df = self._pandas_methods.read_csv(filepath)
 
-
     def get_raw_data(self) -> pandas.DataFrame:
         return self._df
-    
+
     def close(self) -> None:
         return super().close()

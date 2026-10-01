@@ -5,7 +5,7 @@ import json
 
 project_root = Path(__name__).resolve().parents[0]
 dataframe = pd.read_parquet(project_root / "tests/testdata/real_world/11lv/11lv.parquet")
-id = '11lv'
+id = "11lv"
 
 with open(file=project_root / "tests/testdata/real_world/11lv/config.json") as f:
     config = json.load(f)
@@ -21,18 +21,12 @@ config["admin"]["pxDataResource"] = {
 config["admin"]["outputDestination"] = {
     "resourceType": None,
     "pxFolderFormat": str(project_root / f"demo/{id}"),
-    "aggFolderFormat": str(project_root / f"demo/{id}")
+    "aggFolderFormat": str(project_root / f"demo/{id}"),
 }
-config['admin']['buildMultilingualFiles']
+config["admin"]["buildMultilingualFiles"]
 
 
-
-model: PxBuildModel = build_px_file(
-    pxmetadata_id=id,
-    config_file=config,
-    backend='pandas',
-    debug=True
-)
+model: PxBuildModel = build_px_file(pxmetadata_id=id, config_file=config, backend="pandas", debug=True)
 
 print(model.validation_by_language)
 
@@ -45,12 +39,6 @@ for note_key, note_value in model.get_model().note.get_sorted_value_by_key().ite
     print(f"{note_key.variable}[{note_key.lang}]: {note_value.get_value()}")
 
 
-config['admin']['buildMultilingualFiles'] = False
+config["admin"]["buildMultilingualFiles"] = False
 
-model: PxBuildModel = build_px_file(
-    pxmetadata_id=id,
-    config_file=config,
-    backend='pandas',
-    debug=True
-)
-
+model: PxBuildModel = build_px_file(pxmetadata_id=id, config_file=config, backend="pandas", debug=True)
