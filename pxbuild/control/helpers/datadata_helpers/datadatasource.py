@@ -1,15 +1,17 @@
+from typing import TYPE_CHECKING
+
 import pandas
-from typing import List, TYPE_CHECKING
-from .pandas_datasource import PandasDatasource
-from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
-from .parquet_datasource import ParquetDatasource
-from .csv_datasource import CsvDatasource
-from .spark_datasource import SparkDatasource
-from .abstract_datasource import AbstractDatasource
+
+from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig, ResourceType3
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
+
 from ...helpers.logger_config import logger
+from .abstract_datasource import AbstractDatasource
+from .csv_datasource import CsvDatasource
+from .pandas_datasource import PandasDatasource
 from .pandas_spark_backend._backend_methods import IBackendMethods
-from pxbuild.models.input.pydantic_pxbuildconfig import ResourceType3
+from .parquet_datasource import ParquetDatasource
+from .spark_datasource import SparkDatasource
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame
@@ -17,8 +19,6 @@ if TYPE_CHECKING:
 
 class PxDataSourceError(Exception):
     """Custom exception for errors related to datasource."""
-
-    pass
 
 
 class Datadatasource:
@@ -58,17 +58,17 @@ class Datadatasource:
     def _validate_data(self, df: "pandas.DataFrame | SparkDataFrame", file_path: str) -> None:
         self._backend.validate_data(df, file_path)
 
-    def validate_coded_values(self, column: str, codelist: List[str]) -> None:
+    def validate_coded_values(self, column: str, codelist: list[str]) -> None:
         self._backend.validate_coded_values(self._raw_df, column, codelist)
 
-    def get_timeperiodes(self, column_name: str) -> List[str]:
+    def get_timeperiodes(self, column_name: str) -> list[str]:
         return self._backend.get_timeperiodes(self._raw_df, column_name)
 
-    def get_identifiercolumns(self, raw_data: "pandas.DataFrame | SparkDataFrame", measurement_map: dict) -> List[str]:
+    def get_identifiercolumns(self, raw_data: "pandas.DataFrame | SparkDataFrame", measurement_map: dict) -> list[str]:
         all_columns = self._backend.get_columns_to_list(raw_data)
         identifier_columns = []
         for column in all_columns:
-            if not (column in measurement_map.keys()):
+            if not (column in measurement_map):
                 identifier_columns.append(column)
 
         return identifier_columns
@@ -80,11 +80,11 @@ class Datadatasource:
 
     def make_renamedict(self, measurement_code_by_column_name: dict, columns_in_datafile) -> dict:
         my_out = {}
-        for column_name in measurement_code_by_column_name:
-            my_out[column_name] = f"VALUE_{measurement_code_by_column_name[column_name]}"
+        for column_name, measurement_code in measurement_code_by_column_name.items():
+            my_out[column_name] = f"VALUE_{measurement_code}"
             corresponding_symbol_column = column_name + "_SYMBOL"
             if corresponding_symbol_column in columns_in_datafile:
-                my_out[corresponding_symbol_column] = f"SYMBOL_{measurement_code_by_column_name[column_name]}"
+                my_out[corresponding_symbol_column] = f"SYMBOL_{measurement_code}"
 
         return my_out
 

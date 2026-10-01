@@ -1,5 +1,6 @@
 # These 3 lines are here since we are using files in the same repo, not from a package.
 import sys
+
 import pxbuild
 
 my = sys.path[0].replace("\\demo", "\\")

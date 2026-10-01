@@ -1,5 +1,3 @@
-from typing import List
-
 from SpecReader import SpecReader
 from test_templates import TstTemplates
 
@@ -25,7 +23,7 @@ def get_keypart_no_lang(subkeys: str) -> str:
     return my_out
 
 
-def test_lang_string_writer(kw) -> List[str]:
+def test_lang_string_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -45,7 +43,7 @@ def test_lang_string_writer(kw) -> List[str]:
         data["good_value"] = '"a string"'
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_with_key.render(data))
 
     if data["keypart_no_lang"]:
@@ -61,7 +59,7 @@ def test_lang_string_writer(kw) -> List[str]:
     return my_out
 
 
-def test_lang_stringlist_writer(kw) -> List[str]:
+def test_lang_stringlist_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -73,7 +71,7 @@ def test_lang_stringlist_writer(kw) -> List[str]:
     }
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_with_key.render(data))
 
     if data["keypart_no_lang"]:
@@ -92,7 +90,7 @@ def test_lang_stringlist_writer(kw) -> List[str]:
 #####
 
 
-def test_scalar_string_writer(kw) -> List[str]:
+def test_scalar_string_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -110,7 +108,7 @@ def test_scalar_string_writer(kw) -> List[str]:
         data["good_value"] = '"a string"'
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_keyless.render(data))
 
     if "bad_value" in data:
@@ -125,7 +123,7 @@ def test_scalar_string_writer(kw) -> List[str]:
 ######
 
 
-def test_scalar_stringlist_writer(kw) -> List[str]:
+def test_scalar_stringlist_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -138,7 +136,7 @@ def test_scalar_stringlist_writer(kw) -> List[str]:
         data["bad_value"] = '["bad_string"]'
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_keyless.render(data))
 
     if "bad_value" in data:
@@ -153,7 +151,7 @@ def test_scalar_stringlist_writer(kw) -> List[str]:
 #####
 
 
-def test_scalar_bool_writer(kw) -> List[str]:
+def test_scalar_bool_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -163,7 +161,7 @@ def test_scalar_bool_writer(kw) -> List[str]:
     }
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_bool_keyless.render(data))
 
     if not kw.is_duplicate_keypart_allowed:
@@ -173,7 +171,7 @@ def test_scalar_bool_writer(kw) -> List[str]:
 
 
 ####
-def test_lang_bool_writer(kw) -> List[str]:
+def test_lang_bool_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -185,7 +183,7 @@ def test_lang_bool_writer(kw) -> List[str]:
     }
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_bool_with_key.render(data))
 
     if data["keypart_no_lang"]:
@@ -201,7 +199,7 @@ def test_lang_bool_writer(kw) -> List[str]:
 ####
 
 
-def test_with_keypart_int_writer(kw) -> List[str]:
+def test_with_keypart_int_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -213,7 +211,7 @@ def test_with_keypart_int_writer(kw) -> List[str]:
     }
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_with_key.render(data))
 
     if "in_range" in "".join(kw.linevalidate):
@@ -230,7 +228,7 @@ def test_with_keypart_int_writer(kw) -> List[str]:
     return my_out
 
 
-def test_scalar_int_writer(kw) -> List[str]:
+def test_scalar_int_writer(kw) -> list[str]:
     # Data to be rendered in the templates
     data = {
         "object_module_name": kw.module_name,
@@ -240,7 +238,7 @@ def test_scalar_int_writer(kw) -> List[str]:
     }
 
     # Render the template with data
-    my_out: List[str] = [my_templates.intro.render(data)]
+    my_out: list[str] = [my_templates.intro.render(data)]
     my_out.append(my_templates.set_valid_keyless.render(data))
 
     if "in_range" in kw.linevalidate:
@@ -269,7 +267,7 @@ for kw in my_spec.data:
         print(f"Skipping {kw.keyword}.")
         continue
 
-    my_out: str = ""
+    my_out: list[str] = []
     if not kw.has_lang:
         if not kw.subkeys_raw:
             if kw.px_valuetype in ["_PxString"]:

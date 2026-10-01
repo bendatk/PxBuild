@@ -1,7 +1,9 @@
-from pathlib import Path
-from pxbuild.control.from_pxmetadata import PxBuildModel, build_px_file
-import pandas as pd
 import json
+from pathlib import Path
+
+import pandas as pd
+
+from pxbuild.control.from_pxmetadata import PxBuildModel, build_px_file
 
 project_root = Path(__name__).resolve().parents[0]
 dataframe = pd.read_parquet(project_root / "tests/testdata/real_world/11lv/11lv.parquet")

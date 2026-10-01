@@ -1,4 +1,5 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+
 from ...validator.validationResult import ValidationResult
 
 
@@ -29,7 +30,7 @@ def check_stub_and_heading(model: PXFileModel) -> ValidationResult:
                 cur_stub_length = len(model.stub.get_value(langu))
             else:
                 cur_stub_length = -1
-            if not cur_stub_length == stub_length:
+            if cur_stub_length != stub_length:
                 val_result.add_error(
                     f"Number of items in STUB don't match when comparing language code: {langu} and {first_langu}."
                 )
@@ -38,7 +39,7 @@ def check_stub_and_heading(model: PXFileModel) -> ValidationResult:
                 cur_heading_length = len(model.heading.get_value(langu))
             else:
                 cur_heading_length = -1
-            if not cur_heading_length == heading_length:
+            if cur_heading_length != heading_length:
                 val_result.add_error(
                     f"Number of items in HEADING don't match when comparing language code: {langu} and {first_langu}."
                 )

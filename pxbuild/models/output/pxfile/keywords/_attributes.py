@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeCodes
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
 
 
 class _Attributes(_PxValueByKey):
@@ -15,7 +15,7 @@ class _Attributes(_PxValueByKey):
     def __init__(self) -> None:
         super().__init__("ATTRIBUTES")
 
-    def set(self, attributes: list[str], codes: list[str] = None) -> None:
+    def set(self, attributes: list[str], codes: list[str] | None = None) -> None:
         """Not in normal use. See pdf"""
         LineValidator.is_not_none(self._keyword, attributes)
         LineValidator.is_list_of_strings(self._keyword, attributes)
@@ -27,10 +27,10 @@ class _Attributes(_PxValueByKey):
             msg = self._keyword + ":" + str(e)
             raise type(e)(msg) from e
 
-    def get_value(self, codes: list[str] = None) -> list[str]:
+    def get_value(self, codes: list[str] | None = None) -> list[str]:
         my_key = _KeytypeCodes(codes)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, codes: list[str] = None) -> bool:
+    def has_value(self, codes: list[str] | None = None) -> bool:
         my_key = _KeytypeCodes(codes)
         return super().has_value(my_key)

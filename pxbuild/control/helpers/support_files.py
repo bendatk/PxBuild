@@ -1,14 +1,12 @@
-from typing import List
 from pathlib import Path
 
-from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
-from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.input.helper_pxcodes import HelperPxCodes
+from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
 from pxbuild.models.input.pydantic_pxcodes import Grouping
+from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.middle.dims import Dims
-
-from pxbuild.models.output.agg_vs.vs_file_model import _VSFileModel
 from pxbuild.models.output.agg.agg_file_model import AggFileModel
+from pxbuild.models.output.agg_vs.vs_file_model import _VSFileModel
 
 
 # Class for making agg and vs files
@@ -80,7 +78,7 @@ class SupportFiles:
             out_agg_model.set("Aggtext", item_key, valuetext)
 
             child_code_conter = 0
-            ordered_children: List[str] = []
+            ordered_children: list[str] = []
             for code in my_pxcodes_helper.get_codes(language):
                 if item.unordered_children and code in item.unordered_children:
                     ordered_children.append(code)

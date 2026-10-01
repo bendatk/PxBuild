@@ -18,7 +18,9 @@ from pathlib import Path
 from typing import Any, cast
 
 import pxbuild
-from pxbuild.control.helpers.datadata_helpers.pandas_spark_backend.spark_wrapper import SparkWrapper
+from pxbuild.control.helpers.datadata_helpers.pandas_spark_backend.spark_wrapper import (
+    SparkWrapper,
+)
 from tests._paths import data_path, load_testdata_config
 
 

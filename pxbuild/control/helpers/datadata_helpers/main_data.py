@@ -1,16 +1,18 @@
 import time
+from typing import TYPE_CHECKING
+
 import pandas as pd
-from typing import Dict, TYPE_CHECKING
-from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
+
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
+from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.middle.dims import Dims
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from ..loaded_jsons import LoadedJsons
 
+from ...helpers.logger_config import logger
+from ..loaded_jsons import LoadedJsons
+from .data_formatter import DataFormatter
 from .datadatasource import Datadatasource
 from .for_get_data import CubemathsHelper
-from .data_formatter import DataFormatter
-from ...helpers.logger_config import logger
 from .pandas_spark_backend._backend_methods import IBackendMethods
 
 if TYPE_CHECKING:
@@ -37,7 +39,7 @@ class MapData:
         self._loaded_jsons = loaded_jsons
         self._decimals = decimals
 
-        self._cubemaths_helper_by_codeid: Dict[str, CubemathsHelper] = dict()
+        self._cubemaths_helper_by_codeid: dict[str, CubemathsHelper] = {}
         # The CubemathsHelpers is initalized in  init_cubemaths_helpers_and_calculate_matrix_size()
         self._backend = backend
         self.matrix_size: int | None = None

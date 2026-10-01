@@ -1,6 +1,7 @@
-from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from ...validator.validationResult import ValidationResult
 import pxbuild.models.output.pxfile.util.constants as const
+from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+
+from ...validator.validationResult import ValidationResult
 
 
 def check_lang_keys(model: PXFileModel) -> ValidationResult:

@@ -1,6 +1,6 @@
+from ._backend_methods import IBackendMethods
 from .pandas_wrapper import PandasWrapper
 from .spark_wrapper import SparkWrapper
-from ._backend_methods import IBackendMethods
 
 
 def create_backend(backend: str) -> "IBackendMethods":

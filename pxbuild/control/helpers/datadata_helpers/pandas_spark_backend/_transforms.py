@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Literal
+
 from pandas import DataFrame as PandasDataFrame
-from typing import Literal, List, TYPE_CHECKING
+
 from .....models.input.pydantic_pxmetadata import Measurement
 
 if TYPE_CHECKING:
@@ -17,7 +19,7 @@ class ITransforms(ABC):
 
     @abstractmethod
     def add_sum_column(
-        self, df: "SparkDataFrame | PandasDataFrame", sum_col_name: str, columns: List[str]
+        self, df: "SparkDataFrame | PandasDataFrame", sum_col_name: str, columns: list[str]
     ) -> "PandasDataFrame | SparkDataFrame":
         pass
 
@@ -51,13 +53,13 @@ class ITransforms(ABC):
 
     @abstractmethod
     def add_missing_symbolcolumns(
-        self, measurement_codes: List[str], df: "SparkDataFrame | PandasDataFrame"
+        self, measurement_codes: list[str], df: "SparkDataFrame | PandasDataFrame"
     ) -> "PandasDataFrame | SparkDataFrame":
         pass
 
     @abstractmethod
     def round_by_decimals(
-        self, df: "SparkDataFrame | PandasDataFrame", measurements: List[Measurement], decimals: int
+        self, df: "SparkDataFrame | PandasDataFrame", measurements: list[Measurement], decimals: int
     ) -> "PandasDataFrame | SparkDataFrame":
         pass
 

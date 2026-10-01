@@ -1,16 +1,17 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from .validationResult import ValidationResult
-from .checks.check_mandatory import check_mandatory
-from .checks.check_language import check_language
-from .checks.check_lang_keys import check_lang_keys
-from .checks.check_decimals import check_decimals
-from .checks.check_showdecimals import check_showdecimals
+
 from .checks.check_codes_values_equal_count import check_codes_values_equal_count
-from .checks.check_stub_and_heading import check_stub_and_heading
-from .checks.check_contentsvariable_is_present import check_contentsvariable_is_present
-from .checks.check_values import check_values
-from .checks.check_subkeys import check_valuebased_subkeys
 from .checks.check_completeness import check_completeness
+from .checks.check_contentsvariable_is_present import check_contentsvariable_is_present
+from .checks.check_decimals import check_decimals
+from .checks.check_lang_keys import check_lang_keys
+from .checks.check_language import check_language
+from .checks.check_mandatory import check_mandatory
+from .checks.check_showdecimals import check_showdecimals
+from .checks.check_stub_and_heading import check_stub_and_heading
+from .checks.check_subkeys import check_valuebased_subkeys
+from .checks.check_values import check_values
+from .validationResult import ValidationResult
 
 
 class Validate:
@@ -60,7 +61,6 @@ class Validate:
         self.checks_ran.append(check_completeness(model))
         if not self.checks_ran[-1].is_valid:
             return
-        #
         self.checks_ran.append(check_codes_values_equal_count(model))
         self.checks_ran.append(check_decimals(model))
         self.checks_ran.append(check_showdecimals(model))

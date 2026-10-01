@@ -1,7 +1,8 @@
 ﻿import pytest
+
+from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeLang
 from pxbuild.models.output.pxfile.util._px_super import _PxSingle, _PxValueByKey
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
-from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeLang
 
 
 def test_super():

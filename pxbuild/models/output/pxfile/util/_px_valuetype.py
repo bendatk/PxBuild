@@ -1,6 +1,7 @@
 # ---------------   ValueType Classes:
 import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
+
 import pandas as pd
 
 if TYPE_CHECKING:
@@ -39,7 +40,7 @@ class _PxTlist:
         def period_difference(year1: int, period1: int, year2: int, period2: int, period_type: str) -> int:
             return (year2 - year1) * get_period_length(year1, period_type) + (period2 - period1)
 
-        def check_consistent_gap(dates: list[str]) -> tuple[bool, Optional[int]]:
+        def check_consistent_gap(dates: list[str]) -> tuple[bool, int | None]:
             parsed_dates = [parse_period(date) for date in dates]
             period_type = parsed_dates[0][1]
 
@@ -101,7 +102,7 @@ class _PxHierarchy:
         self.mother_child = mother_child
 
     def __str__(self):
-        return self.root_node + ", ".join(["{}:{}".format(k, v) for k, v in self.mother_child.items()])
+        return self.root_node + ", ".join([f"{k}:{v}" for k, v in self.mother_child.items()])
 
     def get_value(self):
         return (self.root_node, self.mother_child)

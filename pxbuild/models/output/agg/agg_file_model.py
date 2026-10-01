@@ -1,18 +1,8 @@
 class AggFileModel:
-    _aggreg_list = []
-    _aggtext_list = []
-    _code_list = []
-    _code_dict = {}
-    # key_value_rows:list = []
-
-    # def __init__(self,name,valueset) -> None:
-    #     self.name= name
-    #     self.valueset= valueset
     def __init__(self) -> None:
-        self._aggreg_list.clear()
-        self._aggtext_list.clear()
-        self._code_list.clear()
-        self._code_dict = {}
+        self._aggreg_list: list[dict[str, str]] = []
+        self._aggtext_list: list[dict[str, str]] = []
+        self._code_dict: dict[str, list[dict[str, str]]] = {}
         print("i init ailemodel")
 
     # def set(self,section:str,vskey:str,vsvalue:str):
@@ -28,16 +18,13 @@ class AggFileModel:
     #         my_code_dict={"section":section,"key":vskey,"val":vsvalue}
     #         self._code_list.append(my_code_dict)
     def set(self, section: str, vskey: str, vsvalue: str):
-        section = section
-        vskey = vskey
-        vsvalue = vsvalue
         my_value_dict = {"key": vskey, "val": vsvalue}
         if section == "Aggreg":
             self._aggreg_list.append(my_value_dict)
         elif section == "Aggtext":
             self._aggtext_list.append(my_value_dict)
         else:
-            if section in self._code_dict.keys():
+            if section in self._code_dict:
                 self._code_dict.get(section).append({vskey: vsvalue})
             else:
                 self._code_dict[section] = [{vskey: vsvalue}]
@@ -64,6 +51,6 @@ class AggFileModel:
             out_str = out_str + "[" + section + "] \n"
             my_list = self._code_dict[section]
             for items in my_list:
-                out_str = out_str + f"{list(items.keys())[0]}={items[list(items.keys())[0]]} \n"
+                out_str = out_str + f"{next(iter(items.keys()))}={items[next(iter(items.keys()))]} \n"
 
         return out_str

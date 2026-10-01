@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
 
 
 class _SubjectArea(_PxValueByKey):
@@ -16,7 +16,7 @@ class _SubjectArea(_PxValueByKey):
         super().__init__("SUBJECT-AREA")
         self._seen_languages = {}
 
-    def set(self, subject_area: str, lang: str = None) -> None:
+    def set(self, subject_area: str, lang: str | None = None) -> None:
         """Text  for Subject area code"""
         LineValidator.is_not_none(self._keyword, subject_area)
         LineValidator.is_string(self._keyword, subject_area)
@@ -29,11 +29,11 @@ class _SubjectArea(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, lang: str = None) -> str:
+    def get_value(self, lang: str | None = None) -> str:
         my_key = _KeytypeLang(lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, lang: str = None) -> bool:
+    def has_value(self, lang: str | None = None) -> bool:
         my_key = _KeytypeLang(lang)
         return super().has_value(my_key)
 

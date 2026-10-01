@@ -1,8 +1,9 @@
+import pytest
+
 from pxbuild.control.load_from_pxfile import Loader
 from pxbuild.operations_on_model.output.refine.trickle_measurement_to_contentsvalues import (
     trickle_measurement_to_contentsvalues,
 )
-import pytest
 from tests._paths import data_path
 
 

@@ -2,6 +2,7 @@ from typing import Any
 
 import pxbuild.models.output.pxfile.util.constants as const
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+
 from ...validator.validationResult import ValidationResult
 
 
@@ -58,7 +59,7 @@ class _Checker:
                 elif keyword.completeness_type == "TODO":
                     self.val_result.add_error(f"{self.error_intro}:Sorry keyword not supported yet.")
                 else:  # pragma: no cover
-                    raise Exception(f"{self.error_intro}:Sorry, unknown completeness_type:{keyword.completeness_type}")
+                    raise ValueError(f"{self.error_intro}:Unknown completeness_type:{keyword.completeness_type}")
 
     def check_completeness_lang(self, keyword: Any) -> None:
         for lang in self.all_languages:
@@ -111,7 +112,7 @@ class _Checker:
             if the_one_index == "":
                 the_one_index = tmp_index
             else:
-                if not tmp_index == the_one_index:
+                if tmp_index != the_one_index:
                     self.val_result.add_error(
                         f"{self.error_intro}: Should only reference 1 variable. Found 2: index {the_one_index} and {tmp_index}."
                     )

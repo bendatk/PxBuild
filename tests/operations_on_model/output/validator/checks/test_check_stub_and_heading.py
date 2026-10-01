@@ -1,5 +1,7 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from pxbuild.operations_on_model.output.validator.checks.check_stub_and_heading import check_stub_and_heading
+from pxbuild.operations_on_model.output.validator.checks.check_stub_and_heading import (
+    check_stub_and_heading,
+)
 
 
 def test_check_stub_and_heading_one_missing_ok():

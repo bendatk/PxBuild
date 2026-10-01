@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeVariableLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
 
 
 class _Variablecode(_PxValueByKey):
@@ -16,8 +16,7 @@ class _Variablecode(_PxValueByKey):
         super().__init__("VARIABLECODE")
         self._seen_languages = {}
 
-    def set(self, variablecode: str, variable: str, lang: str = None) -> None:
-        """ """
+    def set(self, variablecode: str, variable: str, lang: str | None = None) -> None:
         LineValidator.is_not_none(self._keyword, variablecode)
         LineValidator.is_string(self._keyword, variablecode)
         my_value = _PxString(variablecode)
@@ -29,11 +28,11 @@ class _Variablecode(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, variable: str, lang: str = None) -> str:
+    def get_value(self, variable: str, lang: str | None = None) -> str:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, variable: str, lang: str = None) -> bool:
+    def has_value(self, variable: str, lang: str | None = None) -> bool:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().has_value(my_key)
 

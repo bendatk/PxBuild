@@ -20,7 +20,7 @@ class TestCubes1nn:
         return Path(model.statistics.output_files[0])
 
     def assert_expected_file(self, id: str) -> None:
-        file = "tab_{id}.px".format(id=id)
+        file = f"tab_{id}.px"
         actual_path = self.build(id)
         result = filecmp.cmp(
             data_path("cubes", "cubes_1nn", "expected", file),

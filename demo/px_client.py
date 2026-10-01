@@ -1,4 +1,5 @@
 import sys
+
 import pxbuild
 
 my = sys.path[0].replace("\\demo", "\\")

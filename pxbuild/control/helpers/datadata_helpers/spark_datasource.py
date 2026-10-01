@@ -1,5 +1,6 @@
-from .abstract_datasource import AbstractDatasource
 from typing import TYPE_CHECKING
+
+from .abstract_datasource import AbstractDatasource
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame

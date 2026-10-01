@@ -1,17 +1,21 @@
-import pxbuild.models.output.pxfile.util.constants as constants
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+from pxbuild.models.output.pxfile.util import constants
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeContentLang
-
-
 from pxbuild.operations_on_model.output.validator.checks.check_contentsvariable_is_present import (
     check_contentsvariable_is_present,
 )
-from pxbuild.operations_on_model.output.validator.checks.check_lang_keys import check_lang_keys
-from pxbuild.operations_on_model.output.validator.checks.check_language import check_language
+from pxbuild.operations_on_model.output.validator.checks.check_lang_keys import (
+    check_lang_keys,
+)
+from pxbuild.operations_on_model.output.validator.checks.check_language import (
+    check_language,
+)
 from pxbuild.operations_on_model.output.validator.checks.check_stub_and_heading import (
     check_stub_and_heading,
 )
-from pxbuild.operations_on_model.output.validator.checks.check_values import check_values
+from pxbuild.operations_on_model.output.validator.checks.check_values import (
+    check_values,
+)
 
 
 def trickle_measurement_to_contentsvalues(model: PXFileModel):
@@ -39,7 +43,7 @@ def trickle_measurement_to_contentsvalues(model: PXFileModel):
         or not check_lang_keys(model).is_valid
     ):
         # TODO better err mess
-        raise Exception(
+        raise ValueError(
             "One of check_language, check_stub_and_heading, check_contentsvariable_is_present, check_values or check_lang_keys is not valid."
         )
 

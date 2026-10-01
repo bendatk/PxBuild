@@ -1,16 +1,16 @@
-from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from pxbuild.models.output.pxfile.keywords._dayadj import _Dayadj
-from pxbuild.operations_on_model.output.refine.fix_the_variable_type_keyword import (
-    fix_the_variable_type_keyword,
-)
-from pxbuild.operations_on_model.output.validator.validate_px import Validate
 from pxbuild.control.load_from_pxfile import Loader
+from pxbuild.models.output.pxfile.keywords._dayadj import _Dayadj
+from pxbuild.models.output.pxfile.px_file_model import PXFileModel
 from pxbuild.operations_on_model.output.refine.apply_default_language import (
     apply_default_language,
+)
+from pxbuild.operations_on_model.output.refine.fix_the_variable_type_keyword import (
+    fix_the_variable_type_keyword,
 )
 from pxbuild.operations_on_model.output.refine.trickle_measurement_to_contentsvalues import (
     trickle_measurement_to_contentsvalues,
 )
+from pxbuild.operations_on_model.output.validator.validate_px import Validate
 from tests._paths import data_path
 
 

@@ -1,12 +1,9 @@
+from pxbuild.control.helpers.datadata_helpers.datadatasource import Datadatasource
+from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
 from pxbuild.models.input.pydantic_pxcodes import PxCodes
 
 from .abstract_dim import AbstractDim
-from typing import List
-from pxbuild.control.helpers.datadata_helpers.datadatasource import Datadatasource
-from pxbuild.control.helpers.loaded_jsons import LoadedJsons
-
-
-from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
 
 
 class TimeDim(AbstractDim):
@@ -44,10 +41,10 @@ class TimeDim(AbstractDim):
 
     # for time : code == label
 
-    def get_codes(self) -> List[str]:
+    def get_codes(self) -> list[str]:
         return self._period_codes
 
-    def get_labels(self, language: str) -> List[str]:
+    def get_labels(self, language: str) -> list[str]:
         return self._period_labels.get(language, [])
 
     def get_valuelabel(self, language: str, value_code: str) -> str:

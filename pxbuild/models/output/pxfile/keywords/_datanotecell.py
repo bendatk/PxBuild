@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeValuesLangMulti
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
 
 
 class _Datanotecell(_PxValueByKey):
@@ -17,8 +17,7 @@ class _Datanotecell(_PxValueByKey):
         self._seen_languages = {}
         self.occurence_counter = 0
 
-    def set(self, datanotecell: str, values: list[str], lang: str = None) -> None:
-        """ """
+    def set(self, datanotecell: str, values: list[str], lang: str | None = None) -> None:
         LineValidator.is_not_none(self._keyword, datanotecell)
         LineValidator.is_string(self._keyword, datanotecell)
         my_value = _PxString(datanotecell)
@@ -31,12 +30,12 @@ class _Datanotecell(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, values: list[str], lang: str = None) -> str:
+    def get_value(self, values: list[str], lang: str | None = None) -> str:
         # TODO how should this function? Any usecases?
         my_key = _KeytypeValuesLangMulti(values, lang, 1)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, values: list[str], lang: str = None) -> bool:
+    def has_value(self, values: list[str], lang: str | None = None) -> bool:
         # TODO how should this function? Any usecases?
         my_key = _KeytypeValuesLangMulti(values, lang, 1)
         return super().has_value(my_key)

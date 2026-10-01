@@ -1,5 +1,5 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-import pxbuild.models.output.pxfile.util.constants as constants
+from pxbuild.models.output.pxfile.util import constants
 
 
 def apply_default_language(model: PXFileModel):

@@ -1,12 +1,13 @@
 import json
 
-from typing import Dict
-
-from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
+from pxbuild.models.input.pydantic_pxbuildconfig import (
+    PxbuildConfig,
+    ResourceType,
+    ResourceType1,
+)
+from pxbuild.models.input.pydantic_pxcodes import PxCodes
 from pxbuild.models.input.pydantic_pxmetadata import PxMetadata
 from pxbuild.models.input.pydantic_pxstatistics import PxStatistics
-from pxbuild.models.input.pydantic_pxcodes import PxCodes
-from pxbuild.models.input.pydantic_pxbuildconfig import ResourceType, ResourceType1
 
 
 # Class for loading all jsons into pydantic. And nothing else.
@@ -41,7 +42,7 @@ class LoadedJsons:
             pxstatistics_input = pxstatistics_format
         self._pxstatistics = PxStatistics(**pxstatistics_input)
 
-        self._resolved_pxcodes_ids: Dict[str, PxCodes] = {}
+        self._resolved_pxcodes_ids: dict[str, PxCodes] = {}
         pxcodes_format = self._config.admin.px_codes_resource.adress_format
         if self._pxmetadata_model.dataset.coded_dimensions:
 
@@ -81,7 +82,7 @@ class LoadedJsons:
     def get_pxstatistics(self) -> PxStatistics:
         return self._pxstatistics
 
-    def get_resolved_pxcodes_ids(self) -> Dict[str, PxCodes]:
+    def get_resolved_pxcodes_ids(self) -> dict[str, PxCodes]:
         """
         PxCodes as a function of codelist_id.
 

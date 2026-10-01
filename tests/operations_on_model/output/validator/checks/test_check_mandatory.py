@@ -1,5 +1,7 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from pxbuild.operations_on_model.output.validator.checks.check_mandatory import check_mandatory
+from pxbuild.operations_on_model.output.validator.checks.check_mandatory import (
+    check_mandatory,
+)
 
 
 def test_check_mandatory_returns_error():

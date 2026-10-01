@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeVariableLangMulti
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
 
 
 class _Partitioned(_PxValueByKey):
@@ -17,7 +17,7 @@ class _Partitioned(_PxValueByKey):
         self._seen_languages = {}
         self.occurence_counter = 0
 
-    def set(self, partitioned: list[str], variable: str, lang: str = None) -> None:
+    def set(self, partitioned: list[str], variable: str, lang: str | None = None) -> None:
         """string , int (,int) , see pdf"""
         LineValidator.is_not_none(self._keyword, partitioned)
         LineValidator.is_list_of_strings(self._keyword, partitioned)
@@ -31,12 +31,12 @@ class _Partitioned(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, variable: str, lang: str = None) -> list[str]:
+    def get_value(self, variable: str, lang: str | None = None) -> list[str]:
         # TODO how should this function? Any usecases?
         my_key = _KeytypeVariableLangMulti(variable, lang, 1)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, variable: str, lang: str = None) -> bool:
+    def has_value(self, variable: str, lang: str | None = None) -> bool:
         # TODO how should this function? Any usecases?
         my_key = _KeytypeVariableLangMulti(variable, lang, 1)
         return super().has_value(my_key)

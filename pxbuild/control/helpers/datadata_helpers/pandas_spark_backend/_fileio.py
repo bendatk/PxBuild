@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from pandas import DataFrame as PandasDataFrame
 from io import BufferedWriter, TextIOWrapper
-from .....models.output.pxfile.keywords._data import _PxData
 from typing import TYPE_CHECKING
+
+from pandas import DataFrame as PandasDataFrame
+
+from .....models.output.pxfile.keywords._data import _PxData
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame

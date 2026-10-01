@@ -1,5 +1,6 @@
 from pathlib import Path
-from datamodel_code_generator import generate, InputFileType, PythonVersion
+
+from datamodel_code_generator import InputFileType, PythonVersion, generate
 
 generate(
     Path("jsonformats/openapiyaml/pxbuildconfig.yaml"),

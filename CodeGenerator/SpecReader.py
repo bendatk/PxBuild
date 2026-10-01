@@ -5,7 +5,7 @@ from re import sub
 
 def dict_as_signature(in_dict: dict) -> str:
     """Returns a dict as string in method signature (mystring:str, myint:int)"""
-    return ", ".join(["{}:{}".format(k, v) for k, v in in_dict.items()])
+    return ", ".join([f"{k}:{v}" for k, v in in_dict.items()])
 
 
 def dict_as_call(in_dict: dict) -> str:
@@ -32,7 +32,7 @@ def to_camel_case(text) -> str:
 def get_key_type(has_lang: bool, subkeys: dict, multi: bool) -> str:
     my_out = ""
     if len(subkeys) > 0:
-        my_out += "".join(key.capitalize() for key in subkeys.keys())
+        my_out += "".join(key.capitalize() for key in subkeys)
     if has_lang:
         my_out += "Lang"
     if multi:
@@ -94,7 +94,7 @@ class MyKeyword:
         self.px_valuetype = csv_row.px_valuetype
         self.px_valuetype_params = csv_row.px_valuetype_params
         tmp_linevalidate = []
-        if self.px_valuetype in valuetype_line_val.keys():
+        if self.px_valuetype in valuetype_line_val:
             tmp_linevalidate = valuetype_line_val[self.px_valuetype]
         if csv_row.linevalidate:
             self.linevalidate = tmp_linevalidate + csv_row.linevalidate.split(" XX ")
@@ -111,9 +111,7 @@ class MyKeyword:
         self.subkeys = (
             {}
             if not self.subkeys_raw
-            else dict(
-                (x.strip(), y.strip()) for x, y in (element.split(":") for element in self.subkeys_raw.split(","))
-            )
+            else {x.strip(): y.strip() for x, y in (element.split(":") for element in self.subkeys_raw.split(","))}
         )
         self.keyParams = self.subkeys.copy()
         if self.has_lang:
@@ -125,10 +123,10 @@ class MyKeyword:
         if self.px_valuetype in to_native_types:
             self.valueParams.update({to_python_case(self.keyword): to_native_types[self.px_valuetype]})
         elif self.px_valuetype_params:
-            self.valueParams = dict(
-                (x.strip(), y.strip())
+            self.valueParams = {
+                x.strip(): y.strip()
                 for x, y in (element.split(":") for element in self.px_valuetype_params.split(", "))
-            )
+            }
         else:
             self.valueParams.update({"TODO": "str"})
 
@@ -169,7 +167,7 @@ class MyKeyword:
         filehandle.write(f"    pxvalue_type:str = \"{self.classnames['Value']}\"\n")
         if self.keyword == "LANGUAGES":
             pass
-        filehandle.write(f"    has_subkey:bool = {not self.subkeys_raw.strip() == ''}\n")
+        filehandle.write(f"    has_subkey:bool = {self.subkeys_raw.strip() != ''}\n")
         filehandle.write(f"    subkey_optional:bool = {self.is_SubKey_Optional }\n")
         filehandle.write(f'    completeness_type:str = "{self.completeness_type}"\n')
         filehandle.write(f"    may_have_language:bool = {self.has_lang}\n\n")
@@ -319,10 +317,10 @@ for kw in my_spec_reader.data:
 
 with open(file_path_to_pxfiledir + "/util/constants.py", "wt", encoding="utf-8-sig", newline="\n") as constant_module:
     constant_module.write('"""Module for holding constants"""' + "\n\n")
-    constant_module.write(f"MANDATORY_KEYWORDS = {str(mandatory_keys)}\n")
-    constant_module.write(f"LANGDEPENDENT_KEYWORDS = {str(langdependent_keys)}\n")
-    constant_module.write(f"CONTENT_INDEXED_KEYWORDS = {str(content_indexed_keywords)}\n")
-    constant_module.write(f"KEYWORDS_PYTHONIC_MAP = {str(keyword_pythonic_map)}\n")
+    constant_module.write(f"MANDATORY_KEYWORDS = {mandatory_keys!s}\n")
+    constant_module.write(f"LANGDEPENDENT_KEYWORDS = {langdependent_keys!s}\n")
+    constant_module.write(f"CONTENT_INDEXED_KEYWORDS = {content_indexed_keywords!s}\n")
+    constant_module.write(f"KEYWORDS_PYTHONIC_MAP = {keyword_pythonic_map!s}\n")
 
 # make PxFileModel.py
 my_dict = {}

@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeContentLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
 
 
 class _Baseperiod(_PxValueByKey):
@@ -16,7 +16,7 @@ class _Baseperiod(_PxValueByKey):
         super().__init__("BASEPERIOD")
         self._seen_languages = {}
 
-    def set(self, baseperiod: str, content: str = None, lang: str = None, code: str = "") -> None:
+    def set(self, baseperiod: str, content: str | None = None, lang: str | None = None, code: str = "") -> None:
         """Base period for, for instance index series"""
         LineValidator.is_not_none(self._keyword, baseperiod)
         LineValidator.is_string(self._keyword, baseperiod)
@@ -29,11 +29,11 @@ class _Baseperiod(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, content: str = None, lang: str = None) -> str:
+    def get_value(self, content: str | None = None, lang: str | None = None) -> str:
         my_key = _KeytypeContentLang(content, lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, content: str = None, lang: str = None) -> bool:
+    def has_value(self, content: str | None = None, lang: str | None = None) -> bool:
         my_key = _KeytypeContentLang(content, lang)
         return super().has_value(my_key)
 

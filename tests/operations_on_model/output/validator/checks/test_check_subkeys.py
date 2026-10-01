@@ -1,5 +1,7 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from pxbuild.operations_on_model.output.validator.checks.check_subkeys import check_valuebased_subkeys
+from pxbuild.operations_on_model.output.validator.checks.check_subkeys import (
+    check_valuebased_subkeys,
+)
 
 
 def _get_model() -> PXFileModel:

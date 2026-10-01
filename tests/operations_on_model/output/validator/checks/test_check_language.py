@@ -1,5 +1,7 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from pxbuild.operations_on_model.output.validator.checks.check_language import check_language
+from pxbuild.operations_on_model.output.validator.checks.check_language import (
+    check_language,
+)
 
 
 def test_check_language_ok():
