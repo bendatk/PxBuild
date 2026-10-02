@@ -1,24 +1,27 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from time import perf_counter
-from typing import List, Dict, Optional
+from typing import ClassVar
 
-from pxbuild.models.input.pydantic_pxmetadata import PxMetadata, AttachmentItem
 from pxbuild.models.input.pydantic_pxbuildconfig import PxbuildConfig
+from pxbuild.models.input.pydantic_pxmetadata import AttachmentItem, PxMetadata
 from pxbuild.models.input.pydantic_pxstatistics import PxStatistics
-
+from pxbuild.models.middle.dims import Dims
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
 from pxbuild.operations_on_model.output.validator.validate_px import Validate
 
 from .helpers.datadata_helpers.datadatasource import Datadatasource
 from .helpers.datadata_helpers.main_data import MapData
+from .helpers.datadata_helpers.pandas_spark_backend._backend_methods import (
+    IBackendMethods,
+)
+from .helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import (
+    create_backend,
+)
 from .helpers.loaded_jsons import LoadedJsons
-from .helpers.support_files import SupportFiles
 from .helpers.logger_config import configure_logger, logger
-from pxbuild.models.middle.dims import Dims
-from .helpers.datadata_helpers.pandas_spark_backend.pandas_spark_backend import create_backend
-from .helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
+from .helpers.support_files import SupportFiles
 
 
 @dataclass
@@ -28,7 +31,7 @@ class ValidationSummary:
     is_valid: bool
     passed_count: int
     failed_count: int
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
     @classmethod
     def from_validate(cls, validation: Validate) -> "ValidationSummary":
@@ -43,7 +46,7 @@ class ValidationSummary:
 class PxBuildValidationError(ValueError):
     """Raised when an invalid PX model is about to be written."""
 
-    def __init__(self, validation_by_language: Dict[str, ValidationSummary]) -> None:
+    def __init__(self, validation_by_language: dict[str, ValidationSummary]) -> None:
         self.validation_by_language = validation_by_language
         details = []
         for language, summary in validation_by_language.items():
@@ -65,14 +68,14 @@ class PxBuildStatistics:
     row_count/cell_count for a well-formed build.
     """
 
-    languages: List[str]
-    decimals: Optional[int] = None
-    matrix_size: Optional[int] = None
-    row_count: Optional[int] = None
-    cell_count: Optional[int] = None
-    build_seconds: Optional[float] = None
-    write_seconds: Optional[float] = None
-    output_files: List[str] = field(default_factory=list)
+    languages: list[str]
+    decimals: int | None = None
+    matrix_size: int | None = None
+    row_count: int | None = None
+    cell_count: int | None = None
+    build_seconds: float | None = None
+    write_seconds: float | None = None
+    output_files: list[str] = field(default_factory=list)
 
     def __str__(self) -> str:
         return (
@@ -104,7 +107,7 @@ class PxBuildModel:
     """
 
     pxmetadata_id: str
-    models_by_language: Dict[str, PXFileModel]
+    models_by_language: dict[str, PXFileModel]
     config: PxbuildConfig
     dims: Dims
     pxmetadata: PxMetadata
@@ -112,7 +115,7 @@ class PxBuildModel:
     backend: "IBackendMethods"
     main_language: str
     statistics: PxBuildStatistics
-    validation_by_language: Dict[str, ValidationSummary]
+    validation_by_language: dict[str, ValidationSummary]
 
     def get_model(self, language: str | None = None) -> PXFileModel:
         """Return the built PXFileModel for a language, or the main/only one built."""
@@ -136,14 +139,14 @@ class _PxModelBuilder:
     (module-level functions below) instead of instantiating this directly.
     """
 
-    LabelConstructionOptionDict = {
+    LabelConstructionOptionDict: ClassVar[dict[str, int]] = {
         "LabelConstructionOption.code": 0,
         "LabelConstructionOption.text": 1,
         "LabelConstructionOption.code_text": 2,
         "LabelConstructionOption.text_code": 3,
     }
 
-    PriceTypeDict = {"PriceType.current": "C", "PriceType.fixed": "F"}
+    PriceTypeDict: ClassVar[dict[str, str]] = {"PriceType.current": "C", "PriceType.fixed": "F"}
 
     def __init__(
         self, pxmetadata_id: str, config_file: str | dict, backend: str = "pandas", debug: bool = False
@@ -168,11 +171,7 @@ class _PxModelBuilder:
         self._dims = Dims(self._loaded_jsons, self._datadata)
 
         # Derive output filename. A per-language suffix is added at write time (see write_px_file).
-        self._output_filename = (
-            self._pxmetadata_model.dataset.output_file_name if self._pxmetadata_model.dataset.output_file_name else None
-        )
-        if self._output_filename == None:
-            self._output_filename = f"tab_{pxmetadata_id}"
+        self._output_filename: str = self._pxmetadata_model.dataset.output_file_name or f"tab_{pxmetadata_id}"
 
         ##################
         self.models_by_language: dict = {}
@@ -183,7 +182,8 @@ class _PxModelBuilder:
             self._creation_date = get_current_time()
         else:
             self._creation_date = convert_to_pxdate_string(
-                self._pxmetadata_model.dataset.creation_date, self._pxmetadata_model.dataset.creation_dateformat
+                self._pxmetadata_model.dataset.creation_date,
+                self._pxmetadata_model.dataset.creation_dateformat or "%Y%m%d %H:%M",
             )
 
         out_model = PXFileModel()
@@ -214,6 +214,8 @@ class _PxModelBuilder:
             self.map_metaid_to_pxfile(out_model)
             self.map_cellnote_to_pxfile(out_model)
 
+            if self._decimals is None:
+                raise RuntimeError("Decimals were not initialized before mapping data.")
             fixdata = MapData(
                 self._datadata,
                 self._pxmetadata_model,
@@ -240,7 +242,7 @@ class _PxModelBuilder:
         self._datadata._my_datasource.close()
         self.build_seconds = perf_counter() - build_start
 
-        self.validation_by_language: Dict[str, ValidationSummary] = {
+        self.validation_by_language: dict[str, ValidationSummary] = {
             lang: ValidationSummary.from_validate(Validate(model)) for lang, model in self.models_by_language.items()
         }
 
@@ -252,7 +254,7 @@ class _PxModelBuilder:
 
     def map_metaid_to_pxfile(self, out_model: PXFileModel) -> None:
         if self._add_language_independent:
-            metaid_table: List[str] = []
+            metaid_table: list[str] = []
             if self._pxmetadata_model.dataset.meta_id:
                 metaid_table += self._pxmetadata_model.dataset.meta_id
             if self._pxstatistics.meta_id:
@@ -265,7 +267,7 @@ class _PxModelBuilder:
             for n_var in self._dims.coded_dimensions:
                 my_var = n_var.get_pydantic()
                 if my_var.meta_id:
-                    out_model.meta_id.set(" ".join(my_var.meta_id), n_var.get_label(lang), None, lang, my_var.code)
+                    out_model.meta_id.set(" ".join(my_var.meta_id), n_var.get_label(lang), None, lang, n_var.get_code())
 
         contdim = self._dims.contdim
         for my_cont in self._pxmetadata_model.dataset.measurements:
@@ -275,7 +277,7 @@ class _PxModelBuilder:
                     contdim.get_label(lang),
                     my_cont.label[self._current_lang],
                     lang,
-                    my_cont.code,
+                    my_cont.code or my_cont.column_name,
                 )
 
         if self._pxmetadata_model.dataset.time_dimension.meta_id:
@@ -299,8 +301,8 @@ class _PxModelBuilder:
             if lang not in cellnote.text:
                 continue
             valuecode_by_dimensioncode = self.get_valuecode_by_dimensioncode(cellnote.attachment)
-            valuetexts_for_subkey: List[str] = []
-            dimcodes: List[str] = []
+            valuetexts_for_subkey: list[str] = []
+            dimcodes: list[str] = []
             for dim in dimension_in_order:
                 dimcode = dim.get_code()
                 dimcodes.append(dimcode)
@@ -316,8 +318,8 @@ class _PxModelBuilder:
             else:
                 out_model.cellnote.set(cellnote.text[lang], valuetexts_for_subkey, lang)
 
-    def get_valuecode_by_dimensioncode(self, attachments: List[AttachmentItem]) -> Dict[str, str]:
-        my_out: Dict[str, str] = {}
+    def get_valuecode_by_dimensioncode(self, attachments: list[AttachmentItem]) -> dict[str, str]:
+        my_out: dict[str, str] = {}
         for attachment in attachments:
             my_out[attachment.dimension_code] = attachment.value_code
 
@@ -362,18 +364,18 @@ class _PxModelBuilder:
         seen = False
         if self._dims.get_headingcodes():
 
-            my_headings: List[str] = self._dims.get_as_lables(self._dims.get_headingcodes(), lang)
+            my_headings: list[str] = self._dims.get_as_lables(self._dims.get_headingcodes(), lang)
             out_model.heading.set(my_headings, lang)
             seen = True
 
         if self._dims.get_stubcodes():
-            my_stubs: List[str] = self._dims.get_as_lables(self._dims.get_stubcodes(), lang)
+            my_stubs: list[str] = self._dims.get_as_lables(self._dims.get_stubcodes(), lang)
 
             out_model.stub.set(my_stubs, lang)
             seen = True
 
         if not seen:
-            raise Exception("Sorry, both stub and heading are empty.")
+            raise ValueError("Both stub and heading are empty.")
 
     def map_time_dimension_to_pxfile(self, out_model: PXFileModel, language: str):
         time = self._dims.time
@@ -578,7 +580,9 @@ class _PxModelBuilder:
 
         last_updated_date = in_model.upcoming_releases[0]
 
-        formatted_string = convert_to_pxdate_string(last_updated_date, self._pxstatistics.upcoming_releases_dateformat)
+        formatted_string = convert_to_pxdate_string(
+            last_updated_date, self._pxstatistics.upcoming_releases_dateformat or "%Y%m%d %H:%M"
+        )
 
         return formatted_string
 
@@ -592,7 +596,9 @@ class _PxModelBuilder:
 
         last_updated_date = in_model.upcoming_releases[1]
 
-        formatted_string = convert_to_pxdate_string(last_updated_date, self._pxstatistics.upcoming_releases_dateformat)
+        formatted_string = convert_to_pxdate_string(
+            last_updated_date, self._pxstatistics.upcoming_releases_dateformat or "%Y%m%d %H:%M"
+        )
 
         return formatted_string
 
@@ -614,7 +620,7 @@ class _PxModelBuilder:
         if self._add_language_independent:
             out_model.tableid.set(in_model.dataset.table_id)
 
-            if self._pxmetadata_model.dataset.matrix == None:
+            if self._pxmetadata_model.dataset.matrix is None:
                 matrix = f"tab_{self._pxmetadata_id}"
             else:
                 matrix = self._pxmetadata_model.dataset.matrix
@@ -631,7 +637,7 @@ class _PxModelBuilder:
 
             # The SYNONYMS keyword is language independent. So, all langs go into one for multilingual_files.
             if in_model.dataset.search_keywords:
-                temp_tags: List[str] = []
+                temp_tags: list[str] = []
                 if self._config.admin.build_multilingual_files:
                     for language in self._config.admin.valid_languages:
                         temp_tags += in_model.dataset.search_keywords[language]
@@ -666,9 +672,12 @@ class _PxModelBuilder:
                 out_model.charset.set(str(in_config.charset))
             out_model.codepage.set(str(in_config.code_page))
             if in_config.description_default is not None:
-                out_model.descriptiondefault.set((in_config.description_default))
+                out_model.descriptiondefault.set(in_config.description_default)
 
-        out_model.contvariable.set(str(in_config.contvariable[current_lang]), current_lang)
+        contvariable = in_config.contvariable
+        if contvariable is None:
+            raise ValueError("contvariable must be configured.")
+        out_model.contvariable.set(str(contvariable[current_lang]), current_lang)
 
         if in_config.datasymbol1 and in_config.datasymbol1[self._current_lang]:
             out_model.datasymbol1.set(str(in_config.datasymbol1[self._current_lang]), self._current_lang)
@@ -687,12 +696,15 @@ class _PxModelBuilder:
         if in_config.datasymbol_sum and in_config.datasymbol_sum[self._current_lang]:
             out_model.datasymbolsum.set(str(in_config.datasymbol_sum[self._current_lang]), self._current_lang)
 
-        out_model.source.set(in_config.source[self._current_lang], self._current_lang)
+        source = in_config.source
+        if source is None:
+            raise ValueError("source must be configured.")
+        out_model.source.set(source[self._current_lang], self._current_lang)
 
 
 def convert_to_pxdate_string(date_string: str, date_format: str) -> str:
-    dtm_date = datetime.strptime(date_string, date_format)
-    px_date_string = dtm_date.strftime(f"%Y%m%d %H:%M")
+    dtm_date = datetime.strptime(date_string, date_format).replace(tzinfo=timezone.utc)
+    px_date_string = dtm_date.strftime("%Y%m%d %H:%M")
 
     return px_date_string
 
@@ -703,7 +715,7 @@ def get_current_time() -> str:
     """
     from datetime import datetime
 
-    return datetime.now().strftime("%Y%m%d %H:%M")
+    return datetime.now(timezone.utc).strftime("%Y%m%d %H:%M")
 
 
 def write_output(
@@ -768,7 +780,7 @@ def build_px_model(
     )
 
 
-def write_px_file(model: PxBuildModel) -> List[str]:
+def write_px_file(model: PxBuildModel) -> list[str]:
     """Write a previously built PxBuildModel to disk. Returns the written .px file path(s).
 
     Also records the written paths and elapsed write time onto ``model.statistics``.
@@ -777,14 +789,17 @@ def write_px_file(model: PxBuildModel) -> List[str]:
         raise PxBuildValidationError(model.validation_by_language)
 
     write_start = perf_counter()
-    written_files: List[str] = []
+    written_files: list[str] = []
+    px_folder_format = model.config.admin.output_destination.px_folder_format
+    if px_folder_format is None:
+        raise ValueError("pxFolderFormat must be configured before writing PX files.")
     for lang, out_model in model.models_by_language.items():
         # Single-language files get a per-language suffix so they don't overwrite each other,
         # and are rendered with that language as "main" so keywords omit the [lang] tag.
         is_multi = lang == "multi"
         out_file = write_output(
             model.pxmetadata_id,
-            model.config.admin.output_destination.px_folder_format,
+            px_folder_format,
             out_model,
             model.output_filename if is_multi else f"{model.output_filename}_{lang}",
             model.backend,

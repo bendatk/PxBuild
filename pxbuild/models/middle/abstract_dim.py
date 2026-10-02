@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Dict
+
 from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
 
 
 class AbstractDim(ABC):
-    def __init__(self, code: str, label_by_lang: Dict[str, str]) -> None:
+    def __init__(self, code: str, label_by_lang: dict[str, str]) -> None:
         self._code: str = code
         self.label_by_lang = label_by_lang
 

@@ -1,16 +1,12 @@
 class Description:
-    _key_value_rows: list = []
-
     def __init__(self) -> None:
         self._section = "[Descr]"
-        self._key_value_rows.clear()
+        self._key_value_rows: list[dict[str, str]] = []
 
     def set(self, vskey: str, vsvalue: str):
 
-        vskey = vskey
-        vsvalue = vsvalue
         my_dict = {"key": vskey, "val": vsvalue}
-        self._key_value_rows.append((my_dict))
+        self._key_value_rows.append(my_dict)
 
     def __str__(self):
         out_str = f"{self._section}\n"

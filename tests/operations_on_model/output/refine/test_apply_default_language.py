@@ -1,5 +1,7 @@
 from pxbuild.control.load_from_pxfile import Loader
-from pxbuild.operations_on_model.output.refine.apply_default_language import apply_default_language
+from pxbuild.operations_on_model.output.refine.apply_default_language import (
+    apply_default_language,
+)
 from tests._paths import data_path
 
 

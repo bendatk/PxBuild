@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxBool
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Autopen(_PxSingle):
@@ -16,7 +16,7 @@ class _Autopen(_PxSingle):
 
     def set(self, autopen: bool) -> None:
         """Not is use."""
-        LineValidator.is_not_None(self._keyword, autopen)
+        LineValidator.is_not_none(self._keyword, autopen)
         LineValidator.is_bool(self._keyword, autopen)
         my_value = _PxBool(autopen)
         try:

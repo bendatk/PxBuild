@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _SubjectCode(_PxSingle):
@@ -16,7 +16,7 @@ class _SubjectCode(_PxSingle):
 
     def set(self, subject_code: str) -> None:
         """Subject area code. It is used to create files with tables available in PC-Axis. The text must not exceed 20 characters"""
-        LineValidator.is_not_None(self._keyword, subject_code)
+        LineValidator.is_not_none(self._keyword, subject_code)
         LineValidator.is_string(self._keyword, subject_code)
         my_value = _PxString(subject_code)
         try:

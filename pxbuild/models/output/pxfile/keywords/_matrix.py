@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Matrix(_PxSingle):
@@ -16,7 +16,7 @@ class _Matrix(_PxSingle):
 
     def set(self, matrix: str) -> None:
         """The name of the matrix. Is suggested as file name when the file is fetched."""
-        LineValidator.is_not_None(self._keyword, matrix)
+        LineValidator.is_not_none(self._keyword, matrix)
         LineValidator.is_string(self._keyword, matrix)
         my_value = _PxString(matrix)
         try:

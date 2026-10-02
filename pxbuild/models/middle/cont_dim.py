@@ -1,7 +1,7 @@
-from typing import Dict, List
-from .abstract_dim import AbstractDim
-from pxbuild.control.helpers.loaded_jsons import LoadedJsons
 from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
+
+from .abstract_dim import AbstractDim
 
 
 class ContDim(AbstractDim):
@@ -11,14 +11,14 @@ class ContDim(AbstractDim):
         super().__init__(config.contvariable_code, config.contvariable)
 
         if not meta.measurements:
-            raise Exception("Sorry, dataset is missing measurment.")
+            raise ValueError("Dataset is missing measurements.")
 
         languages = config.admin.valid_languages
 
         self._variable_type = config.contvariable_type
-        self._codes: List[str] = []
-        self._labels_by_lang: Dict[str, List[str]] = {}
-        self._labels_by_code: Dict[str, Dict[str, str]] = {}
+        self._codes: list[str] = []
+        self._labels_by_lang: dict[str, list[str]] = {}
+        self._labels_by_code: dict[str, dict[str, str]] = {}
 
         for lang in languages:
             self._labels_by_lang[lang] = []
@@ -32,10 +32,10 @@ class ContDim(AbstractDim):
 
         self._for_get_data = CubemathsHelper(config.contvariable_code, self._codes)
 
-    def get_codes(self) -> List[str]:
+    def get_codes(self) -> list[str]:
         return self._codes
 
-    def get_labels(self, language: str) -> List[str]:
+    def get_labels(self, language: str) -> list[str]:
         return self._labels_by_lang[language]
 
     def get_valuelabel(self, language: str, value_code: str) -> str:

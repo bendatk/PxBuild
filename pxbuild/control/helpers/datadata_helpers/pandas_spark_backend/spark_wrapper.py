@@ -1,18 +1,21 @@
-from typing import Literal, List, TYPE_CHECKING
-from pyarrow.parquet import ParquetFile
-from io import BufferedWriter
-from functools import reduce
-from .....models.output.pxfile.keywords._data import _PxData
-from .....models.input.pydantic_pxmetadata import Measurement
-from ._backend_methods import IBackendMethods
-
-import operator
 import glob
+import operator
 import os
 import uuid
+from contextlib import suppress
+from functools import reduce
+from io import BufferedWriter
+from typing import TYPE_CHECKING, ClassVar, Literal
+
+from pyarrow.parquet import ParquetFile
+
+from .....models.input.pydantic_pxmetadata import Measurement
+from .....models.output.pxfile.keywords._data import _PxData
+from ._backend_methods import IBackendMethods
 
 if TYPE_CHECKING:
-    from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
+    from pyspark.sql import DataFrame as SparkDataFrame
+    from pyspark.sql import SparkSession
 
 
 class SparkWrapper(IBackendMethods):
@@ -59,7 +62,7 @@ class SparkWrapper(IBackendMethods):
 
             return SparkSession.builder.getOrCreate()  # type: ignore
 
-    SPARKDATAFRAMETYPES = [
+    SPARKDATAFRAMETYPES: ClassVar[list[str]] = [
         "<class 'pyspark.sql.dataframe.DataFrame'>",
         "<class 'pyspark.sql.connect.dataframe.DataFrame'>",
         "<class 'pyspark.sql.classic.dataframe.DataFrame'>",
@@ -71,19 +74,19 @@ class SparkWrapper(IBackendMethods):
     def write_pxdata_to_file(
         self, data: _PxData, output_handle: BufferedWriter, temp_volume_base_path: str, columns_per_line: int
     ):
-        from pyspark.sql import functions as F
+        from pyspark.sql import functions as spark_functions
 
         temp_volume_base_path = self.get_temp_output_path(temp_volume_base_path)
         df = data._data.select("out_index", "out_value")
 
-        line_idx = (F.col("out_index") / columns_per_line).cast("long")
+        line_idx = (spark_functions.col("out_index") / columns_per_line).cast("long")
         df_grouped = (
             df.withColumn("line_idx", line_idx)
             .groupBy("line_idx")
             .agg(
-                F.concat_ws(
+                spark_functions.concat_ws(
                     " ",
-                    F.expr(
+                    spark_functions.expr(
                         "transform("
                         "   sort_array(collect_list(struct(out_index, out_value))), "
                         "   x -> x.out_value"
@@ -140,10 +143,8 @@ class SparkWrapper(IBackendMethods):
                     output_handle.write(line.rstrip() + b" ")
                     first_row = False
 
-        try:
-            rc = dbutils.fs.rm(temp_volume_base_path, True)
-        except Exception:
-            pass
+        with suppress(Exception):
+            dbutils.fs.rm(temp_volume_base_path, True)
 
     def read_parquet(self, parquet: ParquetFile):
         pass
@@ -273,7 +274,7 @@ class SparkWrapper(IBackendMethods):
 
     def add_out_value(self, df: "SparkDataFrame", missing_cell_symbol: str) -> "SparkDataFrame":
 
-        from pyspark.sql.functions import when, col, lit, trim
+        from pyspark.sql.functions import col, lit, trim, when
 
         return df.withColumn(
             "out_value",
@@ -283,10 +284,11 @@ class SparkWrapper(IBackendMethods):
         )
 
     def round_by_decimals(
-        self, df: "SparkDataFrame", measurements: List[Measurement], decimals: int
+        self, df: "SparkDataFrame", measurements: list[Measurement], decimals: int
     ) -> "SparkDataFrame":
 
-        from pyspark.sql.functions import round as spark_round, col
+        from pyspark.sql.functions import col
+        from pyspark.sql.functions import round as spark_round
 
         for my_cont in measurements:
             df = df.withColumn(my_cont.column_name, spark_round(col(my_cont.column_name), decimals))
@@ -295,7 +297,7 @@ class SparkWrapper(IBackendMethods):
     #
     # Utility methods
     #
-    def get_columns_to_list(self, df: "SparkDataFrame") -> List[str]:
+    def get_columns_to_list(self, df: "SparkDataFrame") -> list[str]:
 
         return df.columns
 
@@ -309,7 +311,7 @@ class SparkWrapper(IBackendMethods):
 
     def remove_trailing_zero_decimals(self, df: "SparkDataFrame") -> "SparkDataFrame":
 
-        from pyspark.sql.functions import when, col, regexp_replace
+        from pyspark.sql.functions import col, regexp_replace, when
 
         mask = col("out_value").cast("string").rlike(r"^-?\d+\.?\d*$") & col("out_value").cast("string").contains(".")
 

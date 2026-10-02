@@ -1,12 +1,17 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxData
-import pandas as pd
-from io import BufferedWriter
+﻿from io import BufferedWriter
 from typing import TYPE_CHECKING
 
+import pandas as pd
+
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxData
+
 if TYPE_CHECKING:
-    from pyspark.sql import DataFrame as SparkDataFrame, Column as SparkColumn
-    from .....control.helpers.datadata_helpers.pandas_spark_backend._backend_methods import IBackendMethods
+    from pyspark.sql import DataFrame as SparkDataFrame
+
+    from .....control.helpers.datadata_helpers.pandas_spark_backend._backend_methods import (
+        IBackendMethods,
+    )
 
 
 class _Data(_PxSingle):

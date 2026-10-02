@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Synonyms(_PxSingle):
@@ -16,7 +16,7 @@ class _Synonyms(_PxSingle):
 
     def set(self, synonyms: str) -> None:
         """In use?"""
-        LineValidator.is_not_None(self._keyword, synonyms)
+        LineValidator.is_not_none(self._keyword, synonyms)
         LineValidator.is_string(self._keyword, synonyms)
         my_value = _PxString(synonyms)
         try:

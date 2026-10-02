@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _AxisVersion(_PxSingle):
@@ -16,7 +16,7 @@ class _AxisVersion(_PxSingle):
 
     def set(self, axis_version: str) -> None:
         """Not in use. Version number for PC-Axis"""
-        LineValidator.is_not_None(self._keyword, axis_version)
+        LineValidator.is_not_none(self._keyword, axis_version)
         LineValidator.is_string(self._keyword, axis_version)
         LineValidator.regexp_string(r"^\d{4}$", self._keyword, axis_version)
         my_value = _PxString(axis_version)

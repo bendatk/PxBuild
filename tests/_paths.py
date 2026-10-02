@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 TESTDATA_ROOT = Path(__file__).parent / "testdata"
 REPOSITORY_ROOT = TESTDATA_ROOT.parent.parent
 

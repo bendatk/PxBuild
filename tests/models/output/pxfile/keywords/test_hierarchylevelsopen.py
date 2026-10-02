@@ -1,5 +1,8 @@
 ﻿import pytest
-from pxbuild.models.output.pxfile.keywords._hierarchylevelsopen import _Hierarchylevelsopen
+
+from pxbuild.models.output.pxfile.keywords._hierarchylevelsopen import (
+    _Hierarchylevelsopen,
+)
 
 
 def test_hierarchylevelsopen_set_valid():

@@ -1,4 +1,5 @@
 ﻿import pytest
+
 from pxbuild.models.output.pxfile.keywords._next_update import _NextUpdate
 
 

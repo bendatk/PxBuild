@@ -123,4 +123,3 @@
 # StringByLanguage
 
  Description: Dictionary of stings indexed by language code (e.g. 'en','sv')
-

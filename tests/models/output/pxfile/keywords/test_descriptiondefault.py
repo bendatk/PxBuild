@@ -1,5 +1,8 @@
 ﻿import pytest
-from pxbuild.models.output.pxfile.keywords._descriptiondefault import _Descriptiondefault
+
+from pxbuild.models.output.pxfile.keywords._descriptiondefault import (
+    _Descriptiondefault,
+)
 
 
 def test_descriptiondefault_set_valid():

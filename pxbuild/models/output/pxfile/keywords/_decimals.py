@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxInt
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Decimals(_PxSingle):
@@ -16,7 +16,7 @@ class _Decimals(_PxSingle):
 
     def set(self, decimals: int) -> None:
         """Number of desimals in stored data."""
-        LineValidator.is_not_None(self._keyword, decimals)
+        LineValidator.is_not_none(self._keyword, decimals)
         LineValidator.is_int(self._keyword, decimals)
         LineValidator.in_range(0, 15, self._keyword, decimals)
         my_value = _PxInt(decimals)

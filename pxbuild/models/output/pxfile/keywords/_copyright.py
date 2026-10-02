@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxBool
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Copyright(_PxSingle):
@@ -16,7 +16,7 @@ class _Copyright(_PxSingle):
 
     def set(self, copyright: bool) -> None:
         """If true the copyright refers to the organization given in SOURCE"""
-        LineValidator.is_not_None(self._keyword, copyright)
+        LineValidator.is_not_none(self._keyword, copyright)
         LineValidator.is_bool(self._keyword, copyright)
         my_value = _PxBool(copyright)
         try:

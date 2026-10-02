@@ -9,8 +9,7 @@ def _normalize(value: str) -> str:
     # Trailing ".0" on whole numbers is a formatting detail, not a data
     # difference, so it is ignored when comparing against the fixture.
     value = str(value)
-    if value.endswith(".0"):
-        value = value[:-2]
+    value = value.removesuffix(".0")
     return value
 
 

@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 from pxbuild.models.output.pxfile.util._px_valuetype import (
     _PxBool,
     _PxData,
@@ -7,13 +9,13 @@ from pxbuild.models.output.pxfile.util._px_valuetype import (
     _PxStringList,
     _PxTlist,
 )
+
 from ._px_keytypes import (
-    _KeytypeVariableLang,
     _KeytypeContentLang,
+    _KeytypeVariableLang,
     _KeytypeVariableValueLang,
     _KeytypeVariableValueLangMulti,
 )
-from abc import ABC, abstractmethod
 
 
 class _SuperKeyword(ABC):
@@ -62,7 +64,7 @@ class _PxValueByKey(_SuperKeyword):
         self._value_by_key = {}
 
     def set(self, px_value, my_key) -> None:
-        if my_key in self._value_by_key.keys():
+        if my_key in self._value_by_key:
             raise ValueError(
                 f"Duplicate key {my_key}, first value {self._value_by_key[my_key]}, second value {px_value}."
             )
@@ -70,13 +72,13 @@ class _PxValueByKey(_SuperKeyword):
 
     def get_sorted_value_by_key(self):
         if isinstance(
-            list(self._value_by_key.keys())[0],
+            next(iter(self._value_by_key.keys())),
             (_KeytypeVariableLang, _KeytypeContentLang, _KeytypeVariableValueLang, _KeytypeVariableValueLangMulti),
         ):
             value_by_key_sorted = {}
-            codes = sorted(set([keypart.code for keypart in self._value_by_key.keys()]))
+            codes = sorted({keypart.code for keypart in self._value_by_key})
             for code in codes:
-                for keypart in self._value_by_key.keys():
+                for keypart in self._value_by_key:
                     if keypart.code == code:
                         value_by_key_sorted[keypart] = self._value_by_key[keypart]
             return value_by_key_sorted
@@ -93,7 +95,7 @@ class _PxValueByKey(_SuperKeyword):
 
         if self.is_present():
             sorted_value_by_key = self.get_sorted_value_by_key()
-            for keypart in sorted_value_by_key.keys():
+            for keypart in sorted_value_by_key:
                 my_out.append(f"{self._keyword}{keypart}={sorted_value_by_key[keypart]};")
             return "\n".join(my_out)
         else:
@@ -110,7 +112,7 @@ class _PxValueByKey(_SuperKeyword):
         new_value_by_key = {}
         for old_key, value in self._value_by_key.items():
             new_key = old_key.reset_lang_none_to(lang)
-            if new_key in new_value_by_key.keys():
+            if new_key in new_value_by_key:
                 raise ValueError(f"Duplicate key for {self._keyword} {new_key}, when inserting default language")
             new_value_by_key[new_key] = value
 

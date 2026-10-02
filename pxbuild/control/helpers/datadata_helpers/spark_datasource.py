@@ -1,7 +1,6 @@
-import pyarrow.parquet as pq, pandas
-from .abstract_datasource import AbstractDatasource
-from ...helpers.logger_config import logger
 from typing import TYPE_CHECKING
+
+from .abstract_datasource import AbstractDatasource
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame

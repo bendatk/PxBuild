@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
 
 
 class _Survey(_PxValueByKey):
@@ -16,9 +16,9 @@ class _Survey(_PxValueByKey):
         super().__init__("SURVEY")
         self._seen_languages = {}
 
-    def set(self, survey: str, lang: str = None) -> None:
+    def set(self, survey: str, lang: str | None = None) -> None:
         """Hmm, try, pdf says: Is shown on information screen in PX-web if installation parameter true."""
-        LineValidator.is_not_None(self._keyword, survey)
+        LineValidator.is_not_none(self._keyword, survey)
         LineValidator.is_string(self._keyword, survey)
         my_value = _PxString(survey)
         my_key = _KeytypeLang(lang)
@@ -29,11 +29,11 @@ class _Survey(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, lang: str = None) -> str:
+    def get_value(self, lang: str | None = None) -> str:
         my_key = _KeytypeLang(lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, lang: str = None) -> bool:
+    def has_value(self, lang: str | None = None) -> bool:
         my_key = _KeytypeLang(lang)
         return super().has_value(my_key)
 

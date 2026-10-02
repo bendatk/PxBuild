@@ -1,18 +1,21 @@
 from abc import ABC, abstractmethod
-from pandas import Series as PandasSeries, DataFrame as PandasDataFrame
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
+
+from pandas import DataFrame as PandasDataFrame
+from pandas import Series as PandasSeries
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame
 
+
 # Interface for utility functions
 class IUtility(ABC):
     @abstractmethod
-    def get_timeperiodes(self, df: "SparkDataFrame | PandasDataFrame", column_name: str) -> List[str]:
+    def get_timeperiodes(self, df: "SparkDataFrame | PandasDataFrame", column_name: str) -> list[str]:
         pass
 
     @abstractmethod
-    def get_columns_to_list(self, df: "SparkDataFrame | PandasDataFrame") -> List[str]:
+    def get_columns_to_list(self, df: "SparkDataFrame | PandasDataFrame") -> list[str]:
         pass
 
     @abstractmethod

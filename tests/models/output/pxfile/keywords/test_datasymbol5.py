@@ -1,4 +1,5 @@
 ﻿import pytest
+
 from pxbuild.models.output.pxfile.keywords._datasymbol5 import _Datasymbol5
 
 

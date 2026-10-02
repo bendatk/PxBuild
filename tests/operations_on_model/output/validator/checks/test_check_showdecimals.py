@@ -1,5 +1,7 @@
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from pxbuild.operations_on_model.output.validator.checks.check_showdecimals import check_showdecimals
+from pxbuild.operations_on_model.output.validator.checks.check_showdecimals import (
+    check_showdecimals,
+)
 
 
 def test_check_showdecimals_value_error():

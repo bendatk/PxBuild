@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxBool
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeVariableLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxBool
 
 
 class _Doublecolumn(_PxValueByKey):
@@ -16,9 +16,9 @@ class _Doublecolumn(_PxValueByKey):
         super().__init__("DOUBLECOLUMN")
         self._seen_languages = {}
 
-    def set(self, doublecolumn: bool, variable: str, lang: str = None, code: str = "") -> None:
+    def set(self, doublecolumn: bool, variable: str, lang: str | None = None, code: str = "") -> None:
         """This keyword is used to get code and text in separate columns for the specified variable"""
-        LineValidator.is_not_None(self._keyword, doublecolumn)
+        LineValidator.is_not_none(self._keyword, doublecolumn)
         LineValidator.is_bool(self._keyword, doublecolumn)
         my_value = _PxBool(doublecolumn)
         my_key = _KeytypeVariableLang(variable, lang, code)
@@ -29,11 +29,11 @@ class _Doublecolumn(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, variable: str, lang: str = None) -> bool:
+    def get_value(self, variable: str, lang: str | None = None) -> bool:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, variable: str, lang: str = None) -> bool:
+    def has_value(self, variable: str, lang: str | None = None) -> bool:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().has_value(my_key)
 

@@ -1,5 +1,8 @@
 ﻿import pytest
-from pxbuild.models.output.pxfile.keywords._official_statistics import _OfficialStatistics
+
+from pxbuild.models.output.pxfile.keywords._official_statistics import (
+    _OfficialStatistics,
+)
 
 
 def test_officialstatistics_set_valid():

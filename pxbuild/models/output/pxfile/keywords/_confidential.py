@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxInt
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Confidential(_PxSingle):
@@ -16,7 +16,7 @@ class _Confidential(_PxSingle):
 
     def set(self, confidential: int) -> None:
         """Not in use."""
-        LineValidator.is_not_None(self._keyword, confidential)
+        LineValidator.is_not_none(self._keyword, confidential)
         LineValidator.is_int(self._keyword, confidential)
         my_value = _PxInt(confidential)
         try:

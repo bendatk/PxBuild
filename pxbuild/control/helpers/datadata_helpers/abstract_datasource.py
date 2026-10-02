@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from pandas import DataFrame as PandasDataFrame
 from typing import TYPE_CHECKING
+
+from pandas import DataFrame as PandasDataFrame
 
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame as SparkDataFrame

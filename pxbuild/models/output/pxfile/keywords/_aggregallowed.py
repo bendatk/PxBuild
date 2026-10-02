@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxBool
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Aggregallowed(_PxSingle):
@@ -16,7 +16,7 @@ class _Aggregallowed(_PxSingle):
 
     def set(self, aggregallowed: bool) -> None:
         """False if the contents of the table cannot be aggregated"""
-        LineValidator.is_not_None(self._keyword, aggregallowed)
+        LineValidator.is_not_none(self._keyword, aggregallowed)
         LineValidator.is_bool(self._keyword, aggregallowed)
         my_value = _PxBool(aggregallowed)
         try:

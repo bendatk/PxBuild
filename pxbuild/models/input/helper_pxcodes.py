@@ -1,8 +1,7 @@
-from .pydantic_pxcodes import PxCodes, Grouping, Valueitem, Note
-from typing import Dict, List
+from .pydantic_pxcodes import Grouping, Note, PxCodes, Valueitem
 
 
-def sort_valueitems_by_field(objects: List[Valueitem], sort_by: str, lang: str):
+def sort_valueitems_by_field(objects: list[Valueitem], sort_by: str, lang: str):
     # Define a custom sorting key function based on the specified key
     def get_sort_key(obj: Valueitem) -> str:
         if sort_by == "code":
@@ -17,7 +16,7 @@ def sort_valueitems_by_field(objects: List[Valueitem], sort_by: str, lang: str):
 
 
 class HelperPxCodes:
-    def __init__(self, in_pxcodes: PxCodes, in_languages: List[str]) -> None:
+    def __init__(self, in_pxcodes: PxCodes, in_languages: list[str]) -> None:
         self._pxcodes = in_pxcodes
         self.elimination_possible = in_pxcodes.elimination_possible
 
@@ -32,12 +31,12 @@ class HelperPxCodes:
     # if inPxCodes.groupings:
     #     self._has_grouping = True
 
-    def get_codes(self, language: str) -> List[str]:
+    def get_codes(self, language: str) -> list[str]:
         if language not in self._sorted_valueitems:
             raise ValueError(f"Language '{language}' not found in _sorted_valueitems")
         return [valueitem.code for valueitem in self._sorted_valueitems[language]]
 
-    def get_labels(self, language: str) -> List[str]:
+    def get_labels(self, language: str) -> list[str]:
         return [valueitem.label[language] for valueitem in self._sorted_valueitems[language]]
 
     def get_elimination_label(self, language: str) -> str:
@@ -56,7 +55,7 @@ class HelperPxCodes:
         return my_out
 
     def get_valueotes(self):
-        my_out: Dict[str, List[Note]] = dict()
+        my_out: dict[str, list[Note]] = {}
 
         for valueitem in self._pxcodes.valueitems:
             if valueitem.notes:
@@ -67,7 +66,7 @@ class HelperPxCodes:
     #   def has_grouping(self) -> bool:
     #       return self._has_grouping
 
-    def groupings(self) -> List[Grouping] | None:
+    def groupings(self) -> list[Grouping] | None:
         return self._pxcodes.groupings
 
     def id(self) -> str:

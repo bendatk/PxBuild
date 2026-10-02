@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxBool
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Descriptiondefault(_PxSingle):
@@ -16,7 +16,7 @@ class _Descriptiondefault(_PxSingle):
 
     def set(self, descriptiondefault: bool) -> None:
         """Not in normal use."""
-        LineValidator.is_not_None(self._keyword, descriptiondefault)
+        LineValidator.is_not_none(self._keyword, descriptiondefault)
         LineValidator.is_bool(self._keyword, descriptiondefault)
         my_value = _PxBool(descriptiondefault)
         try:

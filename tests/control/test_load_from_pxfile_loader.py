@@ -1,6 +1,7 @@
+import pytest
+
 from pxbuild.control.load_from_pxfile import Loader
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-import pytest
 from tests._paths import data_path
 
 

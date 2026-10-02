@@ -227,6 +227,3 @@
  - isMandatory(*) type: boolean
 
 # StringByLanguage
-
-
-

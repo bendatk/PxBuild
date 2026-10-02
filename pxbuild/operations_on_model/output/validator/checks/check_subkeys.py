@@ -1,15 +1,15 @@
-from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_keytypes import (
-    _KeytypeVariableLang,
-    _KeytypeContentLang,
-    _KeytypeVariableValueLang,
-    _KeytypeValuesLangMulti,
-    _KeytypeCodes,
-)
-
-from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-from ...validator.validationResult import ValidationResult
 import pxbuild.models.output.pxfile.util.constants as const
+from pxbuild.models.output.pxfile.px_file_model import PXFileModel
+from pxbuild.models.output.pxfile.util._px_keytypes import (
+    _KeytypeCodes,
+    _KeytypeContentLang,
+    _KeytypeValuesLangMulti,
+    _KeytypeVariableLang,
+    _KeytypeVariableValueLang,
+)
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+
+from ...validator.validationResult import ValidationResult
 
 
 class _Checker:
@@ -50,7 +50,7 @@ class _Checker:
                 self.val_result.add_error(f"{self.error_intro}: Values can not be None. For lang:{key.lang}.")
         else:
             dimensions = self.model.stub.get_value(key.lang) + self.model.heading.get_value(key.lang)
-            if not len(dimensions) == len(key.values):
+            if len(dimensions) != len(key.values):
                 self.val_result.add_error(
                     f"{self.error_intro}: There are {len(dimensions)} dimensions, but {len(key.values)} values. For lang:{key.lang}."
                 )

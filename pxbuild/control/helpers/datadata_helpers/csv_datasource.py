@@ -1,5 +1,5 @@
 import pandas
-from typing import Union
+
 from .abstract_datasource import AbstractDatasource
 from .pandas_spark_backend._backend_methods import IBackendMethods
 

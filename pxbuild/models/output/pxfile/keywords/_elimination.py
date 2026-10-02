@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxBString
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeVariableLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxBString
 
 
 class _Elimination(_PxValueByKey):
@@ -16,9 +16,9 @@ class _Elimination(_PxValueByKey):
         super().__init__("ELIMINATION")
         self._seen_languages = {}
 
-    def set(self, elimination: str, variable: str, lang: str = None, code: str = "") -> None:
+    def set(self, elimination: str, variable: str, lang: str | None = None, code: str = "") -> None:
         """bool eller string"""
-        LineValidator.is_not_None(self._keyword, elimination)
+        LineValidator.is_not_none(self._keyword, elimination)
         LineValidator.is_string(self._keyword, elimination)
         my_value = _PxBString(elimination)
         my_key = _KeytypeVariableLang(variable, lang, code)
@@ -29,11 +29,11 @@ class _Elimination(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, variable: str, lang: str = None) -> str:
+    def get_value(self, variable: str, lang: str | None = None) -> str:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, variable: str, lang: str = None) -> bool:
+    def has_value(self, variable: str, lang: str | None = None) -> bool:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().has_value(my_key)
 

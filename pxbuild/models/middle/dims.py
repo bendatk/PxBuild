@@ -1,15 +1,13 @@
 # from .pydantic_pxcodes import PxCodes, Grouping, Valueitem, Note
+
 from pxbuild.control.helpers.datadata_helpers.datadatasource import Datadatasource
 from pxbuild.control.helpers.loaded_jsons import LoadedJsons
-
-from typing import Dict, List
-
-from .time_dim import TimeDim
-from .cont_dim import ContDim
-from .coded_dim import CodedDim
-from .abstract_dim import AbstractDim
-
 from pxbuild.models.input.helper_pxcodes import HelperPxCodes
+
+from .abstract_dim import AbstractDim
+from .coded_dim import CodedDim
+from .cont_dim import ContDim
+from .time_dim import TimeDim
 
 
 class Dims:
@@ -17,17 +15,17 @@ class Dims:
 
         meta = in_loaded_jsons.get_pxmetadata().dataset
 
-        self.dim_by_code: Dict[str, AbstractDim] = {}
-        self._stubCodes: List[str] = []
-        self._headingCodes: List[str] = []
+        self.dim_by_code: dict[str, AbstractDim] = {}
+        self._stubCodes: list[str] = []
+        self._headingCodes: list[str] = []
 
-        self.coded_dimensions: List[CodedDim] = []
+        self.coded_dimensions: list[CodedDim] = []
 
         # CodedDimensions
         if meta.coded_dimensions:
             # In input 2 CodedDimensions can share a codelist. This cannot be expressed in output.
             pxcodes_by_codelist_id = in_loaded_jsons.get_resolved_pxcodes_ids()
-            pxcodes_helper_by_codelist_id: Dict[str, HelperPxCodes] = {}
+            pxcodes_helper_by_codelist_id: dict[str, HelperPxCodes] = {}
             for codelist_id in pxcodes_by_codelist_id:
                 pxcodes_helper_by_codelist_id[codelist_id] = HelperPxCodes(
                     pxcodes_by_codelist_id[codelist_id], in_loaded_jsons.get_config().admin.valid_languages
@@ -67,23 +65,23 @@ class Dims:
             self._stubCodes.append(time_code)
         self.dim_by_code[time_code] = self.time
 
-    def get_dims_in_output_order(self) -> List[AbstractDim]:
-        my_out: List[AbstractDim] = []
+    def get_dims_in_output_order(self) -> list[AbstractDim]:
+        my_out: list[AbstractDim] = []
         for code in self._stubCodes + self._headingCodes:
             my_out.append(self.dim_by_code[code])
         return my_out
 
-    def get_stubcodes(self) -> List[str]:
+    def get_stubcodes(self) -> list[str]:
         return self._stubCodes
 
-    def get_headingcodes(self) -> List[str]:
+    def get_headingcodes(self) -> list[str]:
         return self._headingCodes
 
-    def get_dimcodes_in_output_order(self) -> List[str]:
+    def get_dimcodes_in_output_order(self) -> list[str]:
         return self._stubCodes + self._headingCodes
 
-    def get_as_lables(self, codes: List[str], language: str) -> List[str]:
-        my_out: List[str] = []
+    def get_as_lables(self, codes: list[str], language: str) -> list[str]:
+        my_out: list[str] = []
         for code in codes:
             my_out.append(self.dim_by_code[code].label_by_lang[language])
         return my_out

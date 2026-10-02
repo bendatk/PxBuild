@@ -1,10 +1,11 @@
-import pandas as pd
-from typing import Literal, List
-from pyarrow.parquet import ParquetFile
+from typing import Literal
+
 import numpy as np
-from .....models.output.pxfile.keywords._data import _PxData
-from io import TextIOWrapper
+import pandas as pd
+from pyarrow.parquet import ParquetFile
+
 from .....models.input.pydantic_pxmetadata import Measurement
+from .....models.output.pxfile.keywords._data import _PxData
 from ._backend_methods import IBackendMethods
 
 
@@ -22,7 +23,7 @@ class PandasWrapper(IBackendMethods):
             columns_to_sum.append(contrib_col_name)
         return self.add_sum_column(df, "out_index", columns_to_sum)
 
-    def get_columns_to_list(self, df: pd.DataFrame) -> List[str]:
+    def get_columns_to_list(self, df: pd.DataFrame) -> list[str]:
         return df.columns.values.tolist()
 
     def count_rows(self, data: pd.Series) -> int:
@@ -31,12 +32,12 @@ class PandasWrapper(IBackendMethods):
     def rename(self, df: pd.DataFrame, measurement_code_by_column_name: dict) -> pd.DataFrame:
         return df.rename(columns=measurement_code_by_column_name)
 
-    def round_by_decimals(self, df: pd.DataFrame, measurements: List[Measurement], decimals: int) -> pd.DataFrame:
+    def round_by_decimals(self, df: pd.DataFrame, measurements: list[Measurement], decimals: int) -> pd.DataFrame:
         for my_cont in measurements:
             df[my_cont.column_name] = df[my_cont.column_name].round(decimals)
         return df
 
-    def get_timeperiodes(self, df: pd.DataFrame, column_name: str) -> List[str]:
+    def get_timeperiodes(self, df: pd.DataFrame, column_name: str) -> list[str]:
         """Reads all values from a column, applies unique and sorts descending."""
 
         if column_name not in df.columns:
@@ -50,7 +51,7 @@ class PandasWrapper(IBackendMethods):
         as_sorted_list = sorted(as_list)
         return as_sorted_list
 
-    def validate_coded_values(self, df: pd.DataFrame, column: str, codelist: List[str]) -> None:
+    def validate_coded_values(self, df: pd.DataFrame, column: str, codelist: list[str]) -> None:
         """Validates that all values in a column are in a list of valid values."""
 
         if column not in df.columns:
@@ -106,7 +107,7 @@ class PandasWrapper(IBackendMethods):
     def validate_data(self, df: pd.DataFrame, data_file_path: str) -> None:
         valid_symbol_entries = ["", ".", "..", "...", "....", ".....", "......", "-"]
         err_mess_ending = " From datafile " + data_file_path
-        my_colnames: List[str] = df.columns.to_list()
+        my_colnames: list[str] = df.columns.to_list()
 
         for col in my_colnames:
             if "." in col:

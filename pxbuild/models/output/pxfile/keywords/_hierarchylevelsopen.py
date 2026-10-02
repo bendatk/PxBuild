@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxInt
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeVariableLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxInt
 
 
 class _Hierarchylevelsopen(_PxValueByKey):
@@ -16,9 +16,9 @@ class _Hierarchylevelsopen(_PxValueByKey):
         super().__init__("HIERARCHYLEVELSOPEN")
         self._seen_languages = {}
 
-    def set(self, hierarchylevelsopen: int, variable: str, lang: str = None) -> None:
+    def set(self, hierarchylevelsopen: int, variable: str, lang: str | None = None) -> None:
         """Not in normal use. See pdf"""
-        LineValidator.is_not_None(self._keyword, hierarchylevelsopen)
+        LineValidator.is_not_none(self._keyword, hierarchylevelsopen)
         LineValidator.is_int(self._keyword, hierarchylevelsopen)
         my_value = _PxInt(hierarchylevelsopen)
         my_key = _KeytypeVariableLang(variable, lang)
@@ -29,11 +29,11 @@ class _Hierarchylevelsopen(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, variable: str, lang: str = None) -> int:
+    def get_value(self, variable: str, lang: str | None = None) -> int:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, variable: str, lang: str = None) -> bool:
+    def has_value(self, variable: str, lang: str | None = None) -> bool:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().has_value(my_key)
 

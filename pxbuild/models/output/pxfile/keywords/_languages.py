@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Languages(_PxSingle):
@@ -16,7 +16,7 @@ class _Languages(_PxSingle):
 
     def set(self, languages: list[str]) -> None:
         """List of Language-codes used in file."""
-        LineValidator.is_not_None(self._keyword, languages)
+        LineValidator.is_not_none(self._keyword, languages)
         LineValidator.is_list_of_strings(self._keyword, languages)
         LineValidator.regexp_item_string("^[a-z]{2}$", self._keyword, languages)
         LineValidator.unique(self._keyword, languages)

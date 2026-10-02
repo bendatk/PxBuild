@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _AttributeId(_PxSingle):
@@ -16,7 +16,7 @@ class _AttributeId(_PxSingle):
 
     def set(self, attribute_id: list[str]) -> None:
         """Not in normal use. See pdf"""
-        LineValidator.is_not_None(self._keyword, attribute_id)
+        LineValidator.is_not_none(self._keyword, attribute_id)
         LineValidator.is_list_of_strings(self._keyword, attribute_id)
         my_value = _PxStringList(attribute_id)
         try:

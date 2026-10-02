@@ -13,8 +13,8 @@
   "contacts":[
   {
     "phone": "+47 2109 4753",
-    "email": "utenrikshandel@ssb.no",                  
-    "name": {"no":"Utenrikshandel, Statistisk sentralbyrå","en":"Utenrikshandel, Statistics Norway"}  
+    "email": "utenrikshandel@ssb.no",
+    "name": {"no":"Utenrikshandel, Statistisk sentralbyrå","en":"Utenrikshandel, Statistics Norway"}
   }
   ]
 }

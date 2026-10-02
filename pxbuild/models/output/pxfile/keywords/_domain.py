@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeVariableLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
 
 
 class _Domain(_PxValueByKey):
@@ -16,9 +16,9 @@ class _Domain(_PxValueByKey):
         super().__init__("DOMAIN")
         self._seen_languages = {}
 
-    def set(self, domain: str, variable: str, lang: str = None, code: str = "") -> None:
+    def set(self, domain: str, variable: str, lang: str | None = None, code: str = "") -> None:
         """Can occur once for each variable. Is used to determine which value sets are of interest, and thus which aggregation lists can be used."""
-        LineValidator.is_not_None(self._keyword, domain)
+        LineValidator.is_not_none(self._keyword, domain)
         LineValidator.is_string(self._keyword, domain)
         my_value = _PxString(domain)
         my_key = _KeytypeVariableLang(variable, lang, code)
@@ -29,11 +29,11 @@ class _Domain(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, variable: str, lang: str = None) -> str:
+    def get_value(self, variable: str, lang: str | None = None) -> str:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, variable: str, lang: str = None) -> bool:
+    def has_value(self, variable: str, lang: str | None = None) -> bool:
         my_key = _KeytypeVariableLang(variable, lang)
         return super().has_value(my_key)
 

@@ -1,7 +1,7 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
-from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 from pxbuild.models.output.pxfile.util._px_keytypes import _KeytypeLang
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxValueByKey
+from pxbuild.models.output.pxfile.util._px_valuetype import _PxStringList
 
 
 class _AttributeText(_PxValueByKey):
@@ -16,9 +16,9 @@ class _AttributeText(_PxValueByKey):
         super().__init__("ATTRIBUTE-TEXT")
         self._seen_languages = {}
 
-    def set(self, attribute_text: list[str], lang: str = None) -> None:
+    def set(self, attribute_text: list[str], lang: str | None = None) -> None:
         """Not in normal use. See pdf"""
-        LineValidator.is_not_None(self._keyword, attribute_text)
+        LineValidator.is_not_none(self._keyword, attribute_text)
         LineValidator.is_list_of_strings(self._keyword, attribute_text)
         my_value = _PxStringList(attribute_text)
         my_key = _KeytypeLang(lang)
@@ -29,11 +29,11 @@ class _AttributeText(_PxValueByKey):
             raise type(e)(msg) from e
         self._seen_languages[lang] = 1
 
-    def get_value(self, lang: str = None) -> list[str]:
+    def get_value(self, lang: str | None = None) -> list[str]:
         my_key = _KeytypeLang(lang)
         return super().get_value(my_key).get_value()
 
-    def has_value(self, lang: str = None) -> bool:
+    def has_value(self, lang: str | None = None) -> bool:
         my_key = _KeytypeLang(lang)
         return super().has_value(my_key)
 

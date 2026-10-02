@@ -7,14 +7,12 @@ def process_properties2(node_name: str, node_values: dict, required: bool, depth
     indent = "    " * (depth - 1) if depth > 0 else ""
     my_desc = f" Description: {node_values['description']}" if "description" in node_values else ""
     my_default = f" default: {node_values['default']}" if "default" in node_values else ""
-    my_type = (
-        f" type: {node_values['type']}" if "type" in node_values and not node_values["type"] == "object" else " ND"
-    )
+    my_type = f" type: {node_values['type']}" if "type" in node_values and node_values["type"] != "object" else " ND"
     my_max_length = f" ,max length: {node_values['maxLength']}" if "maxLength" in node_values else ""
 
     if "$ref" in node_values:
         my_type = (
-            f" type:  [" + node_values["$ref"].split("/")[-1] + "](#" + node_values["$ref"].split("/")[-1].lower() + ")"
+            " type:  [" + node_values["$ref"].split("/")[-1] + "](#" + node_values["$ref"].split("/")[-1].lower() + ")"
         )
 
     node_name_display = node_name + "(*)" if required else node_name

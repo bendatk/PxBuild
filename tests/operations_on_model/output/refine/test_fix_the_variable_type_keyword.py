@@ -1,6 +1,9 @@
-from pxbuild.control.load_from_pxfile import Loader
-from pxbuild.operations_on_model.output.refine.fix_the_variable_type_keyword import fix_the_variable_type_keyword
 import pytest
+
+from pxbuild.control.load_from_pxfile import Loader
+from pxbuild.operations_on_model.output.refine.fix_the_variable_type_keyword import (
+    fix_the_variable_type_keyword,
+)
 from tests._paths import data_path
 
 

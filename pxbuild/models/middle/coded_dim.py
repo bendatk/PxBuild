@@ -1,12 +1,10 @@
-from typing import List
-from .abstract_dim import AbstractDim
-from ..input.pydantic_pxmetadata import CodedDimension
-from ..input.pydantic_pxcodes import Grouping
-from ..input.pydantic_pxmetadata import DomainIdFrom
-
-from pxbuild.control.helpers.loaded_jsons import LoadedJsons
 from pxbuild.control.helpers.datadata_helpers.for_get_data import CubemathsHelper
+from pxbuild.control.helpers.loaded_jsons import LoadedJsons
 from pxbuild.models.input.helper_pxcodes import HelperPxCodes
+
+from ..input.pydantic_pxcodes import Grouping
+from ..input.pydantic_pxmetadata import CodedDimension, DomainIdFrom
+from .abstract_dim import AbstractDim
 
 
 class CodedDim(AbstractDim):
@@ -38,10 +36,10 @@ class CodedDim(AbstractDim):
     def get_pydantic(self) -> CodedDimension:
         return self._raw
 
-    def get_codes(self, language: str) -> List[str]:
+    def get_codes(self, language: str) -> list[str]:
         return self._pxcodes_helper.get_codes(language)
 
-    def get_labels(self, language: str) -> List[str]:
+    def get_labels(self, language: str) -> list[str]:
         return self._pxcodes_helper.get_labels(language)
 
     def get_valuelabel(self, language: str, value_code: str) -> str:
@@ -50,7 +48,7 @@ class CodedDim(AbstractDim):
     def get_cubemaths_helper(self, language: str) -> CubemathsHelper:
         return CubemathsHelper(self._column_name, self._pxcodes_helper.get_codes(language))
 
-    def groupings(self) -> List[Grouping] | None:
+    def groupings(self) -> list[Grouping] | None:
         return self._pxcodes_helper.groupings()
 
     def elimination_possible(self) -> bool:

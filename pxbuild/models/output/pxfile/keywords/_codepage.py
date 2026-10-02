@@ -1,6 +1,6 @@
-﻿from pxbuild.models.output.pxfile.util._px_super import _PxSingle
+﻿from pxbuild.models.output.pxfile.util._line_validator import LineValidator
+from pxbuild.models.output.pxfile.util._px_super import _PxSingle
 from pxbuild.models.output.pxfile.util._px_valuetype import _PxString
-from pxbuild.models.output.pxfile.util._line_validator import LineValidator
 
 
 class _Codepage(_PxSingle):
@@ -16,7 +16,7 @@ class _Codepage(_PxSingle):
 
     def set(self, codepage: str) -> None:
         """Not in use"""
-        LineValidator.is_not_None(self._keyword, codepage)
+        LineValidator.is_not_none(self._keyword, codepage)
         LineValidator.is_string(self._keyword, codepage)
         my_value = _PxString(codepage)
         try:

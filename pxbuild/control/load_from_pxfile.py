@@ -1,7 +1,8 @@
+import ast
 import re
 
 from pxbuild.models.output.pxfile.px_file_model import PXFileModel
-import pxbuild.models.output.pxfile.util.constants as constants
+from pxbuild.models.output.pxfile.util import constants
 
 
 class QuotedItem:
@@ -73,14 +74,11 @@ class Keypart:
 class Loader:
     @staticmethod
     def is_even(value: int) -> bool:
-        if value % 2 == 0:
-            return True
-        else:
-            return False
+        return value % 2 == 0
 
     def digest_keypart_valuepart_pair(self, key_items: list, value_items: list) -> None:
         keypart = self.get_keypart(key_items)
-        if keypart.keyword in constants.KEYWORDS_PYTHONIC_MAP.keys():
+        if keypart.keyword in constants.KEYWORDS_PYTHONIC_MAP:
             self.fix_value_part(keypart, value_items)
         else:
             self.when_unknown_keyword(keypart, value_items)
@@ -101,7 +99,7 @@ class Loader:
                 if string_before:
                     items_before_subkey.append(UnQuotedItem(string_before))
                 if string_after:
-                    raise Exception(f'Hmm, there is something:{string_after} between ( and first " in keypart.')
+                    raise ValueError(f'Hmm, there is something:{string_after} between ( and first " in keypart.')
                 found_subkey = True
             else:
                 if found_subkey:
@@ -116,7 +114,7 @@ class Loader:
         keyword = ""
         lang_value = ""
         if items_before_subkey[0].is_type_quoted() or items_before_subkey[0].string == "":
-            raise Exception(f"Hmm, expected non-empty UnquotedItem.")
+            raise ValueError("Hmm, expected non-empty UnquotedItem.")
         else:
             if "[" in items_before_subkey[0].string:
                 keyword, string_after = items_before_subkey[0].get_before_and_after("[")
@@ -188,7 +186,7 @@ class Loader:
         elif my_attri.pxvalue_type == "_PxStringList":
             print("Stringlist")
             if Loader.is_even(len(items)):
-                raise ValueError(f"Bad list")
+                raise ValueError("Bad list")
             if not items[0].is_type_quoted():
                 raise ValueError(f"Value for keypart {keypart}: List must start with quoted string")
 
@@ -232,9 +230,12 @@ class Loader:
             do_run_exec = False
 
         if do_run_exec:
-            string_to_exec = f"self.outModel.{attr_name}.set({out_value}{out_subkey_part}{out_lang_part})"
-            print("do_exec:" + string_to_exec)
-            exec(string_to_exec)
+            call = ast.parse(f"set_value({out_value}{out_subkey_part}{out_lang_part})", mode="eval").body
+            if not isinstance(call, ast.Call):
+                raise ValueError(f"Could not parse value for keypart {keypart}")
+            args = [ast.literal_eval(argument) for argument in call.args]
+            kwargs = {keyword.arg: ast.literal_eval(keyword.value) for keyword in call.keywords if keyword.arg}
+            getattr(self.outModel, attr_name).set(*args, **kwargs)
 
         print(f"---- etter keyword {keypart}  er modellen ----")
         print(self.outModel)
