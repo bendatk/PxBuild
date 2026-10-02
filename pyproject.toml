@@ -1,6 +1,6 @@
 [project]
 name = "pxbuild"
-version = "0.2.4"
+version = "0.3.0"
 description = "Tool for building px-files (fork maintained by Statistics Finland)"
 authors = [{ name = "Statistics Finland - Team Times" }, { name = "SSB - Team Nettop (original project)" }]
 license = "Apache-2.0"
